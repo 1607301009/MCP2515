@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\MCP2515.obj",
+".\Objects\UART.obj" 
+TO ".\Objects\Can" 
+PRINT(".\Listings\Can.m51") RAMSIZE(256) 
