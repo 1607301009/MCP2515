@@ -1,4 +1,5 @@
 #include <REG52.H>
+#include "MCP2515.H"
 
 #define FOSC   11059200UL        /*单片机使用11.0592M晶体*/
 #define BAUD   9600UL            /*波特率定义为9600*/
@@ -58,7 +59,7 @@ UART_Busy_Flag = 0;  //清0正在发送标志
 * 返回值  : 无
 * 说明    : 无
 *******************************************************************************/
-void UART_send_str(unsigned char d)          //发送一个字节的数据，形参d即为待发送数据。
+void UART_send_str(uint8 d)          //发送一个字节的数据，形参d即为待发送数据。
 {
     SBUF = d; //将数据写入到串口缓冲
     UART_Busy_Flag = 1;     //设置发送标志
@@ -73,7 +74,7 @@ void UART_send_str(unsigned char d)          //发送一个字节的数据，形参d即为待发
 * 返回值  : 无
 * 说明    : 无
 *******************************************************************************/
-void UART_send_buffer(unsigned char *buffer) {
+void UART_send_buffer(uint8 *buffer) {
     do {
         UART_send_str(*buffer); //发送一个字符
     } while (*buffer++ != '\0');

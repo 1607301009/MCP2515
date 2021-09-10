@@ -15,19 +15,19 @@ sbit MCP2515_MOSI = P1^4;//SPI主机输出从机输入引脚
 sbit MCP2515_MISO = P1^3;//SPI主机输入从机输出引脚 
 sbit MCP2515_CS   = P1^2;//SPI片选引脚
 
-unsigned char code TXB0_Address[]={TXB0CTRL,TXB0SIDH,TXB0SIDL,TXB0EID8,TXB0EID0,TXB0DLC,TXB0D0,TXB0D1,TXB0D2,TXB0D3,TXB0D4,TXB0D5,TXB0D6,TXB0D7};
-unsigned char code TXB1_Address[]={TXB1CTRL,TXB1SIDH,TXB1SIDL,TXB1EID8,TXB1EID0,TXB1DLC,TXB1D0,TXB1D1,TXB1D2,TXB1D3,TXB1D4,TXB1D5,TXB1D6,TXB1D7};
-unsigned char code TXB2_Address[]={TXB2CTRL,TXB2SIDH,TXB2SIDL,TXB2EID8,TXB2EID0,TXB2DLC,TXB2D0,TXB2D1,TXB2D2,TXB2D3,TXB2D4,TXB2D5,TXB2D6,TXB2D7};
+uint8 code TXB0_Address[]={TXB0CTRL,TXB0SIDH,TXB0SIDL,TXB0EID8,TXB0EID0,TXB0DLC,TXB0D0,TXB0D1,TXB0D2,TXB0D3,TXB0D4,TXB0D5,TXB0D6,TXB0D7};
+uint8 code TXB1_Address[]={TXB1CTRL,TXB1SIDH,TXB1SIDL,TXB1EID8,TXB1EID0,TXB1DLC,TXB1D0,TXB1D1,TXB1D2,TXB1D3,TXB1D4,TXB1D5,TXB1D6,TXB1D7};
+uint8 code TXB2_Address[]={TXB2CTRL,TXB2SIDH,TXB2SIDL,TXB2EID8,TXB2EID0,TXB2DLC,TXB2D0,TXB2D1,TXB2D2,TXB2D3,TXB2D4,TXB2D5,TXB2D6,TXB2D7};
  
-unsigned char code RXF0_Address[]={RXF0SIDH,RXF0SIDL,RXF0EID8,RXF0EID0};
-unsigned char code RXF1_Address[]={RXF1SIDH,RXF1SIDL,RXF1EID8,RXF1EID0};
-unsigned char code RXF2_Address[]={RXF2SIDH,RXF2SIDL,RXF2EID8,RXF2EID0};
-unsigned char code RXF3_Address[]={RXF3SIDH,RXF3SIDL,RXF3EID8,RXF3EID0};
-unsigned char code RXF4_Address[]={RXF4SIDH,RXF4SIDL,RXF4EID8,RXF4EID0};
-unsigned char code RXF5_Address[]={RXF5SIDH,RXF5SIDL,RXF5EID8,RXF5EID0};
+uint8 code RXF0_Address[]={RXF0SIDH,RXF0SIDL,RXF0EID8,RXF0EID0};
+uint8 code RXF1_Address[]={RXF1SIDH,RXF1SIDL,RXF1EID8,RXF1EID0};
+uint8 code RXF2_Address[]={RXF2SIDH,RXF2SIDL,RXF2EID8,RXF2EID0};
+uint8 code RXF3_Address[]={RXF3SIDH,RXF3SIDL,RXF3EID8,RXF3EID0};
+uint8 code RXF4_Address[]={RXF4SIDH,RXF4SIDL,RXF4EID8,RXF4EID0};
+uint8 code RXF5_Address[]={RXF5SIDH,RXF5SIDL,RXF5EID8,RXF5EID0};
 
-unsigned char code RXM0_Address[]={RXM0SIDH,RXM0SIDL,RXM0EID8,RXM0EID0};
-unsigned char code RXM1_Address[]={RXM1SIDH,RXM1SIDL,RXM1EID8,RXM1EID0};
+uint8 code RXM0_Address[]={RXM0SIDH,RXM0SIDL,RXM0EID8,RXM0EID0};
+uint8 code RXM1_Address[]={RXM1SIDH,RXM1SIDL,RXM1EID8,RXM1EID0};
 
 /*******************************************************************************
 * 函数名  : Delay_Nms
@@ -35,9 +35,9 @@ unsigned char code RXM1_Address[]={RXM1SIDH,RXM1SIDL,RXM1EID8,RXM1EID0};
 * 输入    : x
 * 说明    : 此方式延时时间是不准确的,准确延时建议用定时器
 *******************************************************************************/
-void Delay_Nms(unsigned int x)
+void Delay_Nms(uint16 x)
 {
-	unsigned int y;
+	uint16 y;
 
 	for (;x>0;x--)
 		for (y=0;y<100;y++);
@@ -52,9 +52,9 @@ void Delay_Nms(unsigned int x)
 * 返回值  : rByte(读取到的一个字节数据)
 * 说明    : 无
 *******************************************************************************/
-unsigned char SPI_ReadByte(void)
+uint8 SPI_ReadByte(void)
 {
-	unsigned char i,rByte=0;
+	uint8 i,rByte=0;
 	
 	MCP2515_SCK=0;
 	for(i=0;i<8;i++)
@@ -75,9 +75,9 @@ unsigned char SPI_ReadByte(void)
 * 返回值  : 无
 * 说明    : 无
 *******************************************************************************/
-void SPI_SendByte(unsigned char dt)
+void SPI_SendByte(uint8 dt)
 {
-	unsigned char i;
+	uint8 i;
 		
 	for(i=0;i<8;i++)
 	{	
@@ -99,7 +99,7 @@ void SPI_SendByte(unsigned char dt)
 * 返回值  : 无
 * 说明    : 无
 *******************************************************************************/
-void MCP2515_WriteByte(unsigned char addr,unsigned char dat)
+void MCP2515_WriteByte(uint8 addr,uint8 dat)
 {
 	MCP2515_CS=0;				//置MCP2515的CS为低电平
 	SPI_SendByte(CAN_WRITE);	//发送写命令
@@ -116,9 +116,9 @@ void MCP2515_WriteByte(unsigned char addr,unsigned char dat)
 * 返回值  : rByte:读取到寄存器的1个字节数据
 * 说明    : 无
 *******************************************************************************/
-unsigned char MCP2515_ReadByte(unsigned char addr)
+uint8 MCP2515_ReadByte(uint8 addr)
 {
-	unsigned char rByte;
+	uint8 rByte;
 	
 	MCP2515_CS=0;				//置MCP2515的CS为低电平
 	SPI_SendByte(CAN_READ);		//发送读命令
@@ -151,7 +151,7 @@ void MCP2515_Reset(void)
 * 返回值  : 无
 * 说明    : 当ID>0x7FF设置设置为拓展帧
 *******************************************************************************/
-void CAN_Set_RX(unsigned char RXF_Address,unsigned long int ID,unsigned char EXIDE)
+void CAN_Set_RX(uint8 RXF_Address,uint32 ID,uint8 EXIDE)
 {
 	//EXIDE=1、ID>0x7FF发送拓展帧
 	if (ID<=0x7FF)
@@ -189,9 +189,9 @@ void CAN_Set_RX(unsigned char RXF_Address,unsigned long int ID,unsigned char EXI
 * 返回值  : 无
 * 说明    : 初始化包括：软件复位、工作波特率设置、标识符相关配置等。
 *******************************************************************************/
-void MCP2515_Init(unsigned char *CAN_Bitrate)
+void MCP2515_Init(uint8 *CAN_Bitrate)
 {
-	unsigned char temp=0;
+	uint8 temp=0;
 
 	MCP2515_Reset();	//发送复位指令软件复位MCP2515
 	Delay_Nms(1);		//通过软件延时约nms(不准确)
@@ -206,7 +206,7 @@ void MCP2515_Init(unsigned char *CAN_Bitrate)
 
 	MCP2515_WriteByte(RXB0CTRL,0x06);//如果RXB0满,RXB0 接收到的报文将被滚存至RXB1
 
-	//unsigned char RXF_Address,unsigned long int ID,unsigned char EXIDE)	
+	//uint8 RXF_Address,uint32 ID,uint8 EXIDE)
 	//RXB0 接收缓冲器配备有验收滤波寄存器RXF0 和RXF1（以及过滤屏蔽寄存器RXM0）
 	CAN_Set_RX(RXF0SIDH,0x100,1);
 	CAN_Set_RX(RXF1SIDH,0x7FE,0);
@@ -260,10 +260,10 @@ void MCP2515_Init(unsigned char *CAN_Bitrate)
 * 改进点   ：在报文发送之前， MCU 应对CANINTE.TXInE 位进行初始化，以便在报文发送时使能或禁止中断的产生
  *          在写入发送缓冲器之前，必须将TXBnCTRL.TXREQ 位清零（表明发送缓冲器无等待发送的报文）。
 *******************************************************************************/
-void CAN_Send_buffer(unsigned long int ID,unsigned char EXIDE,unsigned char DLC,unsigned char *Send_data)
+void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
 {
-	unsigned char *TXB_send;
-   	unsigned char i;
+	uint8 *TXB_send;
+   	uint8 i;
 	//寄存器状态获取TXB0是否忙碌，=1为忙碌，=0为空闲
 	if ((MCP2515_ReadByte(TXB0CTRL)&0x04)==0) 
 		TXB_send=&TXB0_Address;
@@ -323,9 +323,9 @@ void CAN_Send_buffer(unsigned long int ID,unsigned char EXIDE,unsigned char DLC,
 * 返回值  : len(接收到数据的长度,0~8字节)
 * 说明    : 无
 *******************************************************************************/
-void CAN_Receive_Buffer(unsigned char RXB_CTRL_Address,unsigned char *CAN_RX_Buf)
+void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf)
 {	
-	unsigned char j;
+	uint8 j;
 	for(j=0;j<14;j++)
 	{
 		CAN_RX_Buf[j]=MCP2515_ReadByte(RXB_CTRL_Address+j);//把CAN接收到的数据放入指定缓冲区

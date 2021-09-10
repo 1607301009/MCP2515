@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 02:43:33 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -15,26 +15,25 @@ line level    source
    5          
    6          //声明函数
    7          extern void UART_init(void);
-   8          extern void UART_send_str(unsigned char d);
-   9          extern void UART_send_buffer(unsigned char *buffer,unsigned int len);
+   8          extern void UART_send_str(uint8 d);
+   9          extern void UART_send_buffer(uint8 *buffer,uint16 len);
   10          
-  11          extern void Delay_Nms(unsigned int x);
+  11          extern void Delay_Nms(uint16 x);
   12          
-  13          extern unsigned char MCP2515_ReadByte(unsigned char addr);
-  14          extern void MCP2515_Init(unsigned char *CAN_Bitrate);
-  15          extern void CAN_Send_buffer(unsigned long int ID,unsigned char EXIDE,unsigned char DLC,unsigned char *Send
-             -_data);
-  16          extern void CAN_Receive_Buffer(unsigned char RXB_CTRL_Address,unsigned char *CAN_RX_Buf);
+  13          extern uint8 MCP2515_ReadByte(uint8 addr);
+  14          extern void MCP2515_Init(uint8 *CAN_Bitrate);
+  15          extern void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data);
+  16          extern void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf);
   17          
   18          
-  19          bit CAN_MERRF_Flag = 0;                            //CAN报文错误中断标志位
-  20          bit CAN_WAKIF_Flag = 0;                            //CAN唤醒中断标志位
-  21          bit CAN_ERRIF_Flag = 0;                            //CAN错误中断标志位（EFLG 寄存器中有多个中断源）
-  22          bit CAN_TX2IF_Flag = 0;                            //MCP2515发送缓冲器2 空中断标志位
-  23          bit CAN_TX1IF_Flag = 0;                            //MCP2515发送缓冲器1 空中断标志位
-  24          bit CAN_TX0IF_Flag = 0;                            //MCP2515发送缓冲器0 空中断标志位
-  25          bit CAN_RX1IF_Flag = 0;                            //MCP2515接收缓冲器1 满中断标志位
-  26          bit CAN_RX0IF_Flag = 0;                            //MCP2515接收缓冲器0 满中断标志位
+  19          bool CAN_MERRF_Flag = 0;                            //CAN报文错误中断标志位
+  20          bool CAN_WAKIF_Flag = 0;                            //CAN唤醒中断标志位
+  21          bool CAN_ERRIF_Flag = 0;                            //CAN错误中断标志位（EFLG 寄存器中有多个中断源）
+  22          bool CAN_TX2IF_Flag = 0;                            //MCP2515发送缓冲器2 空中断标志位
+  23          bool CAN_TX1IF_Flag = 0;                            //MCP2515发送缓冲器1 空中断标志位
+  24          bool CAN_TX0IF_Flag = 0;                            //MCP2515发送缓冲器0 空中断标志位
+  25          bool CAN_RX1IF_Flag = 0;                            //MCP2515接收缓冲器1 满中断标志位
+  26          bool CAN_RX0IF_Flag = 0;                            //MCP2515接收缓冲器0 满中断标志位
   27          
   28          
   29          
@@ -44,33 +43,33 @@ line level    source
   33   1          return c;
   34   1      }
   35          
-  36          unsigned char CAN_R_Buffer[8];                        //CAN接收数据保存缓冲区
+  36          uint8 CAN_R_Buffer[8];                        //CAN接收数据保存缓冲区
   37          
   38          //MCP2515波特率 要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-  39          unsigned char code
+  39          uint8 code
   40          bitrate_5Kbps[]={
   41                  CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  42          unsigned char code
+  42          uint8 code
   43          bitrate_10Kbps[]={
   44                  CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  45          unsigned char code
+  45          uint8 code
   46          bitrate_25Kbps[]={
   47                  CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  48          unsigned char code
+  48          uint8 code
   49          bitrate_50Kbps[]={
   50                  CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  51          unsigned char code
+  51          uint8 code
   52          bitrate_100Kbps[]={
   53                  CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 02:43:33 PAGE 2   
+  54          uint8 code
+C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 2   
 
-  54          unsigned char code
   55          bitrate_125Kbps[]={
   56                  CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  57          unsigned char code
+  57          uint8 code
   58          bitrate_250Kbps[]={
   59                  CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  60          unsigned char code
+  60          uint8 code
   61          bitrate_500Kbps[]={
   62                  CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
   63          
@@ -103,7 +102,7 @@ line level    source
   90          
   91          interrupt 2 using 1
   92          {
-  93   1      unsigned char Flag;                                //CAN接收到数据标志
+  93   1      uint8 Flag;                                //CAN接收到数据标志
   94   1      Flag = MCP2515_ReadByte(CANINTF);
   95   1      //P1_0=!P1_0;
   96   1      
@@ -126,13 +125,13 @@ line level    source
  113   1      P1_0 = !P1_0;
  114   1      CAN_RX0IF_Flag = 1;                            //MCP2515接收缓冲器0 满中断标志位
  115   1      }
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 02:43:33 PAGE 3   
-
  116          
+C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 3   
+
  117          /* 将一段内存数据转换为十六进制字符串，参数 str 是字符串指针，参数 src 是源数据地址，参数 len 是数据长度 *
              -/
- 118          void MemToStr(unsigned char *str, unsigned char *src, unsigned char len) {
- 119   1          unsigned char tmp;
+ 118          void MemToStr(uint8 *str, uint8 *src, uint8 len) {
+ 119   1          uint8 tmp;
  120   1          while (len--) {
  121   2              tmp = *src >> 4;           // 取出高 4 位
  122   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
@@ -152,10 +151,10 @@ line level    source
  136          
  137          /* 将一段内存数据转换为十六进制字符串，参数 str 是字符串指针，参数 src 是源数据地址，参数 len 是数据长度 *
              -/
- 138          unsigned char *StrData(unsigned char *src, unsigned char len) {
+ 138          uint8 *StrData(uint8 *src, uint8 len) {
  139   1          static char str[41];      //必须为static变量，或者是全局变量 读数据时最多有14位，14*3-1
- 140   1          unsigned char i = 0;
- 141   1          unsigned char tmp;
+ 140   1          uint8 i = 0;
+ 141   1          uint8 tmp;
  142   1          while (len--) {
  143   2              tmp = *src >> 4;           // 取出高 4 位
  144   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
@@ -174,13 +173,13 @@ line level    source
  157   1          return str;
  158   1      }
  159          
- 160          unsigned char *NumToStr(unsigned int num, unsigned char radix) {
+ 160          uint8 *NumToStr(uint16 num, uint8 radix) {
  161   1          static char str[8];      //必须为static变量，或者是全局变量
  162   1      
- 163   1          unsigned char tmp;
- 164   1          unsigned char i = 0;
- 165   1          unsigned char j = 0;
- 166   1          unsigned char NewStr[8] = {0};
+ 163   1          uint8 tmp;
+ 164   1          uint8 i = 0;
+ 165   1          uint8 j = 0;
+ 166   1          uint8 NewStr[8] = {0};
  167   1      
  168   1          do      //从各位开始变为字符，直到最高位，最后应该反转
  169   1          {
@@ -190,9 +189,9 @@ line level    source
  173   2          } while (num > 0);
  174   1          do      //从各位开始变为字符，直到最高位，最后应该反转
  175   1          {
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 02:43:33 PAGE 4   
-
  176   2              tmp = NewStr[--i];
+C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 4   
+
  177   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
  178   2                  str[j++] = tmp + '0';
  179   2              else
@@ -202,17 +201,17 @@ line level    source
  183   1          return str;
  184   1      }
  185          
- 186          unsigned char *StrLen(unsigned char *str) {
- 187   1          unsigned char i = 0;
+ 186          uint8 *StrLen(uint8 *str) {
+ 187   1          uint8 i = 0;
  188   1          while (*str++ != '\0') i++;
  189   1          return i;
  190   1      }
  191          
- 192          unsigned char *StrID;
- 193          unsigned char *SendData;
- 194          unsigned char i;
+ 192          uint8 *StrID;
+ 193          uint8 *SendData;
+ 194          uint8 i;
  195          /* 将需要发送的数据 转发到uart */
- 196          void Send(unsigned int ID, unsigned char EXIDE, unsigned char DLC, unsigned char *Send_data) {
+ 196          void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
  197   1          if (EXIDE)
  198   1          {
  199   2              printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
@@ -231,11 +230,11 @@ line level    source
  212   1      }
  213          
  214          /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
- 215          void Receive(unsigned char RXB_CTRL_Address, unsigned char *CAN_RX_Buf) {
- 216   1          unsigned char i;
- 217   1          unsigned char Receive_DLC = 0;
- 218   1          unsigned char Read_RXB_CTRL = 0;
- 219   1          unsigned char Receive_data[8] = {0};
+ 215          void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
+ 216   1          uint8 i;
+ 217   1          uint8 Receive_DLC = 0;
+ 218   1          uint8 Read_RXB_CTRL = 0;
+ 219   1          uint8 Receive_data[8] = {0};
  220   1      
  221   1          CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
  222   1      
@@ -254,77 +253,75 @@ line level    source
  235   1      }
  236          
  237          /*******************************************************************************
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 02:43:33 PAGE 5   
-
  238          * 函数名  : main
+C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 5   
+
  239          * 描述    : 主函数，用户程序从main函数开始运行
  240          * 输入    : 无
  241          * 输出    : 无
  242          * 返回值  : 无
  243          * 说明    : 无
  244          *******************************************************************************/
- 245          //unsigned char TXB_Value[]={0x0,0x1,0x2,0x3,0x04,0x05,0x06,0x27,0x08,0x09,0x10,0x11,0x12,0x13};
- 246          unsigned char RXB_Value[14] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0
-             -C, 0x0D};
+ 245          //uint8 TXB_Value[]={0x0,0x1,0x2,0x3,0x04,0x05,0x06,0x27,0x08,0x09,0x10,0x11,0x12,0x13};
+ 246          uint8 RXB_Value[14] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D}
+             -;
  247          
- 248          unsigned char Read_Value[] = {0x0, 0x1, 0x2, 0x3, 0x04, 0x05, 0x06, 0x27};
+ 248          uint8 Read_Value[] = {0x0, 0x1, 0x2, 0x3, 0x04, 0x05, 0x06, 0x27};
  249          
- 250          //unsigned char ini00[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x00,0x00,0x00,0x00,0x00};
+ 250          //uint8 ini00[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x00,0x00,0x00,0x00,0x00};
  251          void main(void) {
- 252   1          unsigned int j;
- 253   1          unsigned long int ID = 0x7FD;
- 254   1          unsigned char EXIDE = 0;
- 255   1          unsigned char DLC = 8;
- 256   1          unsigned char Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+ 252   1          uint16 j;
+ 253   1          uint32 ID = 0x7FD;
+ 254   1          uint8 EXIDE = 0;
+ 255   1          uint8 DLC = 8;
+ 256   1          uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
  257   1      
  258   1          UART_init();    //UART1初始化配置
  259   1          Exint_Init();            //外部中断1初始化函数
- 260   1          SendData = StrData(Send_data, DLC);
- 261   1          printf("123123Data:%s \r\n", SendData);
+ 260   1      
+ 261   1          MCP2515_Init(bitrate_100Kbps);
  262   1      
- 263   1          MCP2515_Init(bitrate_100Kbps);
- 264   1      
- 265   1          for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
- 266   1          {
- 267   2              Send(ID, EXIDE, DLC, Send_data);
- 268   2      //        CAN_Send_buffer(ID,EXIDE,DLC,Send_data);
- 269   2              ID++;
- 270   2              EXIDE = !EXIDE;
- 271   2              DLC--;
- 272   2              Delay_Nms(1000);
- 273   2          }
+ 263   1          for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
+ 264   1          {
+ 265   2              Send(ID, EXIDE, DLC, Send_data);
+ 266   2      //        CAN_Send_buffer(ID,EXIDE,DLC,Send_data);
+ 267   2              ID++;
+ 268   2              EXIDE = !EXIDE;
+ 269   2              DLC--;
+ 270   2              Delay_Nms(1000);
+ 271   2          }
+ 272   1      
+ 273   1          Delay_Nms(2000);
  274   1      
- 275   1          Delay_Nms(2000);
- 276   1      
- 277   1          while (1) {
- 278   2      
- 279   2              if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
- 280   2              {
- 281   3                  CAN_RX0IF_Flag = 0;//CAN接收到数据标志
- 282   3                  Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
- 283   3                  Delay_Nms(2000);  //移动到下一个字符
- 284   3      
- 285   3              }
- 286   2              if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
- 287   2              {
- 288   3                  CAN_RX1IF_Flag = 0;//CAN接收到数据标志
- 289   3                  CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
- 290   3      //            UART_send_buffer(RXB_Value, 14); //发送一个字符
- 291   3                  Delay_Nms(2000);  //移动到下一个字符
- 292   3      //      UART_send_buffer(RXB_Value,14); //发送一个字符
- 293   3              }
- 294   2      
- 295   2              Delay_Nms(2000);
- 296   2          }
- 297   1      
- 298   1      }
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 02:43:33 PAGE 6   
-
+ 275   1          while (1) {
+ 276   2      
+ 277   2              if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
+ 278   2              {
+ 279   3                  CAN_RX0IF_Flag = 0;//CAN接收到数据标志
+ 280   3                  Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
+ 281   3                  Delay_Nms(2000);  //移动到下一个字符
+ 282   3      
+ 283   3              }
+ 284   2              if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
+ 285   2              {
+ 286   3                  CAN_RX1IF_Flag = 0;//CAN接收到数据标志
+ 287   3                  CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
+ 288   3      //            UART_send_buffer(RXB_Value, 14); //发送一个字符
+ 289   3                  Delay_Nms(2000);  //移动到下一个字符
+ 290   3      //      UART_send_buffer(RXB_Value,14); //发送一个字符
+ 291   3              }
+ 292   2      
+ 293   2              Delay_Nms(2000);
+ 294   2          }
+ 295   1      
+ 296   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1225    ----
-   CONSTANT SIZE    =    244    ----
+C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 6   
+
+   CODE SIZE        =   1174    ----
+   CONSTANT SIZE    =    227    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =     86      63
    DATA SIZE        =   ----    ----

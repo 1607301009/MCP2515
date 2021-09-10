@@ -5,25 +5,25 @@
 
 //声明函数
 extern void UART_init(void);
-extern void UART_send_str(unsigned char d);
-extern void UART_send_buffer(unsigned char *buffer,unsigned int len);
+extern void UART_send_str(uint8 d);
+extern void UART_send_buffer(uint8 *buffer,uint16 len);
 
-extern void Delay_Nms(unsigned int x);
+extern void Delay_Nms(uint16 x);
 
-extern unsigned char MCP2515_ReadByte(unsigned char addr);
-extern void MCP2515_Init(unsigned char *CAN_Bitrate);
-extern void CAN_Send_buffer(unsigned long int ID,unsigned char EXIDE,unsigned char DLC,unsigned char *Send_data);
-extern void CAN_Receive_Buffer(unsigned char RXB_CTRL_Address,unsigned char *CAN_RX_Buf);
+extern uint8 MCP2515_ReadByte(uint8 addr);
+extern void MCP2515_Init(uint8 *CAN_Bitrate);
+extern void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data);
+extern void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf);
 
 
-bit CAN_MERRF_Flag = 0;                            //CAN报文错误中断标志位
-bit CAN_WAKIF_Flag = 0;                            //CAN唤醒中断标志位
-bit CAN_ERRIF_Flag = 0;                            //CAN错误中断标志位（EFLG 寄存器中有多个中断源）
-bit CAN_TX2IF_Flag = 0;                            //MCP2515发送缓冲器2 空中断标志位
-bit CAN_TX1IF_Flag = 0;                            //MCP2515发送缓冲器1 空中断标志位
-bit CAN_TX0IF_Flag = 0;                            //MCP2515发送缓冲器0 空中断标志位
-bit CAN_RX1IF_Flag = 0;                            //MCP2515接收缓冲器1 满中断标志位
-bit CAN_RX0IF_Flag = 0;                            //MCP2515接收缓冲器0 满中断标志位
+bool CAN_MERRF_Flag = 0;                            //CAN报文错误中断标志位
+bool CAN_WAKIF_Flag = 0;                            //CAN唤醒中断标志位
+bool CAN_ERRIF_Flag = 0;                            //CAN错误中断标志位（EFLG 寄存器中有多个中断源）
+bool CAN_TX2IF_Flag = 0;                            //MCP2515发送缓冲器2 空中断标志位
+bool CAN_TX1IF_Flag = 0;                            //MCP2515发送缓冲器1 空中断标志位
+bool CAN_TX0IF_Flag = 0;                            //MCP2515发送缓冲器0 空中断标志位
+bool CAN_RX1IF_Flag = 0;                            //MCP2515接收缓冲器1 满中断标志位
+bool CAN_RX0IF_Flag = 0;                            //MCP2515接收缓冲器0 满中断标志位
 
 
 
@@ -33,31 +33,31 @@ char putchar(char c)  //printf函数会调用putchar()
     return c;
 }
 
-unsigned char CAN_R_Buffer[8];                        //CAN接收数据保存缓冲区
+uint8 CAN_R_Buffer[8];                        //CAN接收数据保存缓冲区
 
 //MCP2515波特率	要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-unsigned char code
+uint8 code
 bitrate_5Kbps[]={
         CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_10Kbps[]={
         CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_25Kbps[]={
         CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_50Kbps[]={
         CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_100Kbps[]={
         CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_125Kbps[]={
         CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_250Kbps[]={
         CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-unsigned char code
+uint8 code
 bitrate_500Kbps[]={
         CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
 
@@ -90,7 +90,7 @@ void Exint_ISR(void)
 
 interrupt 2 using 1
 {
-unsigned char Flag;                                //CAN接收到数据标志
+uint8 Flag;                                //CAN接收到数据标志
 Flag = MCP2515_ReadByte(CANINTF);
 //P1_0=!P1_0;
 
@@ -115,8 +115,8 @@ CAN_RX0IF_Flag = 1;                            //MCP2515接收缓冲器0 满中断标志位
 }
 
 /* 将一段内存数据转换为十六进制字符串，参数 str 是字符串指针，参数 src 是源数据地址，参数 len 是数据长度 */
-void MemToStr(unsigned char *str, unsigned char *src, unsigned char len) {
-    unsigned char tmp;
+void MemToStr(uint8 *str, uint8 *src, uint8 len) {
+    uint8 tmp;
     while (len--) {
         tmp = *src >> 4;           // 取出高 4 位
         if (tmp <= 9)              // 转换为 0-9 或 A-F
@@ -135,10 +135,10 @@ void MemToStr(unsigned char *str, unsigned char *src, unsigned char len) {
 }
 
 /* 将一段内存数据转换为十六进制字符串，参数 str 是字符串指针，参数 src 是源数据地址，参数 len 是数据长度 */
-unsigned char *StrData(unsigned char *src, unsigned char len) {
+uint8 *StrData(uint8 *src, uint8 len) {
     static char str[41];      //必须为static变量，或者是全局变量 读数据时最多有14位，14*3-1
-    unsigned char i = 0;
-    unsigned char tmp;
+    uint8 i = 0;
+    uint8 tmp;
     while (len--) {
         tmp = *src >> 4;           // 取出高 4 位
         if (tmp <= 9)              // 转换为 0-9 或 A-F
@@ -157,13 +157,13 @@ unsigned char *StrData(unsigned char *src, unsigned char len) {
     return str;
 }
 
-unsigned char *NumToStr(unsigned int num, unsigned char radix) {
+uint8 *NumToStr(uint16 num, uint8 radix) {
     static char str[8];      //必须为static变量，或者是全局变量
 
-    unsigned char tmp;
-    unsigned char i = 0;
-    unsigned char j = 0;
-    unsigned char NewStr[8] = {0};
+    uint8 tmp;
+    uint8 i = 0;
+    uint8 j = 0;
+    uint8 NewStr[8] = {0};
 
     do      //从各位开始变为字符，直到最高位，最后应该反转
     {
@@ -183,17 +183,17 @@ unsigned char *NumToStr(unsigned int num, unsigned char radix) {
     return str;
 }
 
-unsigned char *StrLen(unsigned char *str) {
-    unsigned char i = 0;
+uint8 *StrLen(uint8 *str) {
+    uint8 i = 0;
     while (*str++ != '\0') i++;
     return i;
 }
 
-unsigned char *StrID;
-unsigned char *SendData;
-unsigned char i;
+uint8 *StrID;
+uint8 *SendData;
+uint8 i;
 /* 将需要发送的数据 转发到uart */
-void Send(unsigned int ID, unsigned char EXIDE, unsigned char DLC, unsigned char *Send_data) {
+void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
     if (EXIDE)
     {
         printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
@@ -212,11 +212,11 @@ void Send(unsigned int ID, unsigned char EXIDE, unsigned char DLC, unsigned char
 }
 
 /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
-void Receive(unsigned char RXB_CTRL_Address, unsigned char *CAN_RX_Buf) {
-    unsigned char i;
-    unsigned char Receive_DLC = 0;
-    unsigned char Read_RXB_CTRL = 0;
-    unsigned char Receive_data[8] = {0};
+void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
+    uint8 i;
+    uint8 Receive_DLC = 0;
+    uint8 Read_RXB_CTRL = 0;
+    uint8 Receive_data[8] = {0};
 
     CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
 
@@ -242,23 +242,21 @@ void Receive(unsigned char RXB_CTRL_Address, unsigned char *CAN_RX_Buf) {
 * 返回值  : 无
 * 说明    : 无
 *******************************************************************************/
-//unsigned char TXB_Value[]={0x0,0x1,0x2,0x3,0x04,0x05,0x06,0x27,0x08,0x09,0x10,0x11,0x12,0x13};
-unsigned char RXB_Value[14] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D};
+//uint8 TXB_Value[]={0x0,0x1,0x2,0x3,0x04,0x05,0x06,0x27,0x08,0x09,0x10,0x11,0x12,0x13};
+uint8 RXB_Value[14] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D};
 
-unsigned char Read_Value[] = {0x0, 0x1, 0x2, 0x3, 0x04, 0x05, 0x06, 0x27};
+uint8 Read_Value[] = {0x0, 0x1, 0x2, 0x3, 0x04, 0x05, 0x06, 0x27};
 
-//unsigned char ini00[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x00,0x00,0x00,0x00,0x00};
+//uint8 ini00[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x00,0x00,0x00,0x00,0x00};
 void main(void) {
-    unsigned int j;
-    unsigned long int ID = 0x7FD;
-    unsigned char EXIDE = 0;
-    unsigned char DLC = 8;
-    unsigned char Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+    uint16 j;
+    uint32 ID = 0x7FD;
+    uint8 EXIDE = 0;
+    uint8 DLC = 8;
+    uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
     UART_init();    //UART1初始化配置
     Exint_Init();            //外部中断1初始化函数
-    SendData = StrData(Send_data, DLC);
-    printf("123123Data:%s \r\n", SendData);
 
     MCP2515_Init(bitrate_100Kbps);
 

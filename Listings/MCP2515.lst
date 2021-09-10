@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 02:43:33 PAGE 1   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 23:35:02 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MCP2515
@@ -25,22 +25,22 @@ line level    source
   15          sbit MCP2515_MISO = P1^3;//SPI主机输入从机输出引脚 
   16          sbit MCP2515_CS   = P1^2;//SPI片选引脚
   17          
-  18          unsigned char code TXB0_Address[]={TXB0CTRL,TXB0SIDH,TXB0SIDL,TXB0EID8,TXB0EID0,TXB0DLC,TXB0D0,TXB0D1,TXB0
-             -D2,TXB0D3,TXB0D4,TXB0D5,TXB0D6,TXB0D7};
-  19          unsigned char code TXB1_Address[]={TXB1CTRL,TXB1SIDH,TXB1SIDL,TXB1EID8,TXB1EID0,TXB1DLC,TXB1D0,TXB1D1,TXB1
-             -D2,TXB1D3,TXB1D4,TXB1D5,TXB1D6,TXB1D7};
-  20          unsigned char code TXB2_Address[]={TXB2CTRL,TXB2SIDH,TXB2SIDL,TXB2EID8,TXB2EID0,TXB2DLC,TXB2D0,TXB2D1,TXB2
-             -D2,TXB2D3,TXB2D4,TXB2D5,TXB2D6,TXB2D7};
+  18          uint8 code TXB0_Address[]={TXB0CTRL,TXB0SIDH,TXB0SIDL,TXB0EID8,TXB0EID0,TXB0DLC,TXB0D0,TXB0D1,TXB0D2,TXB0D
+             -3,TXB0D4,TXB0D5,TXB0D6,TXB0D7};
+  19          uint8 code TXB1_Address[]={TXB1CTRL,TXB1SIDH,TXB1SIDL,TXB1EID8,TXB1EID0,TXB1DLC,TXB1D0,TXB1D1,TXB1D2,TXB1D
+             -3,TXB1D4,TXB1D5,TXB1D6,TXB1D7};
+  20          uint8 code TXB2_Address[]={TXB2CTRL,TXB2SIDH,TXB2SIDL,TXB2EID8,TXB2EID0,TXB2DLC,TXB2D0,TXB2D1,TXB2D2,TXB2D
+             -3,TXB2D4,TXB2D5,TXB2D6,TXB2D7};
   21           
-  22          unsigned char code RXF0_Address[]={RXF0SIDH,RXF0SIDL,RXF0EID8,RXF0EID0};
-  23          unsigned char code RXF1_Address[]={RXF1SIDH,RXF1SIDL,RXF1EID8,RXF1EID0};
-  24          unsigned char code RXF2_Address[]={RXF2SIDH,RXF2SIDL,RXF2EID8,RXF2EID0};
-  25          unsigned char code RXF3_Address[]={RXF3SIDH,RXF3SIDL,RXF3EID8,RXF3EID0};
-  26          unsigned char code RXF4_Address[]={RXF4SIDH,RXF4SIDL,RXF4EID8,RXF4EID0};
-  27          unsigned char code RXF5_Address[]={RXF5SIDH,RXF5SIDL,RXF5EID8,RXF5EID0};
+  22          uint8 code RXF0_Address[]={RXF0SIDH,RXF0SIDL,RXF0EID8,RXF0EID0};
+  23          uint8 code RXF1_Address[]={RXF1SIDH,RXF1SIDL,RXF1EID8,RXF1EID0};
+  24          uint8 code RXF2_Address[]={RXF2SIDH,RXF2SIDL,RXF2EID8,RXF2EID0};
+  25          uint8 code RXF3_Address[]={RXF3SIDH,RXF3SIDL,RXF3EID8,RXF3EID0};
+  26          uint8 code RXF4_Address[]={RXF4SIDH,RXF4SIDL,RXF4EID8,RXF4EID0};
+  27          uint8 code RXF5_Address[]={RXF5SIDH,RXF5SIDL,RXF5EID8,RXF5EID0};
   28          
-  29          unsigned char code RXM0_Address[]={RXM0SIDH,RXM0SIDL,RXM0EID8,RXM0EID0};
-  30          unsigned char code RXM1_Address[]={RXM1SIDH,RXM1SIDL,RXM1EID8,RXM1EID0};
+  29          uint8 code RXM0_Address[]={RXM0SIDH,RXM0SIDL,RXM0EID8,RXM0EID0};
+  30          uint8 code RXM1_Address[]={RXM1SIDH,RXM1SIDL,RXM1EID8,RXM1EID0};
   31          
   32          /*******************************************************************************
   33          * 函数名  : Delay_Nms
@@ -48,9 +48,9 @@ line level    source
   35          * 输入    : x
   36          * 说明    : 此方式延时时间是不准确的,准确延时建议用定时器
   37          *******************************************************************************/
-  38          void Delay_Nms(unsigned int x)
+  38          void Delay_Nms(uint16 x)
   39          {
-  40   1        unsigned int y;
+  40   1        uint16 y;
   41   1      
   42   1        for (;x>0;x--)
   43   1          for (y=0;y<100;y++);
@@ -62,14 +62,14 @@ line level    source
   49          * 描述    : 通过SPI读取一个字节数据
   50          * 输入    : 无
   51          * 输出    : 无
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 02:43:33 PAGE 2   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 23:35:02 PAGE 2   
 
   52          * 返回值  : rByte(读取到的一个字节数据)
   53          * 说明    : 无
   54          *******************************************************************************/
-  55          unsigned char SPI_ReadByte(void)
+  55          uint8 SPI_ReadByte(void)
   56          {
-  57   1        unsigned char i,rByte=0;
+  57   1        uint8 i,rByte=0;
   58   1        
   59   1        MCP2515_SCK=0;
   60   1        for(i=0;i<8;i++)
@@ -90,9 +90,9 @@ line level    source
   75          * 返回值  : 无
   76          * 说明    : 无
   77          *******************************************************************************/
-  78          void SPI_SendByte(unsigned char dt)
+  78          void SPI_SendByte(uint8 dt)
   79          {
-  80   1        unsigned char i;
+  80   1        uint8 i;
   81   1          
   82   1        for(i=0;i<8;i++)
   83   1        { 
@@ -114,7 +114,7 @@ line level    source
   99          * 返回值  : 无
  100          * 说明    : 无
  101          *******************************************************************************/
- 102          void MCP2515_WriteByte(unsigned char addr,unsigned char dat)
+ 102          void MCP2515_WriteByte(uint8 addr,uint8 dat)
  103          {
  104   1        MCP2515_CS=0;       //置MCP2515的CS为低电平
  105   1        SPI_SendByte(CAN_WRITE);  //发送写命令
@@ -126,16 +126,16 @@ line level    source
  111          /*******************************************************************************
  112          * 函数名  : MCP2515_ReadByte
  113          * 描述    : 通过SPI从MCP2515指定地址寄器读1个字节数据
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 02:43:33 PAGE 3   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 23:35:02 PAGE 3   
 
  114          * 输入    : addr:MCP2515寄存器地址
  115          * 输出    : 无
  116          * 返回值  : rByte:读取到寄存器的1个字节数据
  117          * 说明    : 无
  118          *******************************************************************************/
- 119          unsigned char MCP2515_ReadByte(unsigned char addr)
+ 119          uint8 MCP2515_ReadByte(uint8 addr)
  120          {
- 121   1        unsigned char rByte;
+ 121   1        uint8 rByte;
  122   1        
  123   1        MCP2515_CS=0;       //置MCP2515的CS为低电平
  124   1        SPI_SendByte(CAN_READ);   //发送读命令
@@ -168,7 +168,7 @@ line level    source
  151          * 返回值  : 无
  152          * 说明    : 当ID>0x7FF设置设置为拓展帧
  153          *******************************************************************************/
- 154          void CAN_Set_RX(unsigned char RXF_Address,unsigned long int ID,unsigned char EXIDE)
+ 154          void CAN_Set_RX(uint8 RXF_Address,uint32 ID,uint8 EXIDE)
  155          {
  156   1        //EXIDE=1、ID>0x7FF发送拓展帧
  157   1        if (ID<=0x7FF)
@@ -190,7 +190,7 @@ line level    source
  173   2        }
  174   1        else
  175   1        { 
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 02:43:33 PAGE 4   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 23:35:02 PAGE 4   
 
  176   2          MCP2515_WriteByte(RXF_Address+0,ID>>21);                  //SIDH
  177   2          MCP2515_WriteByte(RXF_Address+1,(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
@@ -208,9 +208,9 @@ line level    source
  189          * 返回值  : 无
  190          * 说明    : 初始化包括：软件复位、工作波特率设置、标识符相关配置等。
  191          *******************************************************************************/
- 192          void MCP2515_Init(unsigned char *CAN_Bitrate)
+ 192          void MCP2515_Init(uint8 *CAN_Bitrate)
  193          {
- 194   1        unsigned char temp=0;
+ 194   1        uint8 temp=0;
  195   1      
  196   1        MCP2515_Reset();  //发送复位指令软件复位MCP2515
  197   1        Delay_Nms(1);   //通过软件延时约nms(不准确)
@@ -225,7 +225,7 @@ line level    source
  206   1      
  207   1        MCP2515_WriteByte(RXB0CTRL,0x06);//如果RXB0满,RXB0 接收到的报文将被滚存至RXB1
  208   1      
- 209   1        //unsigned char RXF_Address,unsigned long int ID,unsigned char EXIDE) 
+ 209   1        //uint8 RXF_Address,uint32 ID,uint8 EXIDE)
  210   1        //RXB0 接收缓冲器配备有验收滤波寄存器RXF0 和RXF1（以及过滤屏蔽寄存器RXM0）
  211   1        CAN_Set_RX(RXF0SIDH,0x100,1);
  212   1        CAN_Set_RX(RXF1SIDH,0x7FE,0);
@@ -254,7 +254,7 @@ line level    source
  235   1      //  
  236   1      //  MCP2515_WriteByte(RXF0SIDH,0xFF);//配置验收滤波寄存器n标准标识符高位
  237   1      //
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 02:43:33 PAGE 5   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 23:35:02 PAGE 5   
 
  238   1      //  MCP2515_WriteByte(RXM0SIDH,0xFF);//配置验收屏蔽寄存器n标准标识符高位
  239   1      //  MCP2515_WriteByte(RXM1EID0,0xE0);//配置验收屏蔽寄存器n标准标识符低位
@@ -282,10 +282,10 @@ line level    source
  260          * 改进点   ：在报文发送之前， MCU 应对CANINTE.TXInE 位进行初始化，以便在报文发送时使能或禁止中断的产生
  261           *          在写入发送缓冲器之前，必须将TXBnCTRL.TXREQ 位清零（表明发送缓冲器无等待发送的报文）。
  262          *******************************************************************************/
- 263          void CAN_Send_buffer(unsigned long int ID,unsigned char EXIDE,unsigned char DLC,unsigned char *Send_data)
+ 263          void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
  264          {
- 265   1        unsigned char *TXB_send;
- 266   1          unsigned char i;
+ 265   1        uint8 *TXB_send;
+ 266   1          uint8 i;
  267   1        //寄存器状态获取TXB0是否忙碌，=1为忙碌，=0为空闲
  268   1        if ((MCP2515_ReadByte(TXB0CTRL)&0x04)==0) 
  269   1          TXB_send=&TXB0_Address;
@@ -318,7 +318,7 @@ line level    source
  296   3          }
  297   2        }
  298   1        else
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 02:43:33 PAGE 6   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/10/2021 23:35:02 PAGE 6   
 
  299   1        { 
  300   2          MCP2515_WriteByte(TXB_send[1],ID>>21);                  //SIDH
@@ -347,9 +347,9 @@ line level    source
  323          * 返回值  : len(接收到数据的长度,0~8字节)
  324          * 说明    : 无
  325          *******************************************************************************/
- 326          void CAN_Receive_Buffer(unsigned char RXB_CTRL_Address,unsigned char *CAN_RX_Buf)
+ 326          void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf)
  327          { 
- 328   1        unsigned char j;
+ 328   1        uint8 j;
  329   1        for(j=0;j<14;j++)
  330   1        {
  331   2          CAN_RX_Buf[j]=MCP2515_ReadByte(RXB_CTRL_Address+j);//把CAN接收到的数据放入指定缓冲区

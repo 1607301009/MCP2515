@@ -423,4 +423,14 @@
 #define    CAN_500Kbps    0x00    //TQ=250 sample-point=0.750 PRSEG_2TQ PHSEG1_3TQ PHSEG2_2TQ SJW_1TQ
 
 
+#define    true             1
+#define    false            0
+
+typedef bit bool;               // 位变量
+typedef unsigned char uint8;    // 无符号8位整型变量
+typedef unsigned int uint16;    // 无符号16位整型变量
+typedef unsigned long uint32;   // 无符号32位整型变量
+
+
+
 #endif
