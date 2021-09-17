@@ -108,23 +108,64 @@ uint8 *NumToStr(uint16 num, uint8 radix) {
 }
 
 uint8 i;
-/* 将需要发送的数据 转发到uart */
-void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
+///* 将需要发送的数据 转发到uart */
+//void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
+//    if (EXIDE)
+//    {
+//        printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
+//    }
+//    else
+//    {
+//        printf("Can send ID: %8X,  DLC:%bx,  Data: ", ID, DLC);
+//    }
+//
+//    for( i=0;i<DLC;i++ )
+//    {
+//        printf("%02bX " , Send_data[i]);
+//    }
+//    printf("\r\n");
+//    CAN_Send_buffer(ID, EXIDE, DLC, Send_data);
+//}
+
+void ShowMsg(MsgStruct *Msg)
+{
+    uint8 i;
+    uint32 ID = Msg->ID;
+    uint8 EXIDE = Msg->EXIDE;
+    uint8 DLC = Msg->DLC;
+
+    if (Msg->IsSend)
+    {
+        printf("Can send   ");
+    } else {
+        printf("Can recevie");
+    }
+
     if (EXIDE)
     {
-        printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
+        printf("Can send ID: %07lX,  DLC:%bx,  Data: ", ID, DLC);
     }
     else
     {
-        printf("Can send ID: %8X,  DLC:%bx,  Data: ", ID, DLC);
+        printf("Can send ID: %7lX,  DLC:%bx,  Data: ", ID, DLC);
     }
 
     for( i=0;i<DLC;i++ )
     {
-        printf("%02bX " , Send_data[i]);
+        printf("%02bX " , Msg->DATA[i]);
     }
+
     printf("\r\n");
-    CAN_Send_buffer(ID, EXIDE, DLC, Send_data);
+}
+
+/* 将需要发送的数据 转发到uart */
+void Send(MsgStruct *SendMsg) {
+    uint8 i;
+    uint32 ID = SendMsg->ID;
+    uint8 EXIDE = SendMsg->EXIDE;
+    uint8 DLC = SendMsg->DLC;
+    ShowMsg(SendMsg);
+    CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
 }
 
 /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
@@ -165,14 +206,27 @@ void main(void) {
     uint8 DLC = 8;
     uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
+    MsgStruct SendMsg;
+    MsgStruct RecMsg;
+
     UART_init();    //UART1初始化配置
     Exint_Init();            //外部中断1初始化函数
-
     MCP2515_Init(bitrate_100Kbps);
+
+    SendMsg.ID = 0x123;
+    SendMsg.TYPE = 0x2;
+    SendMsg.IsSend = 0x1;
+    SendMsg.EXIDE = 0x0;
+    SendMsg.DLC = 8;
+    *SendMsg.DATA = *Send_data;
+    Send(&SendMsg);
+
+    SendMsg.IsSend = 0;
+    Send(&SendMsg);
 
     for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
     {
-        Send(ID, EXIDE, DLC, Send_data);
+//        Send(ID, EXIDE, DLC, Send_data);
         ID++;
         EXIDE = !EXIDE;
         DLC--;

@@ -432,5 +432,17 @@ typedef unsigned int uint16;    // 无符号16位整型变量
 typedef unsigned long uint32;   // 无符号32位整型变量
 
 
+typedef struct        // reveive 结构体
+{
+    uint32 ID;       // 帧ID
+    uint8 TYPE:2;       // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
+    uint8 IsSend:1;       // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
+    uint8 EXIDE:1;       // 帧格式: 标准帧， 扩展帧
+
+    uint8  DLC:4;       // 数据长度码位 <3:0> 表明接收到的数据字节个数
+
+    uint8  DATA[8];    // 接收缓冲器 n 数据字段字节 m, 这 8 个字节包含接收报文的数据信息
+} MsgStruct;
+
 
 #endif
