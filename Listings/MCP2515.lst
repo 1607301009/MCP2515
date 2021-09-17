@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 01:40:24 PAGE 1   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MCP2515
@@ -62,7 +62,7 @@ line level    source
   49          * √Ë ˆ    : Õ®π˝SPI∂¡»°“ª∏ˆ◊÷Ω⁄ ˝æ›
   50          *  ‰»Î    : Œﬁ
   51          *  ‰≥ˆ    : Œﬁ
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 01:40:24 PAGE 2   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 2   
 
   52          * ∑µªÿ÷µ  : rByte(∂¡»°µΩµƒ“ª∏ˆ◊÷Ω⁄ ˝æ›)
   53          * Àµ√˜    : Œﬁ
@@ -126,7 +126,7 @@ line level    source
  111          /*******************************************************************************
  112          * ∫Ø ˝√˚  : MCP2515_ReadByte
  113          * √Ë ˆ    : Õ®π˝SPI¥”MCP2515÷∏∂®µÿ÷∑ºƒ∆˜∂¡1∏ˆ◊÷Ω⁄ ˝æ›
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 01:40:24 PAGE 3   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 3   
 
  114          *  ‰»Î    : addr:MCP2515ºƒ¥Ê∆˜µÿ÷∑
  115          *  ‰≥ˆ    : Œﬁ
@@ -190,7 +190,7 @@ line level    source
  173   2        }
  174   1        else
  175   1        { 
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 01:40:24 PAGE 4   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 4   
 
  176   2          MCP2515_WriteByte(RXF_Address+0,ID>>21);                  //SIDH
  177   2          MCP2515_WriteByte(RXF_Address+1,(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
@@ -254,7 +254,7 @@ line level    source
  235   1      //  
  236   1      //  MCP2515_WriteByte(RXF0SIDH,0xFF);//≈‰÷√—È ’¬À≤®ºƒ¥Ê∆˜n±Í◊º±Í ∂∑˚∏ﬂŒª
  237   1      //
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 01:40:24 PAGE 5   
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 5   
 
  238   1      //  MCP2515_WriteByte(RXM0SIDH,0xFF);//≈‰÷√—È ’∆¡±Œºƒ¥Ê∆˜n±Í◊º±Í ∂∑˚∏ﬂŒª
  239   1      //  MCP2515_WriteByte(RXM1EID0,0xE0);//≈‰÷√—È ’∆¡±Œºƒ¥Ê∆˜n±Í◊º±Í ∂∑˚µÕŒª
@@ -262,116 +262,128 @@ line level    source
  241   1        MCP2515_WriteByte(CANINTF,0x00);//«Âø’CAN÷–∂œ±Í÷æºƒ¥Ê∆˜µƒÀ˘”–Œª(±ÿ–Î”…MCU«Âø’)
  242   1        MCP2515_WriteByte(CANINTE,0x03);//≈‰÷√CAN÷–∂œ πƒ‹ºƒ¥Ê∆˜µƒΩ” ’ª∫≥Â∆˜0¬˙÷–∂œ πƒ‹,∆‰À¸ŒªΩ˚÷π÷–∂œ
  243   1        
- 244   1        MCP2515_WriteByte(CANCTRL,REQOP_NORMAL|CLKOUT_ENABLED);//|OSM_ENABLEDΩ´MCP2515…Ë÷√Œ™’˝≥£ƒ£ Ω,ÕÀ≥ˆ≈‰÷√ƒ£ Ω
- 245   1        
- 246   1        temp=MCP2515_ReadByte(CANSTAT);//∂¡»°CAN◊¥Ã¨ºƒ¥Ê∆˜µƒ÷µ
- 247   1        if(OPMODE_NORMAL!=(temp&&0xE0))//≈–∂œMCP2515 «∑Ò“—æ≠Ω¯»Î’˝≥£ƒ£ Ω
- 248   1        {
- 249   2          MCP2515_WriteByte(CANCTRL,REQOP_NORMAL|CLKOUT_ENABLED);//|OSM_ENABLED‘Ÿ¥ŒΩ´MCP2515…Ë÷√Œ™’˝≥£ƒ£ Ω,ÕÀ≥ˆ≈‰÷
-             -√ƒ£ Ω
- 250   2        }
- 251   1      }
- 252          
- 253          /*******************************************************************************
- 254          * ∫Ø ˝√˚  : CAN_Send_Buffer
- 255          * √Ë ˆ    : CAN∑¢ÀÕ÷∏∂®≥§∂»µƒ ˝æ›
- 256          *  ‰»Î    : *CAN_TX_Buf(¥˝∑¢ÀÕ ˝æ›ª∫≥Â«¯÷∏’Î),len(¥˝∑¢ÀÕ ˝æ›≥§∂»)
- 257          *  ‰≥ˆ    : Œﬁ
- 258          * ∑µªÿ÷µ  : Œﬁ
- 259          * Àµ√˜    :
- 260          * ∏ƒΩ¯µ„   £∫‘⁄±®Œƒ∑¢ÀÕ÷Æ«∞£¨ MCU ”¶∂‘CANINTE.TXInE ŒªΩ¯––≥ı ºªØ£¨“‘±„‘⁄±®Œƒ∑¢ÀÕ ± πƒ‹ªÚΩ˚÷π÷–∂œµƒ≤˙…˙
- 261           *          ‘⁄–¥»Î∑¢ÀÕª∫≥Â∆˜÷Æ«∞£¨±ÿ–ÎΩ´TXBnCTRL.TXREQ Œª«Â¡„£®±Ì√˜∑¢ÀÕª∫≥Â∆˜Œﬁµ»¥˝∑¢ÀÕµƒ±®Œƒ£©°£
- 262          *******************************************************************************/
- 263          void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
- 264          {
- 265   1        uint8 *TXB_send;
- 266   1          uint8 i;
- 267   1        //ºƒ¥Ê∆˜◊¥Ã¨ªÒ»°TXB0 «∑Ò√¶¬µ£¨=1Œ™√¶¬µ£¨=0Œ™ø’œ–
- 268   1        if ((MCP2515_ReadByte(TXB0CTRL)&0x04)==0) 
- 269   1          TXB_send=&TXB0_Address;
- 270   1        else if ((MCP2515_ReadByte(TXB1CTRL)&0x04)==0)
- 271   1          TXB_send=&TXB1_Address;
- 272   1        else if ((MCP2515_ReadByte(TXB2CTRL)&0x04)==0)
- 273   1          TXB_send=&TXB2_Address;
- 274   1        else      //ºƒ¥Ê∆˜»´≤ø√¶¬µ
- 275   1          TXB_send=&TXB0_Address;
- 276   1      
- 277   1        //…Ë÷√DLC
- 278   1        MCP2515_WriteByte(TXB_send[5],DLC);
- 279   1      
- 280   1        //EXIDE=1°¢ID>0x7FF∑¢ÀÕÕÿ’π÷°
- 281   1        if (ID<=0x7FF)
- 282   1        {
- 283   2          if (EXIDE)
- 284   2          {
- 285   3            MCP2515_WriteByte(TXB_send[1],0x0);                 //SIDH
- 286   3            MCP2515_WriteByte(TXB_send[2],0x8);                 //SIDL
- 287   3            MCP2515_WriteByte(TXB_send[3],ID>>8&0xFF);              //EID8
- 288   3            MCP2515_WriteByte(TXB_send[4],ID&0xFF);               //EID0
- 289   3          }                                   
- 290   2          else
- 291   2          { 
- 292   3            MCP2515_WriteByte(TXB_send[1],ID>>3);               //SIDH
- 293   3            MCP2515_WriteByte(TXB_send[2],(ID&0x07)<<5);            //SIDL
- 294   3            MCP2515_WriteByte(TXB_send[3],0);                 //EID8
- 295   3            MCP2515_WriteByte(TXB_send[4],0);                 //EID0
- 296   3          }
- 297   2        }
- 298   1        else
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 01:40:24 PAGE 6   
+ 244   1      //  MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//|OSM_ENABLEDΩ´MCP2515…Ë÷√Œ™’˝≥£ƒ£ Ω,ÕÀ≥ˆ≈‰÷√
+             -ƒ£ Ω
+ 245   1      //
+ 246   1      //  temp=MCP2515_ReadByte(CANSTAT);//∂¡»°CAN◊¥Ã¨ºƒ¥Ê∆˜µƒ÷µ
+ 247   1      //  if(OPMODE_LOOPBACK!=(temp&&0xE0))//≈–∂œMCP2515 «∑Ò“—æ≠Ω¯»Î’˝≥£ƒ£ Ω
+ 248   1      //  {
+ 249   1      //      MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//|OSM_ENABLED‘Ÿ¥ŒΩ´MCP2515…Ë÷√Œ™’˝≥£ƒ£ Ω,
+             -ÕÀ≥ˆ≈‰÷√ƒ£ Ω
+ 250   1      //  }
+ 251   1      
+ 252   1          MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//Ω´MCP2515…Ë÷√Œ™ª∑ªÿƒ£ Ω,ÕÀ≥ˆ≈‰÷√ƒ£ Ω
+ 253   1      
+ 254   1          temp=MCP2515_ReadByte(CANSTAT);//∂¡»°CAN◊¥Ã¨ºƒ¥Ê∆˜µƒ÷µ
+ 255   1          if(OPMODE_NORMAL!=(temp&&0xE0))//≈–∂œMCP2515 «∑Ò“—æ≠Ω¯»Îª∑ªÿƒ£ Ω
+ 256   1          {
+ 257   2          MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//‘Ÿ¥ŒΩ´MCP2515…Ë÷√Œ™ª∑ªÿƒ£ Ω,ÕÀ≥ˆ≈‰÷√ƒ£ Ω
+ 258   2          }
+ 259   1      
+ 260   1      }
+ 261          
+ 262          /*******************************************************************************
+ 263          * ∫Ø ˝√˚  : CAN_Send_Buffer
+ 264          * √Ë ˆ    : CAN∑¢ÀÕ÷∏∂®≥§∂»µƒ ˝æ›
+ 265          *  ‰»Î    : *CAN_TX_Buf(¥˝∑¢ÀÕ ˝æ›ª∫≥Â«¯÷∏’Î),len(¥˝∑¢ÀÕ ˝æ›≥§∂»)
+ 266          *  ‰≥ˆ    : Œﬁ
+ 267          * ∑µªÿ÷µ  : Œﬁ
+ 268          * Àµ√˜    :
+ 269          * ∏ƒΩ¯µ„   £∫‘⁄±®Œƒ∑¢ÀÕ÷Æ«∞£¨ MCU ”¶∂‘CANINTE.TXInE ŒªΩ¯––≥ı ºªØ£¨“‘±„‘⁄±®Œƒ∑¢ÀÕ ± πƒ‹ªÚΩ˚÷π÷–∂œµƒ≤˙…˙
+ 270           *          ‘⁄–¥»Î∑¢ÀÕª∫≥Â∆˜÷Æ«∞£¨±ÿ–ÎΩ´TXBnCTRL.TXREQ Œª«Â¡„£®±Ì√˜∑¢ÀÕª∫≥Â∆˜Œﬁµ»¥˝∑¢ÀÕµƒ±®Œƒ£©°£
+ 271          *******************************************************************************/
+ 272          void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
+ 273          {
+ 274   1        uint8 *TXB_send;
+ 275   1          uint8 i;
+ 276   1        //ºƒ¥Ê∆˜◊¥Ã¨ªÒ»°TXB0 «∑Ò√¶¬µ£¨=1Œ™√¶¬µ£¨=0Œ™ø’œ–
+ 277   1        if ((MCP2515_ReadByte(TXB0CTRL)&0x04)==0) 
+ 278   1          TXB_send=&TXB0_Address;
+ 279   1        else if ((MCP2515_ReadByte(TXB1CTRL)&0x04)==0)
+ 280   1          TXB_send=&TXB1_Address;
+ 281   1        else if ((MCP2515_ReadByte(TXB2CTRL)&0x04)==0)
+ 282   1          TXB_send=&TXB2_Address;
+ 283   1        else      //ºƒ¥Ê∆˜»´≤ø√¶¬µ
+ 284   1          TXB_send=&TXB0_Address;
+ 285   1      
+ 286   1        //…Ë÷√DLC
+ 287   1        MCP2515_WriteByte(TXB_send[5],DLC);
+ 288   1      
+ 289   1        //EXIDE=1°¢ID>0x7FF∑¢ÀÕÕÿ’π÷°
+ 290   1        if (ID<=0x7FF)
+ 291   1        {
+ 292   2          if (EXIDE)
+ 293   2          {
+ 294   3            MCP2515_WriteByte(TXB_send[1],0x0);                 //SIDH
+ 295   3            MCP2515_WriteByte(TXB_send[2],0x8);                 //SIDL
+ 296   3            MCP2515_WriteByte(TXB_send[3],ID>>8&0xFF);              //EID8
+ 297   3            MCP2515_WriteByte(TXB_send[4],ID&0xFF);               //EID0
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 6   
 
- 299   1        { 
- 300   2          MCP2515_WriteByte(TXB_send[1],ID>>21);                  //SIDH
- 301   2          MCP2515_WriteByte(TXB_send[2],(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
- 302   2          MCP2515_WriteByte(TXB_send[3],ID>>8&0xFF);                //EID8
- 303   2          MCP2515_WriteByte(TXB_send[4],ID&0xFF);                 //EID0
- 304   2        }
- 305   1        
- 306   1        for(i=0;(i<=DLC&&i<=8);i++)
- 307   1        {
- 308   2          MCP2515_WriteByte(TXB_send[6]+i,Send_data[i]);              //D0_8Ω´¥˝∑¢ÀÕµƒ ˝æ›–¥»Î∑¢ÀÕª∫≥Âºƒ¥Ê∆˜
- 309   2        }
- 310   1      
- 311   1        MCP2515_CS=0;
- 312   1        MCP2515_WriteByte(TXB_send[0],0x08);                    //CTRL ø™ º∑¢ÀÕ
- 313   1        MCP2515_CS=1;
+ 298   3          }                                   
+ 299   2          else
+ 300   2          { 
+ 301   3            MCP2515_WriteByte(TXB_send[1],ID>>3);               //SIDH
+ 302   3            MCP2515_WriteByte(TXB_send[2],(ID&0x07)<<5);            //SIDL
+ 303   3            MCP2515_WriteByte(TXB_send[3],0);                 //EID8
+ 304   3            MCP2515_WriteByte(TXB_send[4],0);                 //EID0
+ 305   3          }
+ 306   2        }
+ 307   1        else
+ 308   1        { 
+ 309   2          MCP2515_WriteByte(TXB_send[1],ID>>21);                  //SIDH
+ 310   2          MCP2515_WriteByte(TXB_send[2],(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
+ 311   2          MCP2515_WriteByte(TXB_send[3],ID>>8&0xFF);                //EID8
+ 312   2          MCP2515_WriteByte(TXB_send[4],ID&0xFF);                 //EID0
+ 313   2        }
  314   1        
- 315   1        //∑¢ÀÕ–Œ Ω…Ë÷√£∫µ•¥Œ∑¢ÀÕ£¨‘∂≥Ã÷°£¨Õÿ’π÷°£¨µ˜ ‘◊¥Ã¨£¨ªÿ”¶°£
- 316   1      }
- 317          
- 318          /*******************************************************************************
- 319          * ∫Ø ˝√˚  : CAN_Receive_Buffer
- 320          * √Ë ˆ    : CANΩ” ’“ª÷° ˝æ›
- 321          *  ‰»Î    : RX_Address(–Ë“™∂¡»°µƒRXB0CTRL°¢RXB1CTRLµÿ÷∑),*CAN_TX_Buf(¥˝Ω” ’ ˝æ›ª∫≥Â«¯÷∏’Î)
- 322          *  ‰≥ˆ    : Œﬁ
- 323          * ∑µªÿ÷µ  : len(Ω” ’µΩ ˝æ›µƒ≥§∂»,0~8◊÷Ω⁄)
- 324          * Àµ√˜    : Œﬁ
- 325          *******************************************************************************/
- 326          void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf)
- 327          { 
- 328   1        uint8 j;
- 329   1        for(j=0;j<14;j++)
- 330   1        {
- 331   2          CAN_RX_Buf[j]=MCP2515_ReadByte(RXB_CTRL_Address+j);//∞—CANΩ” ’µΩµƒ ˝æ›∑≈»Î÷∏∂®ª∫≥Â«¯
- 332   2          //CAN_RX_Buf[j]=RXB_CTRL_Address+j;
- 333   2        }
- 334   1        if (RXB_CTRL_Address==RXB0CTRL)
- 335   1          {
- 336   2          MCP2515_WriteByte(CANINTF,0);//«Â≥˝÷–∂œ±Í÷æŒª(÷–∂œ±Í÷æºƒ¥Ê∆˜±ÿ–Î”…MCU«Â¡„)
- 337   2          }
- 338   1        else if (RXB_CTRL_Address==RXB1CTRL)
- 339   1          {
- 340   2          MCP2515_WriteByte(CANINTF,0);//«Â≥˝÷–∂œ±Í÷æŒª(÷–∂œ±Í÷æºƒ¥Ê∆˜±ÿ–Î”…MCU«Â¡„)  
- 341   2          }
- 342   1      }
- 343          
- 344          
+ 315   1        for(i=0;(i<=DLC&&i<=8);i++)
+ 316   1        {
+ 317   2          MCP2515_WriteByte(TXB_send[6]+i,Send_data[i]);              //D0_8Ω´¥˝∑¢ÀÕµƒ ˝æ›–¥»Î∑¢ÀÕª∫≥Âºƒ¥Ê∆˜
+ 318   2        }
+ 319   1      
+ 320   1        MCP2515_CS=0;
+ 321   1        MCP2515_WriteByte(TXB_send[0],0x08);                    //CTRL ø™ º∑¢ÀÕ
+ 322   1        MCP2515_CS=1;
+ 323   1        
+ 324   1        //∑¢ÀÕ–Œ Ω…Ë÷√£∫µ•¥Œ∑¢ÀÕ£¨‘∂≥Ã÷°£¨Õÿ’π÷°£¨µ˜ ‘◊¥Ã¨£¨ªÿ”¶°£
+ 325   1      }
+ 326          
+ 327          /*******************************************************************************
+ 328          * ∫Ø ˝√˚  : CAN_Receive_Buffer
+ 329          * √Ë ˆ    : CANΩ” ’“ª÷° ˝æ›
+ 330          *  ‰»Î    : RX_Address(–Ë“™∂¡»°µƒRXB0CTRL°¢RXB1CTRLµÿ÷∑),*CAN_TX_Buf(¥˝Ω” ’ ˝æ›ª∫≥Â«¯÷∏’Î)
+ 331          *  ‰≥ˆ    : Œﬁ
+ 332          * ∑µªÿ÷µ  : len(Ω” ’µΩ ˝æ›µƒ≥§∂»,0~8◊÷Ω⁄)
+ 333          * Àµ√˜    : Œﬁ
+ 334          *******************************************************************************/
+ 335          void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf)
+ 336          { 
+ 337   1        uint8 j;
+ 338   1        for(j=0;j<14;j++)
+ 339   1        {
+ 340   2          CAN_RX_Buf[j]=MCP2515_ReadByte(RXB_CTRL_Address+j);//∞—CANΩ” ’µΩµƒ ˝æ›∑≈»Î÷∏∂®ª∫≥Â«¯
+ 341   2          //CAN_RX_Buf[j]=RXB_CTRL_Address+j;
+ 342   2        }
+ 343   1        if (RXB_CTRL_Address==RXB0CTRL)
+ 344   1          {
+ 345   2          MCP2515_WriteByte(CANINTF,0);//«Â≥˝÷–∂œ±Í÷æŒª(÷–∂œ±Í÷æºƒ¥Ê∆˜±ÿ–Î”…MCU«Â¡„)
+ 346   2          }
+ 347   1        else if (RXB_CTRL_Address==RXB1CTRL)
+ 348   1          {
+ 349   2          MCP2515_WriteByte(CANINTF,0);//«Â≥˝÷–∂œ±Í÷æŒª(÷–∂œ±Í÷æºƒ¥Ê∆˜±ÿ–Î”…MCU«Â¡„)  
+ 350   2          }
+ 351   1      }
+ 352          
+ 353          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1440    ----
+   CODE SIZE        =   1441    ----
    CONSTANT SIZE    =     74    ----
    XDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.0.0   MCP2515                                                           09/18/2021 02:15:25 PAGE 7   
+
    PDATA SIZE       =   ----      23
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

@@ -25,20 +25,21 @@ Project File Date:  09/10/2021
 Rebuild target 'Target 1'
 assembling STARTUP.A51...
 compiling main.c...
-main.c(163): warning C280: 'i': unreferenced local variable
-main.c(210): warning C280: 'RecMsg': unreferenced local variable
+main.c(164): warning C280: 'i': unreferenced local variable
+main.c(256): warning C275: expression with possibly no effect
+main.c(247): warning C280: 'j': unreferenced local variable
 compiling MCP2515.c...
 compiling UART.c...
 linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_NUMTOSTR?MAIN
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_RECEIVE?MAIN
+    SEGMENT: ?PR?_CAN_RECEIVE_BUFFER?MCP2515
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_UART_SEND_BUFFER?UART
-Program Size: data=24.2 xdata=122 code=4507
+Program Size: data=24.2 xdata=107 code=4937
 creating hex file from ".\Objects\Can"...
-".\Objects\Can" - 0 Error(s), 5 Warning(s).
+".\Objects\Can" - 0 Error(s), 6 Warning(s).
 Build Time Elapsed:  00:00:02
 </pre>
 </body>

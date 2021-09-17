@@ -241,13 +241,22 @@ void MCP2515_Init(uint8 *CAN_Bitrate)
 	MCP2515_WriteByte(CANINTF,0x00);//清空CAN中断标志寄存器的所有位(必须由MCU清空)
 	MCP2515_WriteByte(CANINTE,0x03);//配置CAN中断使能寄存器的接收缓冲器0满中断使能,其它位禁止中断
 	
-	MCP2515_WriteByte(CANCTRL,REQOP_NORMAL|CLKOUT_ENABLED);//|OSM_ENABLED将MCP2515设置为正常模式,退出配置模式
-	
-	temp=MCP2515_ReadByte(CANSTAT);//读取CAN状态寄存器的值
-	if(OPMODE_NORMAL!=(temp&&0xE0))//判断MCP2515是否已经进入正常模式
-	{
-		MCP2515_WriteByte(CANCTRL,REQOP_NORMAL|CLKOUT_ENABLED);//|OSM_ENABLED再次将MCP2515设置为正常模式,退出配置模式
-	}
+//	MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//|OSM_ENABLED将MCP2515设置为正常模式,退出配置模式
+//
+//	temp=MCP2515_ReadByte(CANSTAT);//读取CAN状态寄存器的值
+//	if(OPMODE_LOOPBACK!=(temp&&0xE0))//判断MCP2515是否已经进入正常模式
+//	{
+//	    MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//|OSM_ENABLED再次将MCP2515设置为正常模式,退出配置模式
+//	}
+
+    MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//将MCP2515设置为环回模式,退出配置模式
+
+    temp=MCP2515_ReadByte(CANSTAT);//读取CAN状态寄存器的值
+    if(OPMODE_NORMAL!=(temp&&0xE0))//判断MCP2515是否已经进入环回模式
+    {
+    MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//再次将MCP2515设置为环回模式,退出配置模式
+    }
+
 }
 
 /*******************************************************************************

@@ -11,6 +11,7 @@ extern void UART_send_buffer(uint8 *buffer,uint16 len);
 extern void Delay_Nms(uint16 x);
 
 extern uint8 MCP2515_ReadByte(uint8 addr);
+extern void MCP2515_WriteByte(uint8 addr,uint8 dat);
 extern void MCP2515_Init(uint8 *CAN_Bitrate);
 extern void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data);
 extern void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf);
@@ -143,11 +144,11 @@ void ShowMsg(MsgStruct *Msg)
 
     if (EXIDE)
     {
-        printf("Can send ID: %07lX,  DLC:%bx,  Data: ", ID, DLC);
+        printf("ID: %07lX,  DLC:%bx,  Data: ", ID, DLC);
     }
     else
     {
-        printf("Can send ID: %7lX,  DLC:%bx,  Data: ", ID, DLC);
+        printf("ID: %7lX,  DLC:%bx,  Data: ", ID, DLC);
     }
 
     for( i=0;i<DLC;i++ )
@@ -168,28 +169,71 @@ void Send(MsgStruct *SendMsg) {
     CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
 }
 
-/* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
-void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
-    uint8 i;
-    uint8 Receive_DLC = 0;
-    uint8 Read_RXB_CTRL = 0;
-    uint8 Receive_data[8] = {0};
+///* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
+//void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
+//    uint8 i;
+//    uint8 Receive_DLC = 0;
+//    uint8 Read_RXB_CTRL = 0;
+//    uint8 Receive_data[8] = {0};
+//
+//    CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
+//
+//    Receive_DLC = CAN_RX_Buf[5] & 0x0F; //获取接收到的数据长度
+//    printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
+//
+//    for (i = 0; i < Receive_DLC; i++) //获取接收到的数据
+//    {
+//        Receive_data[i] = CAN_RX_Buf[6 + i];
+//        printf("%02bX " , Receive_data[i]);
+//    }
+//    printf("\r\n");
+////  获取接收缓存器及验收滤波器， 待优化
+//    Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+//    printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
+//}
+//
+ /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
+ void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
+     uint8 i;
 
-    CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
+     uint8 RXBnCTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+     uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
+     uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
+     uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
+     uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
+     uint8 RXBnDLC  = MCP2515_ReadByte(RXB_CTRL_Address + 5);
 
-    Receive_DLC = CAN_RX_Buf[5] & 0x0F; //获取接收到的数据长度
-    printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
+     RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // 扩展标识符标志位 1 = 收到的报文是扩展帧, 0 = 收到的报文是标准帧
+     RecMsg->DLC = RXBnDLC & 0x0F;
 
-    for (i = 0; i < Receive_DLC; i++) //获取接收到的数据
-    {
-        Receive_data[i] = CAN_RX_Buf[6 + i];
-        printf("%02bX " , Receive_data[i]);
-    }
-    printf("\r\n");
-//  获取接收缓存器及验收滤波器， 待优化
-    Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
-    printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
+     if (RecMsg->EXIDE)
+     {
+         uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
+         uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8<<8) | RXBnEID0;
+         RecMsg->ID = SID<<18 | EID;
+     }
+     else
+     {
+         uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
+         RecMsg->ID = SID;
+     }
+
+     for (i = 0; i < RecMsg->DLC; i++) //获取接收到的数据
+         {
+         RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
+         }
+
+     if (RXB_CTRL_Address==RXB0CTRL)
+     {
+         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
+     }
+     else if (RXB_CTRL_Address==RXB1CTRL)
+     {
+         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
+     }
 }
+
+
 
 /*******************************************************************************
 * 函数名  : main
@@ -201,7 +245,7 @@ void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
 *******************************************************************************/
 void main(void) {
     uint16 j;
-    uint32 ID = 0x7FD;
+    uint32 ID = 0x7FE;
     uint8 EXIDE = 0;
     uint8 DLC = 8;
     uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
@@ -209,29 +253,59 @@ void main(void) {
     MsgStruct SendMsg;
     MsgStruct RecMsg;
 
+    CAN_RX0IF_Flag == 0;
+
     UART_init();    //UART1初始化配置
     Exint_Init();            //外部中断1初始化函数
     MCP2515_Init(bitrate_100Kbps);
 
-    SendMsg.ID = 0x123;
-    SendMsg.TYPE = 0x2;
     SendMsg.IsSend = 0x1;
+
+    SendMsg.ID = ID;
+    SendMsg.TYPE = 0x2;
     SendMsg.EXIDE = 0x0;
     SendMsg.DLC = 8;
     *SendMsg.DATA = *Send_data;
+
+
+
+    RecMsg.IsSend = 0;
     Send(&SendMsg);
 
-    SendMsg.IsSend = 0;
-    Send(&SendMsg);
-
-    for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
+    for (i = 0; i < 2; i++) //发送字符串，直到遇到0才结束
     {
-//        Send(ID, EXIDE, DLC, Send_data);
-        ID++;
-        EXIDE = !EXIDE;
-        DLC--;
-        Delay_Nms(1000);
+        Send(&SendMsg);
+        SendMsg.ID = 0x100;
+        SendMsg.TYPE = 0x2;
+        SendMsg.EXIDE = 0x1;
+        SendMsg.DLC = 7;
+
+        Delay_Nms(3000);
+
+        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
+        {
+            Receive(RXB0CTRL, &RecMsg);
+            ShowMsg(&RecMsg);
+            CAN_RX0IF_Flag = 0;
+            printf("CAN_RX0IF_Flag = 0\r\n");
+        }
+
+        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
+        {
+            Receive(RXB1CTRL, &RecMsg);
+            CAN_RX0IF_Flag = 0;
+            printf("CAN_RX1IF_Flag == 1\r\n");
+        }
     }
+
+//    for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
+//    {
+////        Send(ID, EXIDE, DLC, Send_data);
+//        ID++;
+//        EXIDE = !EXIDE;
+//        DLC--;
+//        Delay_Nms(1000);
+//    }
 
     Delay_Nms(2000);
 
