@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 00:49:17 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -43,287 +43,190 @@ line level    source
   33   1          return c;
   34   1      }
   35          
-  36          uint8 CAN_R_Buffer[8];                        //CAN接收数据保存缓冲区
-  37          
-  38          //MCP2515波特率 要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-  39          uint8 code
-  40          bitrate_5Kbps[]={
-  41                  CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  42          uint8 code
-  43          bitrate_10Kbps[]={
-  44                  CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  45          uint8 code
-  46          bitrate_25Kbps[]={
-  47                  CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  48          uint8 code
-  49          bitrate_50Kbps[]={
-  50                  CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  51          uint8 code
-  52          bitrate_100Kbps[]={
-  53                  CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
-  54          uint8 code
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 2   
+  36          //MCP2515波特率 要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
+  37          uint8 code bitrate_5Kbps[5]={ CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+  38          uint8 code bitrate_10Kbps[5]={ CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+  39          uint8 code bitrate_25Kbps[5]={ CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+  40          uint8 code bitrate_50Kbps[5]={CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+  41          uint8 code bitrate_100Kbps[5]={CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
+  42          uint8 code bitrate_125Kbps[5]={CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+  43          uint8 code bitrate_250Kbps[5]={CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+  44          uint8 code bitrate_500Kbps[5]={CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
+  45          
+  46          /*******************************************************************************
+  47          * 函数名  : Exint_Init
+  48          * 描述    : 外部中断1初始化函数
+  49          * 输入    : 无
+  50          * 输出    : 无
+  51          * 返回值  : 无
+  52          * 说明    : 无
+  53          *******************************************************************************/
+  54          void Exint_Init(void) {
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 00:49:17 PAGE 2   
 
-  55          bitrate_125Kbps[]={
-  56                  CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  57          uint8 code
-  58          bitrate_250Kbps[]={
-  59                  CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-  60          uint8 code
-  61          bitrate_500Kbps[]={
-  62                  CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
-  63          
-  64          /*******************************************************************************
-  65          * 函数名  : Exint_Init
-  66          * 描述    : 外部中断1初始化函数
-  67          * 输入    : 无
-  68          * 输出    : 无
-  69          * 返回值  : 无
-  70          * 说明    : 无
-  71          *******************************************************************************/
-  72          void Exint_Init(void) {
-  73   1          PX1 = 1;        //设置外部中断1的中断优先级为高优先级
-  74   1          IT1 = 1;    //设置INT1的中断类型 (1:仅下降沿 0:上升沿和下降沿)
-  75   1          EX1 = 1;    //使能INT1中断
-  76   1          EA = 1;    //使能总中断
-  77   1      }
-  78          
-  79          /*******************************************************************************
-  80          * 函数名  : Exint_ISR
-  81          * 描述    : 外部中断1中断服务函数 单片机引脚P3.3接MCP2515 INT引脚
-  82          * 输入    : 无
-  83          * 输出    : 无
-  84          * 返回值  : 无
-  85          * 说明    : 用于检测MCP2515中断引脚的中断信号
-  86          *******************************************************************************/
-  87          sbit P1_0 = P1 ^ 0;
-  88          
-  89          void Exint_ISR(void)
-  90          
-  91          interrupt 2 using 1
-  92          {
-  93   1      uint8 Flag;                                //CAN接收到数据标志
-  94   1      Flag = MCP2515_ReadByte(CANINTF);
-  95   1      //P1_0=!P1_0;
-  96   1      
-  97   1      if (Flag&0x80)
-  98   1      CAN_MERRF_Flag = 1;                            //CAN报文错误中断标志位
-  99   1      if (Flag&0x40)
- 100   1      CAN_WAKIF_Flag = 1;                            //CAN唤醒中断标志位
- 101   1      if (Flag&0x20)
- 102   1      CAN_ERRIF_Flag = 1;                            //CAN错误中断标志位（EFLG 寄存器中有多个中断源）
- 103   1      if (Flag&0x10)
- 104   1      CAN_TX2IF_Flag = 1;                            //MCP2515发送缓冲器2 空中断标志位
- 105   1      if (Flag&0x08)
- 106   1      CAN_TX1IF_Flag = 1;                            //MCP2515发送缓冲器1 空中断标志位
- 107   1      if (Flag&0x04)
- 108   1      CAN_TX0IF_Flag = 1;                            //MCP2515发送缓冲器0 空中断标志位
- 109   1      if (Flag&0x02)
- 110   1      //P1_0=!P1_0;
- 111   1      CAN_RX1IF_Flag = 1;                            //MCP2515接收缓冲器1 满中断标志位
- 112   1      if (Flag&0x01)
- 113   1      P1_0 = !P1_0;
- 114   1      CAN_RX0IF_Flag = 1;                            //MCP2515接收缓冲器0 满中断标志位
- 115   1      }
- 116          
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 3   
+  55   1          PX1 = 1;        //设置外部中断1的中断优先级为高优先级
+  56   1          IT1 = 1;    //设置INT1的中断类型 (1:仅下降沿 0:上升沿和下降沿)
+  57   1          EX1 = 1;    //使能INT1中断
+  58   1          EA = 1;    //使能总中断
+  59   1      }
+  60          
+  61          /*******************************************************************************
+  62          * 函数名  : Exint_ISR
+  63          * 描述    : 外部中断1中断服务函数 单片机引脚P3.3接MCP2515 INT引脚
+  64          * 输入    : 无
+  65          * 输出    : 无
+  66          * 返回值  : 无
+  67          * 说明    : 用于检测MCP2515中断引脚的中断信号
+  68          *******************************************************************************/
+  69          void Exint_ISR(void) interrupt 2 using 1
+  70          {
+  71   1          uint8 Flag;                                //CAN接收到数据标志
+  72   1          Flag = MCP2515_ReadByte(CANINTF);
+  73   1      
+  74   1          if (Flag&0x80) CAN_MERRF_Flag = 1;                            //CAN报文错误中断标志位
+  75   1          if (Flag&0x40) CAN_WAKIF_Flag = 1;                            //CAN唤醒中断标志位
+  76   1          if (Flag&0x20) CAN_ERRIF_Flag = 1;                            //CAN错误中断标志位（EFLG 寄存器中有多个
+             -中断源）
+  77   1          if (Flag&0x10) CAN_TX2IF_Flag = 1;                            //MCP2515发送缓冲器2 空中断标志位
+  78   1          if (Flag&0x08) CAN_TX1IF_Flag = 1;                            //MCP2515发送缓冲器1 空中断标志位
+  79   1          if (Flag&0x04) CAN_TX0IF_Flag = 1;                            //MCP2515发送缓冲器0 空中断标志位
+  80   1          if (Flag&0x02) CAN_RX1IF_Flag = 1;                            //MCP2515接收缓冲器1 满中断标志位
+  81   1          if (Flag&0x01) CAN_RX0IF_Flag = 1;                           //MCP2515接收缓冲器0 满中断标志位
+  82   1      }
+  83          
+  84          uint8 *NumToStr(uint16 num, uint8 radix) {
+  85   1          static char str[8];      //必须为static变量，或者是全局变量
+  86   1      
+  87   1          uint8 tmp;
+  88   1          uint8 i = 0;
+  89   1          uint8 j = 0;
+  90   1          uint8 NewStr[8] = {0};
+  91   1      
+  92   1          do      //从各位开始变为字符，直到最高位，最后应该反转
+  93   1          {
+  94   2              tmp = num % radix;
+  95   2              num = num / radix;
+  96   2              NewStr[i++] = tmp;
+  97   2          } while (num > 0);
+  98   1          do      //从各位开始变为字符，直到最高位，最后应该反转
+  99   1          {
+ 100   2              tmp = NewStr[--i];
+ 101   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
+ 102   2                  str[j++] = tmp + '0';
+ 103   2              else
+ 104   2                  str[j++] = tmp - 10 + 'A';
+ 105   2          } while (i > 0);
+ 106   1          str[j] = '\0';                 // 添加字符串结束符
+ 107   1          return str;
+ 108   1      }
+ 109          
+ 110          uint8 i;
+ 111          /* 将需要发送的数据 转发到uart */
+ 112          void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
+ 113   1          if (EXIDE)
+ 114   1          {
+ 115   2              printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 00:49:17 PAGE 3   
 
- 117          /* 将一段内存数据转换为十六进制字符串，参数 str 是字符串指针，参数 src 是源数据地址，参数 len 是数据长度 *
-             -/
- 118          void MemToStr(uint8 *str, uint8 *src, uint8 len) {
- 119   1          uint8 tmp;
- 120   1          while (len--) {
- 121   2              tmp = *src >> 4;           // 取出高 4 位
- 122   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
- 123   2                  *str++ = tmp + '0';
- 124   2              else
- 125   2                  *str++ = tmp - 10 + 'A';
- 126   2              tmp = *src & 0x0F;         // 取出低 4 位
- 127   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
- 128   2                  *str++ = tmp + '0';
- 129   2              else
- 130   2                  *str++ = tmp - 10 + 'A';
- 131   2              *str++ = ' ';              // 转换完 1 个字节就添加 1 个空格
- 132   2              src++;
- 133   2          }
- 134   1          *str = '\0';                 // 添加字符串结束符
- 135   1      }
- 136          
- 137          /* 将一段内存数据转换为十六进制字符串，参数 str 是字符串指针，参数 src 是源数据地址，参数 len 是数据长度 *
-             -/
- 138          uint8 *StrData(uint8 *src, uint8 len) {
- 139   1          static char str[41];      //必须为static变量，或者是全局变量 读数据时最多有14位，14*3-1
- 140   1          uint8 i = 0;
- 141   1          uint8 tmp;
- 142   1          while (len--) {
- 143   2              tmp = *src >> 4;           // 取出高 4 位
- 144   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
- 145   2                  str[i++] = tmp + '0';
- 146   2              else
- 147   2                  str[i++] = tmp - 10 + 'A';
- 148   2              tmp = *src & 0x0F;         // 取出低 4 位
- 149   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
- 150   2                  str[i++] = tmp + '0';
- 151   2              else
- 152   2                  str[i++] = tmp - 10 + 'A';
- 153   2              str[i++] = ' ';              // 转换完 1 个字节就添加 1 个空格
- 154   2              src++;
- 155   2          }
- 156   1          str[--i] = '\0';                 // 添加字符串结束符
- 157   1          return str;
- 158   1      }
- 159          
- 160          uint8 *NumToStr(uint16 num, uint8 radix) {
- 161   1          static char str[8];      //必须为static变量，或者是全局变量
- 162   1      
- 163   1          uint8 tmp;
- 164   1          uint8 i = 0;
- 165   1          uint8 j = 0;
- 166   1          uint8 NewStr[8] = {0};
+ 116   2          }
+ 117   1          else
+ 118   1          {
+ 119   2              printf("Can send ID: %8X,  DLC:%bx,  Data: ", ID, DLC);
+ 120   2          }
+ 121   1      
+ 122   1          for( i=0;i<DLC;i++ )
+ 123   1          {
+ 124   2              printf("%02bX " , Send_data[i]);
+ 125   2          }
+ 126   1          printf("\r\n");
+ 127   1          CAN_Send_buffer(ID, EXIDE, DLC, Send_data);
+ 128   1      }
+ 129          
+ 130          /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
+ 131          void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
+ 132   1          uint8 i;
+ 133   1          uint8 Receive_DLC = 0;
+ 134   1          uint8 Read_RXB_CTRL = 0;
+ 135   1          uint8 Receive_data[8] = {0};
+ 136   1      
+ 137   1          CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
+ 138   1      
+ 139   1          Receive_DLC = CAN_RX_Buf[5] & 0x0F; //获取接收到的数据长度
+ 140   1          printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
+ 141   1      
+ 142   1          for (i = 0; i < Receive_DLC; i++) //获取接收到的数据
+ 143   1          {
+ 144   2              Receive_data[i] = CAN_RX_Buf[6 + i];
+ 145   2              printf("%02bX " , Receive_data[i]);
+ 146   2          }
+ 147   1          printf("\r\n");
+ 148   1      //  获取接收缓存器及验收滤波器， 待优化
+ 149   1          Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+ 150   1          printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
+ 151   1      }
+ 152          
+ 153          /*******************************************************************************
+ 154          * 函数名  : main
+ 155          * 描述    : 主函数，用户程序从main函数开始运行
+ 156          * 输入    : 无
+ 157          * 输出    : 无
+ 158          * 返回值  : 无
+ 159          * 说明    : 无
+ 160          *******************************************************************************/
+ 161          void main(void) {
+ 162   1          uint16 j;
+ 163   1          uint32 ID = 0x7FD;
+ 164   1          uint8 EXIDE = 0;
+ 165   1          uint8 DLC = 8;
+ 166   1          uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
  167   1      
- 168   1          do      //从各位开始变为字符，直到最高位，最后应该反转
- 169   1          {
- 170   2              tmp = num % radix;
- 171   2              num = num / radix;
- 172   2              NewStr[i++] = tmp;
- 173   2          } while (num > 0);
- 174   1          do      //从各位开始变为字符，直到最高位，最后应该反转
- 175   1          {
- 176   2              tmp = NewStr[--i];
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 4   
+ 168   1          UART_init();    //UART1初始化配置
+ 169   1          Exint_Init();            //外部中断1初始化函数
+ 170   1      
+ 171   1          MCP2515_Init(bitrate_100Kbps);
+ 172   1      
+ 173   1          for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
+ 174   1          {
+ 175   2              Send(ID, EXIDE, DLC, Send_data);
+ 176   2              ID++;
+ 177   2              EXIDE = !EXIDE;
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 00:49:17 PAGE 4   
 
- 177   2              if (tmp <= 9)              // 转换为 0-9 或 A-F
- 178   2                  str[j++] = tmp + '0';
- 179   2              else
- 180   2                  str[j++] = tmp - 10 + 'A';
- 181   2          } while (i > 0);
- 182   1          str[j] = '\0';                 // 添加字符串结束符
- 183   1          return str;
- 184   1      }
- 185          
- 186          uint8 *StrLen(uint8 *str) {
- 187   1          uint8 i = 0;
- 188   1          while (*str++ != '\0') i++;
- 189   1          return i;
- 190   1      }
- 191          
- 192          uint8 *StrID;
- 193          uint8 *SendData;
- 194          uint8 i;
- 195          /* 将需要发送的数据 转发到uart */
- 196          void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
- 197   1          if (EXIDE)
- 198   1          {
- 199   2              printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
- 200   2          }
- 201   1          else
- 202   1          {
- 203   2              printf("Can send ID: %8X,  DLC:%bx,  Data: ", ID, DLC);
- 204   2          }
- 205   1      
- 206   1          for( i=0;i<DLC;i++ )
- 207   1          {
- 208   2              printf("%02bX " , Send_data[i]);
- 209   2          }
- 210   1          printf("\r\n");
- 211   1          CAN_Send_buffer(ID, EXIDE, DLC, Send_data);
- 212   1      }
- 213          
- 214          /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
- 215          void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
- 216   1          uint8 i;
- 217   1          uint8 Receive_DLC = 0;
- 218   1          uint8 Read_RXB_CTRL = 0;
- 219   1          uint8 Receive_data[8] = {0};
- 220   1      
- 221   1          CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
- 222   1      
- 223   1          Receive_DLC = CAN_RX_Buf[5] & 0x0F; //获取接收到的数据长度
- 224   1          printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
- 225   1      
- 226   1          for (i = 0; i < Receive_DLC; i++) //获取接收到的数据
- 227   1          {
- 228   2              Receive_data[i] = CAN_RX_Buf[6 + i];
- 229   2              printf("%02bX " , Receive_data[i]);
- 230   2          }
- 231   1          printf("\r\n");
- 232   1      //  获取接收缓存器及验收滤波器， 待优化
- 233   1          Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
- 234   1          printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
- 235   1      }
- 236          
- 237          /*******************************************************************************
- 238          * 函数名  : main
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 5   
-
- 239          * 描述    : 主函数，用户程序从main函数开始运行
- 240          * 输入    : 无
- 241          * 输出    : 无
- 242          * 返回值  : 无
- 243          * 说明    : 无
- 244          *******************************************************************************/
- 245          //uint8 TXB_Value[]={0x0,0x1,0x2,0x3,0x04,0x05,0x06,0x27,0x08,0x09,0x10,0x11,0x12,0x13};
- 246          uint8 RXB_Value[14] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D}
-             -;
- 247          
- 248          uint8 Read_Value[] = {0x0, 0x1, 0x2, 0x3, 0x04, 0x05, 0x06, 0x27};
- 249          
- 250          //uint8 ini00[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x00,0x00,0x00,0x00,0x00};
- 251          void main(void) {
- 252   1          uint16 j;
- 253   1          uint32 ID = 0x7FD;
- 254   1          uint8 EXIDE = 0;
- 255   1          uint8 DLC = 8;
- 256   1          uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
- 257   1      
- 258   1          UART_init();    //UART1初始化配置
- 259   1          Exint_Init();            //外部中断1初始化函数
- 260   1      
- 261   1          MCP2515_Init(bitrate_100Kbps);
- 262   1      
- 263   1          for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
- 264   1          {
- 265   2              Send(ID, EXIDE, DLC, Send_data);
- 266   2      //        CAN_Send_buffer(ID,EXIDE,DLC,Send_data);
- 267   2              ID++;
- 268   2              EXIDE = !EXIDE;
- 269   2              DLC--;
- 270   2              Delay_Nms(1000);
- 271   2          }
- 272   1      
- 273   1          Delay_Nms(2000);
- 274   1      
- 275   1          while (1) {
- 276   2      
- 277   2              if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
- 278   2              {
- 279   3                  CAN_RX0IF_Flag = 0;//CAN接收到数据标志
- 280   3                  Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
- 281   3                  Delay_Nms(2000);  //移动到下一个字符
- 282   3      
- 283   3              }
- 284   2              if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
- 285   2              {
- 286   3                  CAN_RX1IF_Flag = 0;//CAN接收到数据标志
- 287   3                  CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
- 288   3      //            UART_send_buffer(RXB_Value, 14); //发送一个字符
- 289   3                  Delay_Nms(2000);  //移动到下一个字符
- 290   3      //      UART_send_buffer(RXB_Value,14); //发送一个字符
- 291   3              }
- 292   2      
- 293   2              Delay_Nms(2000);
- 294   2          }
- 295   1      
- 296   1      }
+ 178   2              DLC--;
+ 179   2              Delay_Nms(1000);
+ 180   2          }
+ 181   1      
+ 182   1          Delay_Nms(2000);
+ 183   1      
+ 184   1          while (1) {
+ 185   2      
+ 186   2      //        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
+ 187   2      //        {
+ 188   2      //            CAN_RX0IF_Flag = 0;//CAN接收到数据标志
+ 189   2      //            Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
+ 190   2      //            Delay_Nms(2000);  //移动到下一个字符
+ 191   2      //
+ 192   2      //        }
+ 193   2      //        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
+ 194   2      //        {
+ 195   2      //            CAN_RX1IF_Flag = 0;//CAN接收到数据标志
+ 196   2      //            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
+ 197   2      ////            UART_send_buffer(RXB_Value, 14); //发送一个字符
+ 198   2      //            Delay_Nms(2000);  //移动到下一个字符
+ 199   2      ////      UART_send_buffer(RXB_Value,14); //发送一个字符
+ 200   2      //        }
+ 201   2      //
+ 202   2      //        Delay_Nms(2000);
+ 203   2          }
+ 204   1      
+ 205   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-C51 COMPILER V9.60.0.0   MAIN                                                              09/10/2021 23:35:16 PAGE 6   
-
-   CODE SIZE        =   1174    ----
+   CODE SIZE        =    781    ----
    CONSTANT SIZE    =    227    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =     86      63
+   PDATA SIZE       =      9      52
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =      8    ----
