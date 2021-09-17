@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:18:19 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:49:22 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   52          * ·µ»ØÖµ  : ÎÞ
   53          * ËµÃ÷    : ÎÞ
   54          *******************************************************************************/
-C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:18:19 PAGE 2   
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:49:22 PAGE 2   
 
   55          void Exint_Init(void) {
   56   1          PX1 = 1;        //ÉèÖÃÍâ²¿ÖÐ¶Ï1µÄÖÐ¶ÏÓÅÏÈ¼¶Îª¸ßÓÅÏÈ¼¶
@@ -126,7 +126,7 @@ line level    source
  113          //void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
  114          //    if (EXIDE)
  115          //    {
-C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:18:19 PAGE 3   
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:49:22 PAGE 3   
 
  116          //        printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
  117          //    }
@@ -152,9 +152,9 @@ line level    source
  137   1      
  138   1          if (Msg->IsSend)
  139   1          {
- 140   2              printf("Can send   ");
+ 140   2              printf("Can send    ");
  141   2          } else {
- 142   2              printf("Can recevie");
+ 142   2              printf("Can recevie ");
  143   2          }
  144   1      
  145   1          if (EXIDE)
@@ -176,87 +176,86 @@ line level    source
  161          
  162          /* ½«ÐèÒª·¢ËÍµÄÊý¾Ý ×ª·¢µ½uart */
  163          void Send(MsgStruct *SendMsg) {
- 164   1          uint8 i;
- 165   1          uint32 ID = SendMsg->ID;
- 166   1          uint8 EXIDE = SendMsg->EXIDE;
- 167   1          uint8 DLC = SendMsg->DLC;
- 168   1          ShowMsg(SendMsg);
- 169   1          CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
- 170   1      }
-*** WARNING C280 IN LINE 164 OF main.c: 'i': unreferenced local variable
- 171          
- 172          ///* ½«ÐèÒª·¢ËÍµÄÊý¾Ý ×ª·¢µ½uart, CAN_RX_Buf[14]*/
- 173          //void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
- 174          //    uint8 i;
- 175          //    uint8 Receive_DLC = 0;
- 176          //    uint8 Read_RXB_CTRL = 0;
-C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:18:19 PAGE 4   
+ 164   1          uint32 ID = SendMsg->ID;
+ 165   1          uint8 EXIDE = SendMsg->EXIDE;
+ 166   1          uint8 DLC = SendMsg->DLC;
+ 167   1      //    ShowMsg(SendMsg);
+ 168   1          CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
+ 169   1      }
+ 170          
+ 171          ///* ½«ÐèÒª·¢ËÍµÄÊý¾Ý ×ª·¢µ½uart, CAN_RX_Buf[14]*/
+ 172          //void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
+ 173          //    uint8 i;
+ 174          //    uint8 Receive_DLC = 0;
+ 175          //    uint8 Read_RXB_CTRL = 0;
+ 176          //    uint8 Receive_data[8] = {0};
+ 177          //
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:49:22 PAGE 4   
 
- 177          //    uint8 Receive_data[8] = {0};
- 178          //
- 179          //    CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN½ÓÊÕÒ»Ö¡Êý¾Ý
- 180          //
- 181          //    Receive_DLC = CAN_RX_Buf[5] & 0x0F; //»ñÈ¡½ÓÊÕµ½µÄÊý¾Ý³¤¶È
- 182          //    printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
- 183          //
- 184          //    for (i = 0; i < Receive_DLC; i++) //»ñÈ¡½ÓÊÕµ½µÄÊý¾Ý
- 185          //    {
- 186          //        Receive_data[i] = CAN_RX_Buf[6 + i];
- 187          //        printf("%02bX " , Receive_data[i]);
- 188          //    }
- 189          //    printf("\r\n");
- 190          ////  »ñÈ¡½ÓÊÕ»º´æÆ÷¼°ÑéÊÕÂË²¨Æ÷£¬ ´ýÓÅ»¯
- 191          //    Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
- 192          //    printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
- 193          //}
- 194          //
- 195           /* ½«ÐèÒª·¢ËÍµÄÊý¾Ý ×ª·¢µ½uart, CAN_RX_Buf[14]*/
- 196           void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
- 197   1           uint8 i;
- 198   1      
- 199   1           uint8 RXBnCTRL = MCP2515_ReadByte(RXB_CTRL_Address);
- 200   1           uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
- 201   1           uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
- 202   1           uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
- 203   1           uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
- 204   1           uint8 RXBnDLC  = MCP2515_ReadByte(RXB_CTRL_Address + 5);
- 205   1      
- 206   1           RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // À©Õ¹±êÊ¶·û±êÖ¾Î» 1 = ÊÕµ½µÄ±¨ÎÄÊÇÀ©Õ¹Ö¡, 0 = ÊÕµ½µÄ±¨ÎÄÊÇ±
+ 178          //    CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN½ÓÊÕÒ»Ö¡Êý¾Ý
+ 179          //
+ 180          //    Receive_DLC = CAN_RX_Buf[5] & 0x0F; //»ñÈ¡½ÓÊÕµ½µÄÊý¾Ý³¤¶È
+ 181          //    printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
+ 182          //
+ 183          //    for (i = 0; i < Receive_DLC; i++) //»ñÈ¡½ÓÊÕµ½µÄÊý¾Ý
+ 184          //    {
+ 185          //        Receive_data[i] = CAN_RX_Buf[6 + i];
+ 186          //        printf("%02bX " , Receive_data[i]);
+ 187          //    }
+ 188          //    printf("\r\n");
+ 189          ////  »ñÈ¡½ÓÊÕ»º´æÆ÷¼°ÑéÊÕÂË²¨Æ÷£¬ ´ýÓÅ»¯
+ 190          //    Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+ 191          //    printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
+ 192          //}
+ 193          //
+ 194           /* ½«ÐèÒª·¢ËÍµÄÊý¾Ý ×ª·¢µ½uart, CAN_RX_Buf[14]*/
+ 195           void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
+ 196   1           uint8 i;
+ 197   1      
+ 198   1           uint8 RXBnCTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+ 199   1           uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
+ 200   1           uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
+ 201   1           uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
+ 202   1           uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
+ 203   1           uint8 RXBnDLC  = MCP2515_ReadByte(RXB_CTRL_Address + 5);
+ 204   1      
+ 205   1           RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // À©Õ¹±êÊ¶·û±êÖ¾Î» 1 = ÊÕµ½µÄ±¨ÎÄÊÇÀ©Õ¹Ö¡, 0 = ÊÕµ½µÄ±¨ÎÄÊÇ±
              -ê×¼Ö¡
- 207   1           RecMsg->DLC = RXBnDLC & 0x0F;
- 208   1      
- 209   1           if (RecMsg->EXIDE)
- 210   1           {
- 211   2               uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
- 212   2               uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8<<8) | RXBnEID0;
- 213   2               RecMsg->ID = SID<<18 | EID;
- 214   2           }
- 215   1           else
- 216   1           {
- 217   2               uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
- 218   2               RecMsg->ID = SID;
- 219   2           }
- 220   1      
- 221   1           for (i = 0; i < RecMsg->DLC; i++) //»ñÈ¡½ÓÊÕµ½µÄÊý¾Ý
- 222   1               {
- 223   2               RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
- 224   2               }
- 225   1      
- 226   1           if (RXB_CTRL_Address==RXB0CTRL)
- 227   1           {
- 228   2               MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFE);//Çå³ýÖÐ¶Ï±êÖ¾Î»(ÖÐ¶Ï±êÖ¾¼Ä´æÆ÷±ØÐëÓ
-             -ÉMCUÇåÁã)
- 229   2           }
- 230   1           else if (RXB_CTRL_Address==RXB1CTRL)
- 231   1           {
- 232   2               MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFD);//Çå³ýÖÐ¶Ï±êÖ¾Î»(ÖÐ¶Ï±êÖ¾¼Ä´æÆ÷±ØÐëÓ
-             -ÉMCUÇåÁã)
- 233   2           }
+ 206   1           RecMsg->DLC = RXBnDLC & 0x0F;
+ 207   1      
+ 208   1           if (RecMsg->EXIDE)
+ 209   1           {
+ 210   2               uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
+ 211   2               uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8<<8) | RXBnEID0;
+ 212   2               RecMsg->ID = SID<<18 | EID;
+ 213   2           }
+ 214   1           else
+ 215   1           {
+ 216   2               uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
+ 217   2               RecMsg->ID = SID;
+ 218   2           }
+ 219   1      
+ 220   1           for (i = 0; i < RecMsg->DLC; i++) //»ñÈ¡½ÓÊÕµ½µÄÊý¾Ý
+ 221   1           {
+ 222   2              RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
+ 223   2           }
+ 224   1      
+ 225   1      //     if (RXB_CTRL_Address==RXB0CTRL)
+ 226   1      //     {
+ 227   1      //         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFE);//Çå³ýÖÐ¶Ï±êÖ¾Î»(ÖÐ¶Ï±êÖ¾¼Ä´æÆ÷±ØÐ
+             -ëÓÉMCUÇåÁã)
+ 228   1              MCP2515_WriteByte(CANINTF, 0);//Çå³ýÖÐ¶Ï±êÖ¾Î»(ÖÐ¶Ï±êÖ¾¼Ä´æÆ÷±ØÐëÓÉMCUÇåÁã)
+ 229   1      //     }
+ 230   1      //     else if (RXB_CTRL_Address==RXB1CTRL)
+ 231   1      //     {
+ 232   1      //         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFD);//Çå³ýÖÐ¶Ï±êÖ¾Î»(ÖÐ¶Ï±êÖ¾¼Ä´æÆ÷±ØÐ
+             -ëÓÉMCUÇåÁã)
+ 233   1      //     }
  234   1      }
  235          
-C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:18:19 PAGE 5   
-
  236          
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:49:22 PAGE 5   
+
  237          
  238          /*******************************************************************************
  239          * º¯ÊýÃû  : main
@@ -267,108 +266,97 @@ line level    source
  244          * ËµÃ÷    : ÎÞ
  245          *******************************************************************************/
  246          void main(void) {
- 247   1          uint16 j;
- 248   1          uint32 ID = 0x7FE;
- 249   1          uint8 EXIDE = 0;
- 250   1          uint8 DLC = 8;
+ 247   1          uint32 ID = 0x7FE;
+ 248   1          uint8 EXIDE = 0;
+ 249   1          uint8 DLC = 8;
+ 250   1          uint8 i;
  251   1          uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
  252   1      
  253   1          MsgStruct SendMsg;
  254   1          MsgStruct RecMsg;
  255   1      
- 256   1          CAN_RX0IF_Flag == 0;
-*** WARNING C275 IN LINE 256 OF main.c: expression with possibly no effect
- 257   1      
- 258   1          UART_init();    //UART1³õÊ¼»¯ÅäÖÃ
- 259   1          Exint_Init();            //Íâ²¿ÖÐ¶Ï1³õÊ¼»¯º¯Êý
- 260   1          MCP2515_Init(bitrate_100Kbps);
+ 256   1          UART_init();    //UART1³õÊ¼»¯ÅäÖÃ
+ 257   1          Exint_Init();            //Íâ²¿ÖÐ¶Ï1³õÊ¼»¯º¯Êý
+ 258   1          MCP2515_Init(bitrate_100Kbps);
+ 259   1      
+ 260   1          SendMsg.IsSend = 0x1;
  261   1      
- 262   1          SendMsg.IsSend = 0x1;
- 263   1      
- 264   1          SendMsg.ID = ID;
- 265   1          SendMsg.TYPE = 0x2;
- 266   1          SendMsg.EXIDE = 0x0;
- 267   1          SendMsg.DLC = 8;
- 268   1          *SendMsg.DATA = *Send_data;
+ 262   1          SendMsg.ID = ID;
+ 263   1          SendMsg.TYPE = 0x2;
+ 264   1          SendMsg.EXIDE = 0x0;
+ 265   1          SendMsg.DLC = 8;
+ 266   1          *SendMsg.DATA = *Send_data;
+ 267   1      
+ 268   1      
  269   1      
- 270   1      
- 271   1      
- 272   1          RecMsg.IsSend = 0;
- 273   1          Send(&SendMsg);
- 274   1      
- 275   1          for (i = 0; i < 2; i++) //·¢ËÍ×Ö·û´®£¬Ö±µ½Óöµ½0²Å½áÊø
- 276   1          {
- 277   2              Send(&SendMsg);
- 278   2              SendMsg.ID = 0x100;
- 279   2              SendMsg.TYPE = 0x2;
- 280   2              SendMsg.EXIDE = 0x1;
- 281   2              SendMsg.DLC = 7;
- 282   2      
- 283   2              Delay_Nms(3000);
- 284   2      
- 285   2              if (CAN_RX0IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷0 ÂúÖÐ¶Ï±êÖ¾Î»
- 286   2              {
- 287   3                  Receive(RXB0CTRL, &RecMsg);
+ 270   1          RecMsg.IsSend = 0;
+ 271   1      //    Send(&SendMsg);
+ 272   1      
+ 273   1          for (i = 0; i < 2; i++) //·¢ËÍ×Ö·û´®£¬Ö±µ½Óöµ½0²Å½áÊø
+ 274   1          {
+ 275   2              Send(&SendMsg);
+ 276   2              ShowMsg(&SendMsg);
+ 277   2              SendMsg.ID = 0x100;
+ 278   2              SendMsg.TYPE = 0x2;
+ 279   2              SendMsg.EXIDE = 0x1;
+ 280   2              SendMsg.DLC = 7;
+ 281   2      
+ 282   2              Delay_Nms(3000);
+ 283   2      
+ 284   2              if (CAN_RX0IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷0 ÂúÖÐ¶Ï±êÖ¾Î»
+ 285   2              {
+ 286   3                  Receive(RXB0CTRL, &RecMsg);
+ 287   3                  CAN_RX0IF_Flag = 0;
  288   3                  ShowMsg(&RecMsg);
- 289   3                  CAN_RX0IF_Flag = 0;
- 290   3                  printf("CAN_RX0IF_Flag = 0\r\n");
- 291   3              }
- 292   2      
- 293   2              if (CAN_RX1IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷1 ÂúÖÐ¶Ï±êÖ¾Î»
- 294   2              {
- 295   3                  Receive(RXB1CTRL, &RecMsg);
- 296   3                  CAN_RX0IF_Flag = 0;
-C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:18:19 PAGE 6   
-
- 297   3                  printf("CAN_RX1IF_Flag == 1\r\n");
+ 289   3                  printf("CAN_RX0IF_Flag = 0\r\n");
+ 290   3              }
+ 291   2      
+ 292   2              if (CAN_RX1IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷1 ÂúÖÐ¶Ï±êÖ¾Î»
+ 293   2              {
+ 294   3                  Receive(RXB1CTRL, &RecMsg);
+ 295   3                  CAN_RX1IF_Flag = 0;
+ 296   3                  ShowMsg(&RecMsg);
+ 297   3                  printf("CAN_RX1IF_Flag = 1\r\n");
  298   3              }
+C51 COMPILER V9.60.0.0   MAIN                                                              09/18/2021 02:49:22 PAGE 6   
+
  299   2          }
  300   1      
- 301   1      //    for (j = 0; j < 2; j++) //·¢ËÍ×Ö·û´®£¬Ö±µ½Óöµ½0²Å½áÊø
- 302   1      //    {
- 303   1      ////        Send(ID, EXIDE, DLC, Send_data);
- 304   1      //        ID++;
- 305   1      //        EXIDE = !EXIDE;
- 306   1      //        DLC--;
- 307   1      //        Delay_Nms(1000);
- 308   1      //    }
- 309   1      
- 310   1          Delay_Nms(2000);
- 311   1      
- 312   1          while (1) {
- 313   2      
- 314   2      //        if (CAN_RX0IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷0 ÂúÖÐ¶Ï±êÖ¾Î»
- 315   2      //        {
- 316   2      //            CAN_RX0IF_Flag = 0;//CAN½ÓÊÕµ½Êý¾Ý±êÖ¾
- 317   2      //            Receive(RXB0CTRL, RXB_Value);//CAN½ÓÊÕÒ»Ö¡Êý¾Ý
- 318   2      //            Delay_Nms(2000);  //ÒÆ¶¯µ½ÏÂÒ»¸ö×Ö·û
- 319   2      //
- 320   2      //        }
- 321   2      //        if (CAN_RX1IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷1 ÂúÖÐ¶Ï±êÖ¾Î»
- 322   2      //        {
- 323   2      //            CAN_RX1IF_Flag = 0;//CAN½ÓÊÕµ½Êý¾Ý±êÖ¾
- 324   2      //            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN½ÓÊÕÒ»Ö¡Êý¾Ý
- 325   2      ////            UART_send_buffer(RXB_Value, 14); //·¢ËÍÒ»¸ö×Ö·û
- 326   2      //            Delay_Nms(2000);  //ÒÆ¶¯µ½ÏÂÒ»¸ö×Ö·û
- 327   2      ////      UART_send_buffer(RXB_Value,14); //·¢ËÍÒ»¸ö×Ö·û
- 328   2      //        }
- 329   2      //
- 330   2      //        Delay_Nms(2000);
- 331   2          }
- 332   1      
- 333   1      }
-*** WARNING C280 IN LINE 247 OF main.c: 'j': unreferenced local variable
+ 301   1          Delay_Nms(2000);
+ 302   1      
+ 303   1          while (1) {
+ 304   2      
+ 305   2      //        if (CAN_RX0IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷0 ÂúÖÐ¶Ï±êÖ¾Î»
+ 306   2      //        {
+ 307   2      //            CAN_RX0IF_Flag = 0;//CAN½ÓÊÕµ½Êý¾Ý±êÖ¾
+ 308   2      //            Receive(RXB0CTRL, RXB_Value);//CAN½ÓÊÕÒ»Ö¡Êý¾Ý
+ 309   2      //            Delay_Nms(2000);  //ÒÆ¶¯µ½ÏÂÒ»¸ö×Ö·û
+ 310   2      //
+ 311   2      //        }
+ 312   2      //        if (CAN_RX1IF_Flag == 1)                            //½ÓÊÕ»º³åÆ÷1 ÂúÖÐ¶Ï±êÖ¾Î»
+ 313   2      //        {
+ 314   2      //            CAN_RX1IF_Flag = 0;//CAN½ÓÊÕµ½Êý¾Ý±êÖ¾
+ 315   2      //            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN½ÓÊÕÒ»Ö¡Êý¾Ý
+ 316   2      ////            UART_send_buffer(RXB_Value, 14); //·¢ËÍÒ»¸ö×Ö·û
+ 317   2      //            Delay_Nms(2000);  //ÒÆ¶¯µ½ÏÂÒ»¸ö×Ö·û
+ 318   2      ////      UART_send_buffer(RXB_Value,14); //·¢ËÍÒ»¸ö×Ö·û
+ 319   2      //        }
+ 320   2      //
+ 321   2      //        Delay_Nms(2000);
+ 322   2          }
+ 323   1      
+ 324   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1214    ----
-   CONSTANT SIZE    =    190    ----
+   CODE SIZE        =   1198    ----
+   CONSTANT SIZE    =    191    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =      9      94
+   PDATA SIZE       =      9      91
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =      8    ----
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

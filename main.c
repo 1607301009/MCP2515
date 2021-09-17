@@ -137,9 +137,9 @@ void ShowMsg(MsgStruct *Msg)
 
     if (Msg->IsSend)
     {
-        printf("Can send   ");
+        printf("Can send    ");
     } else {
-        printf("Can recevie");
+        printf("Can recevie ");
     }
 
     if (EXIDE)
@@ -161,11 +161,10 @@ void ShowMsg(MsgStruct *Msg)
 
 /* 将需要发送的数据 转发到uart */
 void Send(MsgStruct *SendMsg) {
-    uint8 i;
     uint32 ID = SendMsg->ID;
     uint8 EXIDE = SendMsg->EXIDE;
     uint8 DLC = SendMsg->DLC;
-    ShowMsg(SendMsg);
+//    ShowMsg(SendMsg);
     CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
 }
 
@@ -219,18 +218,19 @@ void Send(MsgStruct *SendMsg) {
      }
 
      for (i = 0; i < RecMsg->DLC; i++) //获取接收到的数据
-         {
-         RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
-         }
+     {
+        RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
+     }
 
-     if (RXB_CTRL_Address==RXB0CTRL)
-     {
-         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
-     }
-     else if (RXB_CTRL_Address==RXB1CTRL)
-     {
-         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
-     }
+//     if (RXB_CTRL_Address==RXB0CTRL)
+//     {
+//         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
+        MCP2515_WriteByte(CANINTF, 0);//清除中断标志位(中断标志寄存器必须由MCU清零)
+//     }
+//     else if (RXB_CTRL_Address==RXB1CTRL)
+//     {
+//         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
+//     }
 }
 
 
@@ -244,16 +244,14 @@ void Send(MsgStruct *SendMsg) {
 * 说明    : 无
 *******************************************************************************/
 void main(void) {
-    uint16 j;
     uint32 ID = 0x7FE;
     uint8 EXIDE = 0;
     uint8 DLC = 8;
+    uint8 i;
     uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
     MsgStruct SendMsg;
     MsgStruct RecMsg;
-
-    CAN_RX0IF_Flag == 0;
 
     UART_init();    //UART1初始化配置
     Exint_Init();            //外部中断1初始化函数
@@ -270,11 +268,12 @@ void main(void) {
 
 
     RecMsg.IsSend = 0;
-    Send(&SendMsg);
+//    Send(&SendMsg);
 
     for (i = 0; i < 2; i++) //发送字符串，直到遇到0才结束
     {
         Send(&SendMsg);
+        ShowMsg(&SendMsg);
         SendMsg.ID = 0x100;
         SendMsg.TYPE = 0x2;
         SendMsg.EXIDE = 0x1;
@@ -285,27 +284,19 @@ void main(void) {
         if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
         {
             Receive(RXB0CTRL, &RecMsg);
-            ShowMsg(&RecMsg);
             CAN_RX0IF_Flag = 0;
+            ShowMsg(&RecMsg);
             printf("CAN_RX0IF_Flag = 0\r\n");
         }
 
         if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
         {
             Receive(RXB1CTRL, &RecMsg);
-            CAN_RX0IF_Flag = 0;
-            printf("CAN_RX1IF_Flag == 1\r\n");
+            CAN_RX1IF_Flag = 0;
+            ShowMsg(&RecMsg);
+            printf("CAN_RX1IF_Flag = 1\r\n");
         }
     }
-
-//    for (j = 0; j < 2; j++) //发送字符串，直到遇到0才结束
-//    {
-////        Send(ID, EXIDE, DLC, Send_data);
-//        ID++;
-//        EXIDE = !EXIDE;
-//        DLC--;
-//        Delay_Nms(1000);
-//    }
 
     Delay_Nms(2000);
 
