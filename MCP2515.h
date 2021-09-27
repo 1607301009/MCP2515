@@ -444,5 +444,36 @@ typedef struct        // reveive 结构体
     uint8  DATA[8];    // 接收缓冲器 n 数据字段字节 m, 这 8 个字节包含接收报文的数据信息
 } MsgStruct;
 
+typedef struct        // reveive 结构体
+{
+    uint8 bitrate[5];       // 比特率数组
+    uint8 BUKT_enable:1;    // 滚存使能位
+    uint8 CAN_MODE:3;       // 工作模式： 1. 配置模式。
+                            //          2. 正常模式。
+                            //          3. 休眠模式。
+                            //          4. 仅监听模式。
+                            //          5. 环回模式。
+
+    uint32 RXM0ID;       // 屏蔽器默认完全屏蔽
+    uint32 RXF0ID;       // 录波器0H
+    uint32 RXF1ID;       // 录波器0H
+
+    uint32 RXM1ID;       // 屏蔽器默认完全屏蔽
+    uint32 RXF2ID;       // 录波器0H
+    uint32 RXF3ID;       // 录波器0H
+    uint32 RXF4ID;       // 录波器0H
+    uint32 RXF5ID;       // 录波器0H
+
+    uint8 CANINTE_enable;     // 录波器0H
+    uint8 CANINTF_enable;     // 录波器0H
+
+    uint8 RXF0IDE:1;     // RXF0扩展帧标志位
+    uint8 RXF1IDE:1;     // RXF1扩展帧标志位
+    uint8 RXF2IDE:1;     // RXF2扩展帧标志位
+    uint8 RXF3IDE:1;     // RXF3扩展帧标志位
+    uint8 RXF4IDE:1;     // RXF4扩展帧标志位
+    uint8 RXF5IDE:1;     // RXF5扩展帧标志位
+} CanCfgStruct;
+
 
 #endif

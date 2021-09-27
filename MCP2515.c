@@ -180,6 +180,42 @@ void CAN_Set_RX(uint8 RXF_Address,uint32 ID,uint8 EXIDE)
 	}
 }
 
+void Can_Init(CanCfgStruct *CanCfg)
+{
+    MCP2515_Reset();	//发送复位指令软件复位MCP2515
+    Delay_Nms(1);		//通过软件延时约nms(不准确)
+
+    //设置波特率
+    //set CNF1,SJW=00,长度为1TQ,BRP=49,TQ=[2*(BRP+1)]/Fsoc=2*50/8M=12.5us
+    MCP2515_WriteByte(CNF1,CanCfg->bitrate[4] | CanCfg->bitrate[0]);
+    //set CNF2,SAM=0,在采样点对总线进行一次采样，PHSEG1=(2+1)TQ=3TQ,PRSEG=(0+1)TQ=1TQ
+    MCP2515_WriteByte(CNF2,BTLMODE_CNF3 | CanCfg->bitrate[2] | CanCfg->bitrate[1]);
+    //set CNF3,PHSEG2=(2+1)TQ=3TQ,同时当CANCTRL.CLKEN=1时设定CLKOUT引脚为时间输出使能位
+    MCP2515_WriteByte(CNF3,SOF_ENABLED | CanCfg->bitrate[3]);
+
+    MCP2515_WriteByte(RXB0CTRL,CanCfg->BUKT_enable << 2);   //如果RXB0满,RXB0 接收到的报文将被滚存至RXB1
+
+    MCP2515_WriteByte(RXB1CTRL, RXM);   // 接收所有报文
+
+    MCP2515_WriteByte(CANINTF,CanCfg->CANINTF_enable);//清空CAN中断标志寄存器的所有位(必须由MCU清空)
+    MCP2515_WriteByte(CANINTE,CanCfg->CANINTE_enable);//配置CAN中断使能寄存器的接收缓冲器0满中断使能,其它位禁止中断
+
+    CAN_Set_RX(RXF0SIDH, CanCfg->RXF0ID, CanCfg->RXF0IDE);
+    CAN_Set_RX(RXF1SIDH, CanCfg->RXF1ID, CanCfg->RXF1IDE);
+    CAN_Set_RX(RXF2SIDH, CanCfg->RXF2ID, CanCfg->RXF2IDE);
+    CAN_Set_RX(RXF3SIDH, CanCfg->RXF3ID, CanCfg->RXF3IDE);
+    CAN_Set_RX(RXF4SIDH, CanCfg->RXF4ID, CanCfg->RXF4IDE);
+    CAN_Set_RX(RXF5SIDH, CanCfg->RXF5ID, CanCfg->RXF5IDE);
+
+    CAN_Set_RX(RXM0SIDH, CanCfg->RXM0ID, 1);
+    CAN_Set_RX(RXM1SIDH, CanCfg->RXM1ID, 1);
+
+    MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//将MCP2515设置为环回模式,退出配置模式
+    if(OPMODE_NORMAL!=(MCP2515_ReadByte(CANSTAT)&&0xE0))//判断MCP2515是否已经进入环回模式
+    {
+        MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//再次将MCP2515设置为环回模式,退出配置模式
+    }
+}
 
 /*******************************************************************************
 * 函数名  : MCP2515_Init
@@ -233,13 +269,13 @@ void MCP2515_Init(uint8 *CAN_Bitrate)
 //	MCP2515_WriteByte(RXB0CTRL,0x62);//仅仅接收标准标识符的有效信息
 //	MCP2515_WriteByte(RXB0DLC,DLC_8);//设置接收数据的长度为8个字节
 //	
-//	MCP2515_WriteByte(RXF0SIDH,0xFF);//配置验收滤波寄存器n标准标识符高位
+//	MCP2515_WriteByte(RXF0SIDH,0xFF);       //配置验收滤波寄存器n标准标识符高位
 //
-//	MCP2515_WriteByte(RXM0SIDH,0xFF);//配置验收屏蔽寄存器n标准标识符高位
-//	MCP2515_WriteByte(RXM1EID0,0xE0);//配置验收屏蔽寄存器n标准标识符低位
+//	MCP2515_WriteByte(RXM0SIDH,0xFF);       //配置验收屏蔽寄存器n标准标识符高位
+//	MCP2515_WriteByte(RXM1EID0,0xE0);       //配置验收屏蔽寄存器n标准标识符低位
 //		
-	MCP2515_WriteByte(CANINTF,0x00);//清空CAN中断标志寄存器的所有位(必须由MCU清空)
-	MCP2515_WriteByte(CANINTE,0x03);//配置CAN中断使能寄存器的接收缓冲器0满中断使能,其它位禁止中断
+	MCP2515_WriteByte(CANINTF,0x00);    //清空CAN中断标志寄存器的所有位(必须由MCU清空)
+	MCP2515_WriteByte(CANINTE,0x03);    //配置CAN中断使能寄存器的接收缓冲器满中断使能,其它位禁止中断
 	
 //	MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//|OSM_ENABLED将MCP2515设置为正常模式,退出配置模式
 //
@@ -271,57 +307,77 @@ void MCP2515_Init(uint8 *CAN_Bitrate)
 *******************************************************************************/
 void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
 {
-	uint8 *TXB_send;
+	uint8 TXBnCTRL;         // 选择发送缓冲器
+
    	uint8 i;
 	//寄存器状态获取TXB0是否忙碌，=1为忙碌，=0为空闲
-	if ((MCP2515_ReadByte(TXB0CTRL)&0x04)==0) 
-		TXB_send=&TXB0_Address;
-	else if ((MCP2515_ReadByte(TXB1CTRL)&0x04)==0)
-		TXB_send=&TXB1_Address;
-	else if ((MCP2515_ReadByte(TXB2CTRL)&0x04)==0)
-		TXB_send=&TXB2_Address;
-	else		  //寄存器全部忙碌
-		TXB_send=&TXB0_Address;
+	uint8 Read_TXBnCTRL = MCP2515_ReadByte(TXB0CTRL);
+	if ((Read_TXBnCTRL & TXREQ) == 0)
+	{
+	    TXBnCTRL = TXB0CTRL;
+	}
+	else
+	{
+	    Read_TXBnCTRL = MCP2515_ReadByte(TXB1CTRL);
+	    if ((Read_TXBnCTRL & TXREQ) == 0)
+	    {
+	        TXBnCTRL = TXB1CTRL;
+	    }
+	    else
+	    {
+	        Read_TXBnCTRL = MCP2515_ReadByte(TXB2CTRL);  // 如果前面两个寄存器全部忙碌， 默认使用第3个
+	        TXBnCTRL = TXB2CTRL;
+	    }
+	}
 
-	//设置DLC
-	MCP2515_WriteByte(TXB_send[5],DLC);
+	// 设置DLC， 默认为数据帧 RTR=0   后期开发远程帧
+	MCP2515_WriteByte(TXBnCTRL + 5, DLC);
 
-	//EXIDE=1、ID>0x7FF发送拓展帧
+	// EXIDE=1、ID>0x7FF发送拓展帧
 	if (ID<=0x7FF)
 	{
 		if (EXIDE)
 		{
-			MCP2515_WriteByte(TXB_send[1],0x0);								  //SIDH
-			MCP2515_WriteByte(TXB_send[2],0x8);								  //SIDL
-			MCP2515_WriteByte(TXB_send[3],ID>>8&0xFF);						  //EID8
-			MCP2515_WriteByte(TXB_send[4],ID&0xFF);							  //EID0
+		    MCP2515_WriteByte(TXBnCTRL + 1, 0x0);			//SIDH
+		    MCP2515_WriteByte(TXBnCTRL + 2, 0x8);			//SIDL
+		    MCP2515_WriteByte(TXBnCTRL + 3, ID>>8&0xFF);	//EID8
+            MCP2515_WriteByte(TXBnCTRL + 4, ID&0xFF);		//EID0
 		}																	  
 		else
 		{	
-			MCP2515_WriteByte(TXB_send[1],ID>>3);							  //SIDH
-			MCP2515_WriteByte(TXB_send[2],(ID&0x07)<<5);					  //SIDL
-			MCP2515_WriteByte(TXB_send[3],0);								  //EID8
-			MCP2515_WriteByte(TXB_send[4],0);								  //EID0
+		    MCP2515_WriteByte(TXBnCTRL + 1, ID>>3);		  //SIDH
+		    MCP2515_WriteByte(TXBnCTRL + 2, (ID&0x07)<<5);  //SIDL
+		    MCP2515_WriteByte(TXBnCTRL + 3, 0);			  //EID8
+		    MCP2515_WriteByte(TXBnCTRL + 4, 0);			  //EID0
 		}
 	}
 	else
 	{	
-		MCP2515_WriteByte(TXB_send[1],ID>>21);								  //SIDH
-		MCP2515_WriteByte(TXB_send[2],(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);	  //SIDL
-		MCP2515_WriteByte(TXB_send[3],ID>>8&0xFF);							  //EID8
-		MCP2515_WriteByte(TXB_send[4],ID&0xFF);								  //EID0
+	    MCP2515_WriteByte(TXBnCTRL + 1, ID>>21);								  //SIDH
+	    MCP2515_WriteByte(TXBnCTRL + 2, (ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);	  //SIDL
+	    MCP2515_WriteByte(TXBnCTRL + 3, ID>>8&0xFF);							  //EID8
+	    MCP2515_WriteByte(TXBnCTRL + 4, ID&0xFF);								  //EID0
 	}
 	
-	for(i=0;(i<=DLC&&i<=8);i++)
+	for(i = 0;(i <= DLC && i <= 8); i++)
 	{
-		MCP2515_WriteByte(TXB_send[6]+i,Send_data[i]);						  //D0_8将待发送的数据写入发送缓冲寄存器
+	    MCP2515_WriteByte(TXBnCTRL + 6 + i, Send_data[i]);						  //D0_8将待发送的数据写入发送缓冲寄存器
 	}
 
 	MCP2515_CS=0;
-	MCP2515_WriteByte(TXB_send[0],0x08);									  //CTRL 开始发送
+	MCP2515_WriteByte(TXBnCTRL, Read_TXBnCTRL | TXREQ);	//CTRL 开始发送
 	MCP2515_CS=1;
-	
 	//发送形式设置：单次发送，远程帧，拓展帧，调试状态，回应。
+
+    // 等待报文发送成功
+    for(i = 0; i < 14; i++)
+    {
+        if ((MCP2515_ReadByte(TXBnCTRL) & TXREQ) == 0)
+        {
+            return;
+        }
+        Delay_Nms(100);
+    }
 }
 
 /*******************************************************************************

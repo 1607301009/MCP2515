@@ -13,6 +13,7 @@ extern void Delay_Nms(uint16 x);
 extern uint8 MCP2515_ReadByte(uint8 addr);
 extern void MCP2515_WriteByte(uint8 addr,uint8 dat);
 extern void MCP2515_Init(uint8 *CAN_Bitrate);
+extern void Can_Init(CanCfgStruct *CanCfg);
 extern void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data);
 extern void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf);
 
@@ -23,8 +24,8 @@ bool CAN_ERRIF_Flag = 0;                            //CAN错误中断标志位（EFLG 寄
 bool CAN_TX2IF_Flag = 0;                            //MCP2515发送缓冲器2 空中断标志位
 bool CAN_TX1IF_Flag = 0;                            //MCP2515发送缓冲器1 空中断标志位
 bool CAN_TX0IF_Flag = 0;                            //MCP2515发送缓冲器0 空中断标志位
-bool CAN_RX1IF_Flag = 0;                            //MCP2515接收缓冲器1 满中断标志位
-bool CAN_RX0IF_Flag = 0;                            //MCP2515接收缓冲器0 满中断标志位
+bool CAN_RX1IF_Flag = false;                            //MCP2515接收缓冲器1 满中断标志位
+bool CAN_RX0IF_Flag = false;                            //MCP2515接收缓冲器0 满中断标志位
 
 
 
@@ -78,82 +79,30 @@ void Exint_ISR(void) interrupt 2 using 1
     if (Flag&0x10) CAN_TX2IF_Flag = 1;                            //MCP2515发送缓冲器2 空中断标志位
     if (Flag&0x08) CAN_TX1IF_Flag = 1;                            //MCP2515发送缓冲器1 空中断标志位
     if (Flag&0x04) CAN_TX0IF_Flag = 1;                            //MCP2515发送缓冲器0 空中断标志位
-    if (Flag&0x02) CAN_RX1IF_Flag = 1;                            //MCP2515接收缓冲器1 满中断标志位
-    if (Flag&0x01) CAN_RX0IF_Flag = 1;                           //MCP2515接收缓冲器0 满中断标志位
+    if (Flag&0x02) CAN_RX1IF_Flag = true;                            //MCP2515接收缓冲器1 满中断标志位
+    if (Flag&0x01) CAN_RX0IF_Flag = true;                           //MCP2515接收缓冲器0 满中断标志位
 }
 
-uint8 *NumToStr(uint16 num, uint8 radix) {
-    static char str[8];      //必须为static变量，或者是全局变量
-
-    uint8 tmp;
-    uint8 i = 0;
-    uint8 j = 0;
-    uint8 NewStr[8] = {0};
-
-    do      //从各位开始变为字符，直到最高位，最后应该反转
-    {
-        tmp = num % radix;
-        num = num / radix;
-        NewStr[i++] = tmp;
-    } while (num > 0);
-    do      //从各位开始变为字符，直到最高位，最后应该反转
-    {
-        tmp = NewStr[--i];
-        if (tmp <= 9)              // 转换为 0-9 或 A-F
-            str[j++] = tmp + '0';
-        else
-            str[j++] = tmp - 10 + 'A';
-    } while (i > 0);
-    str[j] = '\0';                 // 添加字符串结束符
-    return str;
-}
-
-uint8 i;
-///* 将需要发送的数据 转发到uart */
-//void Send(uint16 ID, uint8 EXIDE, uint8 DLC, uint8 *Send_data) {
-//    if (EXIDE)
-//    {
-//        printf("Can send ID: %08X,  DLC:%bx,  Data: ", ID, DLC);
-//    }
-//    else
-//    {
-//        printf("Can send ID: %8X,  DLC:%bx,  Data: ", ID, DLC);
-//    }
-//
-//    for( i=0;i<DLC;i++ )
-//    {
-//        printf("%02bX " , Send_data[i]);
-//    }
-//    printf("\r\n");
-//    CAN_Send_buffer(ID, EXIDE, DLC, Send_data);
-//}
-
-void ShowMsg(MsgStruct *Msg)
-{
+void ShowMsg(MsgStruct *Msg) {
     uint8 i;
     uint32 ID = Msg->ID;
     uint8 EXIDE = Msg->EXIDE;
     uint8 DLC = Msg->DLC;
 
-    if (Msg->IsSend)
-    {
+    if (Msg->IsSend) {
         printf("Can send    ");
     } else {
         printf("Can recevie ");
     }
 
-    if (EXIDE)
-    {
+    if (EXIDE) {
         printf("ID: %07lX,  DLC:%bx,  Data: ", ID, DLC);
-    }
-    else
-    {
+    } else {
         printf("ID: %7lX,  DLC:%bx,  Data: ", ID, DLC);
     }
 
-    for( i=0;i<DLC;i++ )
-    {
-        printf("%02bX " , Msg->DATA[i]);
+    for (i = 0; i < DLC; i++) {
+        printf("%02bX ", Msg->DATA[i]);
     }
 
     printf("\r\n");
@@ -168,72 +117,87 @@ void Send(MsgStruct *SendMsg) {
     CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
 }
 
-///* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
-//void Receive(uint8 RXB_CTRL_Address, uint8 *CAN_RX_Buf) {
-//    uint8 i;
-//    uint8 Receive_DLC = 0;
-//    uint8 Read_RXB_CTRL = 0;
-//    uint8 Receive_data[8] = {0};
-//
-//    CAN_Receive_Buffer(RXB_CTRL_Address, CAN_RX_Buf);//CAN接收一帧数据
-//
-//    Receive_DLC = CAN_RX_Buf[5] & 0x0F; //获取接收到的数据长度
-//    printf("Receive RXB_CTRL_Address: %bX, DLC:%bx, Data:", RXB_CTRL_Address, Receive_DLC);
-//
-//    for (i = 0; i < Receive_DLC; i++) //获取接收到的数据
-//    {
-//        Receive_data[i] = CAN_RX_Buf[6 + i];
-//        printf("%02bX " , Receive_data[i]);
-//    }
-//    printf("\r\n");
-////  获取接收缓存器及验收滤波器， 待优化
-//    Read_RXB_CTRL = MCP2515_ReadByte(RXB_CTRL_Address);
-//    printf("Read_RXB_CTRL: %02bX,  RXF:%bX \r\n", Read_RXB_CTRL, Read_RXB_CTRL & 0x07);
-//}
-//
- /* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
- void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
-     uint8 i;
+/* 将需要发送的数据 转发到uart, CAN_RX_Buf[14]*/
+void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
+    uint8 i;
 
-     uint8 RXBnCTRL = MCP2515_ReadByte(RXB_CTRL_Address);
-     uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
-     uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
-     uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
-     uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
-     uint8 RXBnDLC  = MCP2515_ReadByte(RXB_CTRL_Address + 5);
+    uint8 RXBnCTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+    uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
+    uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
+    uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
+    uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
+    uint8 RXBnDLC = MCP2515_ReadByte(RXB_CTRL_Address + 5);
 
-     RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // 扩展标识符标志位 1 = 收到的报文是扩展帧, 0 = 收到的报文是标准帧
-     RecMsg->DLC = RXBnDLC & 0x0F;
+    RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // 扩展标识符标志位 1 = 收到的报文是扩展帧, 0 = 收到的报文是标准帧
+    RecMsg->DLC = RXBnDLC & 0x0F;
 
-     if (RecMsg->EXIDE)
-     {
-         uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
-         uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8<<8) | RXBnEID0;
-         RecMsg->ID = SID<<18 | EID;
-     }
-     else
-     {
-         uint32 SID = (RXBnSIDH<<3) | (RXBnSIDL>>5);
-         RecMsg->ID = SID;
-     }
+    if (RecMsg->EXIDE) {
+        uint32 SID = (RXBnSIDH << 3) | (RXBnSIDL >> 5);
+        uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8 << 8) | RXBnEID0;
+        RecMsg->ID = SID << 18 | EID;
+    } else {
+        uint32 SID = (RXBnSIDH << 3) | (RXBnSIDL >> 5);
+        RecMsg->ID = SID;
+    }
 
-     for (i = 0; i < RecMsg->DLC; i++) //获取接收到的数据
-     {
+    for (i = 0; i < RecMsg->DLC; i++) //获取接收到的数据
+    {
         RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
-     }
-
-//     if (RXB_CTRL_Address==RXB0CTRL)
-//     {
-//         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
-        MCP2515_WriteByte(CANINTF, 0);//清除中断标志位(中断标志寄存器必须由MCU清零)
-//     }
-//     else if (RXB_CTRL_Address==RXB1CTRL)
-//     {
-//         MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) | 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
-//     }
+    }
 }
 
+void SetCfg(CanCfgStruct *CanCfg)
+{
+//     *(CanCfg->bitrate) = &bitrate_100Kbps[0];  // {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ}
+    CanCfg->bitrate[0] = bitrate_100Kbps[0];
+    CanCfg->bitrate[1] = bitrate_100Kbps[1];
+    CanCfg->bitrate[2] = bitrate_100Kbps[2];
+    CanCfg->bitrate[3] = bitrate_100Kbps[3];
+    CanCfg->bitrate[4] = bitrate_100Kbps[4];
+    CanCfg->BUKT_enable = 1;
+    CanCfg->CAN_MODE = 3;       // 000 = 设定为正常工作模式
+                                // 001 = 设定为休眠模式
+                                // 010 = 设定为环回模式
+                                // 011 = 设定为仅监听模式
+                                // 100 = 设定为配置模式
+    CanCfg->CANINTE_enable = 3;
+    CanCfg->CANINTF_enable = 0;
 
+    CanCfg->RXM0ID = 0x1FFFFFFF;
+    CanCfg->RXM1ID = 0x1FFFFFFF;
+
+    CanCfg->RXF0ID = 0x100;
+    CanCfg->RXF1ID = 0x7FE;
+    CanCfg->RXF2ID = 0x101;
+    CanCfg->RXF3ID = 0x102;
+    CanCfg->RXF4ID = 0x103;
+    CanCfg->RXF5ID = 0x104;
+
+    CanCfg->RXF0IDE = 1;
+    CanCfg->RXF1IDE = 0;
+    CanCfg->RXF2IDE = 0;
+    CanCfg->RXF3IDE = 1;
+    CanCfg->RXF4IDE = 0;
+    CanCfg->RXF5IDE = 1;
+}
+
+void ReadCfg(void) {
+    printf("CNF1: %02bX ", MCP2515_ReadByte(CNF1));
+    printf("CNF2: %02bX ", MCP2515_ReadByte(CNF2));
+    printf("CNF3: %02bX \r\n", MCP2515_ReadByte(CNF3));
+    printf("RXB0CTRL: %02bX ", MCP2515_ReadByte(RXB0CTRL));
+    printf("CANINTF: %02bX ", MCP2515_ReadByte(CANINTF));
+    printf("CANINTE: %02bX \r\n", MCP2515_ReadByte(CANINTE));
+    printf("RXF0SIDH: %02bX ", MCP2515_ReadByte(RXF0SIDH));
+    printf("RXF1SIDH: %02bX ", MCP2515_ReadByte(RXF1SIDH));
+    printf("RXF2SIDH: %02bX \r\n", MCP2515_ReadByte(RXF2SIDH));
+    printf("RXF3SIDH: %02bX ", MCP2515_ReadByte(RXF3SIDH));
+    printf("RXF4SIDH: %02bX ", MCP2515_ReadByte(RXF4SIDH));
+    printf("RXF5SIDH: %02bX  \r\n", MCP2515_ReadByte(RXF5SIDH));
+    printf("RXM0SIDH: %02bX ", MCP2515_ReadByte(RXM0SIDH));
+    printf("RXM1SIDH: %02bX ", MCP2515_ReadByte(RXM1SIDH));
+    printf("CANCTRL: %02bX \r\n", MCP2515_ReadByte(CANCTRL));
+}
 
 /*******************************************************************************
 * 函数名  : main
@@ -244,18 +208,26 @@ void Send(MsgStruct *SendMsg) {
 * 说明    : 无
 *******************************************************************************/
 void main(void) {
-    uint32 ID = 0x7FE;
+    uint32 ID = 0x101;
     uint8 EXIDE = 0;
     uint8 DLC = 8;
     uint8 i;
+    uint8 CANINTF_Flag;
     uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
     MsgStruct SendMsg;
     MsgStruct RecMsg;
 
+    CanCfgStruct CanCfg;
+    SetCfg(&CanCfg);
+
     UART_init();    //UART1初始化配置
     Exint_Init();            //外部中断1初始化函数
-    MCP2515_Init(bitrate_100Kbps);
+//    MCP2515_Init(bitrate_100Kbps);
+
+    Can_Init(&CanCfg);
+
+//    ReadCfg();
 
     SendMsg.IsSend = 0x1;
 
@@ -263,9 +235,12 @@ void main(void) {
     SendMsg.TYPE = 0x2;
     SendMsg.EXIDE = 0x0;
     SendMsg.DLC = 8;
-    *SendMsg.DATA = *Send_data;
 
-
+    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
+    {
+        SendMsg.DATA[i] = Send_data[i];
+//        printf("SendMsg.DATA[%bd] = %bx \r\n", i, SendMsg.DATA[i]);
+    }
 
     RecMsg.IsSend = 0;
 //    Send(&SendMsg);
@@ -281,20 +256,24 @@ void main(void) {
 
         Delay_Nms(3000);
 
-        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
-        {
+        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
+        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
+        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
+
+
+        CANINTF_Flag = MCP2515_ReadByte(CANINTF);
+        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
+
+        if (CANINTF_Flag & RX0IF) {
             Receive(RXB0CTRL, &RecMsg);
-            CAN_RX0IF_Flag = 0;
             ShowMsg(&RecMsg);
-            printf("CAN_RX0IF_Flag = 0\r\n");
+            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
         }
 
-        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
-        {
+        if (CANINTF_Flag & RX1IF) {
             Receive(RXB1CTRL, &RecMsg);
-            CAN_RX1IF_Flag = 0;
             ShowMsg(&RecMsg);
-            printf("CAN_RX1IF_Flag = 1\r\n");
+            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
         }
     }
 
