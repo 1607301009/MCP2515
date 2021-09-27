@@ -28,7 +28,6 @@ bool CAN_RX1IF_Flag = false;                            //MCP2515½ÓÊÕ»º³åÆ÷1 ÂúÖ
 bool CAN_RX0IF_Flag = false;                            //MCP2515½ÓÊÕ»º³åÆ÷0 ÂúÖÐ¶Ï±êÖ¾Î»
 
 
-
 char putchar(char c)  //printfº¯Êý»áµ÷ÓÃputchar()
 {
     UART_send_str(c);
@@ -36,14 +35,14 @@ char putchar(char c)  //printfº¯Êý»áµ÷ÓÃputchar()
 }
 
 //MCP2515²¨ÌØÂÊ	Òª¿¼ÂÇFOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-uint8 code bitrate_5Kbps[5]={ CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_10Kbps[5]={ CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_25Kbps[5]={ CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_50Kbps[5]={CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_100Kbps[5]={CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
-uint8 code bitrate_125Kbps[5]={CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_250Kbps[5]={CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_500Kbps[5]={CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_5Kbps[5] = {CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_10Kbps[5] = {CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_25Kbps[5] = {CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_50Kbps[5] = {CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_100Kbps[5] = {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
+uint8 code bitrate_125Kbps[5] = {CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_250Kbps[5] = {CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+uint8 code bitrate_500Kbps[5] = {CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
 
 /*******************************************************************************
 * º¯ÊýÃû  : Exint_Init
@@ -113,7 +112,6 @@ void Send(MsgStruct *SendMsg) {
     uint32 ID = SendMsg->ID;
     uint8 EXIDE = SendMsg->EXIDE;
     uint8 DLC = SendMsg->DLC;
-//    ShowMsg(SendMsg);
     CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
 }
 
@@ -193,7 +191,7 @@ void ReadCfg(void) {
     printf("RXF2SIDH: %02bX \r\n", MCP2515_ReadByte(RXF2SIDH));
     printf("RXF3SIDH: %02bX ", MCP2515_ReadByte(RXF3SIDH));
     printf("RXF4SIDH: %02bX ", MCP2515_ReadByte(RXF4SIDH));
-    printf("RXF5SIDH: %02bX  \r\n", MCP2515_ReadByte(RXF5SIDH));
+    printf("RXF5SIDH: %02bX \r\n", MCP2515_ReadByte(RXF5SIDH));
     printf("RXM0SIDH: %02bX ", MCP2515_ReadByte(RXM0SIDH));
     printf("RXM1SIDH: %02bX ", MCP2515_ReadByte(RXM1SIDH));
     printf("CANCTRL: %02bX \r\n", MCP2515_ReadByte(CANCTRL));
