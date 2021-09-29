@@ -1,6 +1,7 @@
 ".\Objects\STARTUP.obj",
 ".\Objects\main.obj",
 ".\Objects\MCP2515.obj",
-".\Objects\UART.obj" 
+".\Objects\UART.obj",
+".\Objects\I2C_ROM.obj" 
 TO ".\Objects\Can" 
 PRINT(".\Listings\Can.m51") RAMSIZE(256) 

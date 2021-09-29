@@ -17,6 +17,9 @@ extern void Can_Init(CanCfgStruct *CanCfg);
 extern void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data);
 extern void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf);
 
+// 存储模块
+extern void E2Read(unsigned char *buf, unsigned char addr, unsigned char len);
+extern void E2Write(unsigned char *buf, unsigned char addr, unsigned char len);
 
 bool CAN_MERRF_Flag = 0;                            //CAN报文错误中断标志位
 bool CAN_WAKIF_Flag = 0;                            //CAN唤醒中断标志位
@@ -224,6 +227,8 @@ void main(void) {
 //    MCP2515_Init(bitrate_100Kbps);
 
     Can_Init(&CanCfg);
+    E2Write(Send_data, 0x00, sizeof(Send_data));
+    E2Read(Send_data, 0x00, sizeof(Send_data));  // 从 EEPROM 读取一段数据
 
 //    ReadCfg();
 
