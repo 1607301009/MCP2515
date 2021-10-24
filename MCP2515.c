@@ -172,11 +172,11 @@ void CAN_Set_RX(uint8 RXF_Address,uint32 ID,uint8 EXIDE)
 		}
 	}
 	else
-	{	
-		MCP2515_WriteByte(RXF_Address+0,ID>>21);								  //SIDH
-		MCP2515_WriteByte(RXF_Address+1,(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);	  //SIDL
-		MCP2515_WriteByte(RXF_Address+2,ID>>8&0xFF);							  //EID8
-		MCP2515_WriteByte(RXF_Address+3,ID&0xFF);								  //EID0
+	{
+        MCP2515_WriteByte(RXF_Address + 0, ID >> 21);                                  //SIDH
+        MCP2515_WriteByte(RXF_Address + 1, (ID >> 18 & 0x07) << 5 | (ID >> 16 & 0x03) | 0x08);      //SIDL
+        MCP2515_WriteByte(RXF_Address + 2, ID >> 8 & 0xFF);                              //EID8
+        MCP2515_WriteByte(RXF_Address + 3, ID & 0xFF);                                  //EID0
 	}
 }
 

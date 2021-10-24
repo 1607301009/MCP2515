@@ -1,10 +1,10 @@
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 1   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MCP2515
 OBJECT MODULE PLACED IN .\Objects\MCP2515.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE MCP2515.c COMPACT OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Li
-                    -stings\MCP2515.lst) TABS(2) OBJECT(.\Objects\MCP2515.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE MCP2515.c LARGE OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\List
+                    -ings\MCP2515.lst) TABS(2) OBJECT(.\Objects\MCP2515.obj)
 
 line level    source
 
@@ -16,6 +16,7 @@ line level    source
    6          
    7          #include <reg51.h>
    8          #include "MCP2515.H"
+*** WARNING C317 IN LINE 485 OF MCP2515.H: attempt to redefine macro 'E2_RXF45'
    9          
   10          //MCP2515引脚定义
   11          sbit MCP2515_INT  = P1^6;//MCP2515中断引脚    （好像没有用到）
@@ -61,9 +62,9 @@ line level    source
   48          * 函数名  : SPI_ReadByte
   49          * 描述    : 通过SPI读取一个字节数据
   50          * 输入    : 无
-  51          * 输出    : 无
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 2   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 2   
 
+  51          * 输出    : 无
   52          * 返回值  : rByte(读取到的一个字节数据)
   53          * 说明    : 无
   54          *******************************************************************************/
@@ -125,9 +126,9 @@ line level    source
  110          
  111          /*******************************************************************************
  112          * 函数名  : MCP2515_ReadByte
- 113          * 描述    : 通过SPI从MCP2515指定地址寄器读1个字节数据
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 3   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 3   
 
+ 113          * 描述    : 通过SPI从MCP2515指定地址寄器读1个字节数据
  114          * 输入    : addr:MCP2515寄存器地址
  115          * 输出    : 无
  116          * 返回值  : rByte:读取到寄存器的1个字节数据
@@ -189,13 +190,13 @@ line level    source
  172   3          }
  173   2        }
  174   1        else
- 175   1        { 
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 4   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 4   
 
- 176   2          MCP2515_WriteByte(RXF_Address+0,ID>>21);                  //SIDH
- 177   2          MCP2515_WriteByte(RXF_Address+1,(ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
- 178   2          MCP2515_WriteByte(RXF_Address+2,ID>>8&0xFF);                //EID8
- 179   2          MCP2515_WriteByte(RXF_Address+3,ID&0xFF);                 //EID0
+ 175   1        {
+ 176   2              MCP2515_WriteByte(RXF_Address + 0, ID >> 21);                                  //SIDH
+ 177   2              MCP2515_WriteByte(RXF_Address + 1, (ID >> 18 & 0x07) << 5 | (ID >> 16 & 0x03) | 0x08);      //SIDL
+ 178   2              MCP2515_WriteByte(RXF_Address + 2, ID >> 8 & 0xFF);                              //EID8
+ 179   2              MCP2515_WriteByte(RXF_Address + 3, ID & 0xFF);                                  //EID0
  180   2        }
  181   1      }
  182          
@@ -253,9 +254,9 @@ line level    source
  232   1        MCP2515_Reset();  //发送复位指令软件复位MCP2515
  233   1        Delay_Nms(1);   //通过软件延时约nms(不准确)
  234   1      
- 235   1        //设置波特率
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 5   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 5   
 
+ 235   1        //设置波特率
  236   1        //set CNF1,SJW=00,长度为1TQ,BRP=49,TQ=[2*(BRP+1)]/Fsoc=2*50/8M=12.5us
  237   1        MCP2515_WriteByte(CNF1,CAN_Bitrate[4]|CAN_Bitrate[0]);
  238   1        //set CNF2,SAM=0,在采样点对总线进行一次采样，PHSEG1=(2+1)TQ=3TQ,PRSEG=(0+1)TQ=1TQ
@@ -317,9 +318,9 @@ line level    source
  292   1          {
  293   2          MCP2515_WriteByte(CANCTRL,REQOP_LOOPBACK|CLKOUT_ENABLED);//再次将MCP2515设置为环回模式,退出配置模式
  294   2          }
- 295   1      
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 6   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 6   
 
+ 295   1      
  296   1      }
  297          
  298          /*******************************************************************************
@@ -381,9 +382,9 @@ line level    source
  354   1        else
  355   1        { 
  356   2            MCP2515_WriteByte(TXBnCTRL + 1, ID>>21);                  //SIDH
- 357   2            MCP2515_WriteByte(TXBnCTRL + 2, (ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 7   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 7   
 
+ 357   2            MCP2515_WriteByte(TXBnCTRL + 2, (ID>>18&0x07)<<5|(ID>>16&0x03)|0x08);   //SIDL
  358   2            MCP2515_WriteByte(TXBnCTRL + 3, ID>>8&0xFF);                //EID8
  359   2            MCP2515_WriteByte(TXBnCTRL + 4, ID&0xFF);                 //EID0
  360   2        }
@@ -439,16 +440,16 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1807    ----
+   CODE SIZE        =   1887    ----
    CONSTANT SIZE    =     74    ----
-   XDATA SIZE       =   ----    ----
-   PDATA SIZE       =   ----      25
+   XDATA SIZE       =   ----      25
+   PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-C51 COMPILER V9.60.0.0   MCP2515                                                           09/28/2021 01:23:31 PAGE 8   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/25/2021 03:18:38 PAGE 8   
 
+   BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

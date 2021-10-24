@@ -446,6 +446,7 @@ typedef struct        // reveive 结构体
 
 typedef struct        // reveive 结构体
 {
+    uint8 _5Kbps;          // 比特率数，单位: 5Kbps
     uint8 bitrate[5];       // 比特率数组
     uint8 BUKT_enable:1;    // 滚存使能位
     uint8 CAN_MODE:3;       // 工作模式： 1. 配置模式。
@@ -456,16 +457,16 @@ typedef struct        // reveive 结构体
 
     uint32 RXM0ID;       // 屏蔽器默认完全屏蔽
     uint32 RXF0ID;       // 录波器0H
-    uint32 RXF1ID;       // 录波器0H
+    uint32 RXF1ID;       // 录波器1H
 
     uint32 RXM1ID;       // 屏蔽器默认完全屏蔽
-    uint32 RXF2ID;       // 录波器0H
-    uint32 RXF3ID;       // 录波器0H
-    uint32 RXF4ID;       // 录波器0H
-    uint32 RXF5ID;       // 录波器0H
+    uint32 RXF2ID;       // 录波器2H
+    uint32 RXF3ID;       // 录波器3H
+    uint32 RXF4ID;       // 录波器4H
+    uint32 RXF5ID;       // 录波器5H
 
-    uint8 CANINTE_enable;     // 录波器0H
-    uint8 CANINTF_enable;     // 录波器0H
+    uint8 CANINTE_enable;     // 中断使能位，p50
+    uint8 CANINTF_enable;     // 中断标志位，p51
 
     uint8 RXF0IDE:1;     // RXF0扩展帧标志位
     uint8 RXF1IDE:1;     // RXF1扩展帧标志位
@@ -475,5 +476,19 @@ typedef struct        // reveive 结构体
     uint8 RXF5IDE:1;     // RXF5扩展帧标志位
 } CanCfgStruct;
 
+/* E2 Config 配置信息 */
+#define E2_CanCifg         0x0
+#define E2_RXM01ID         0x1
+#define E2_RXF01           0x2
+#define E2_RXF23           0x3
+#define E2_RXF45           0x4
+#define E2_RXF45           0x3
+
+/* Config address 配置信息 */
+#define E2_5Kbps            0x0
+#define E2_BUKT_enable      0x1
+#define E2_CAN_MODE         0x2
+#define E2_CANINTE_enable   0x3
+#define E2_CANINTF_enable   0x4
 
 #endif

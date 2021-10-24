@@ -27,8 +27,8 @@ bool CAN_ERRIF_Flag = 0;                            //CAN错误中断标志位（EFLG 寄
 bool CAN_TX2IF_Flag = 0;                            //MCP2515发送缓冲器2 空中断标志位
 bool CAN_TX1IF_Flag = 0;                            //MCP2515发送缓冲器1 空中断标志位
 bool CAN_TX0IF_Flag = 0;                            //MCP2515发送缓冲器0 空中断标志位
-bool CAN_RX1IF_Flag = false;                            //MCP2515接收缓冲器1 满中断标志位
-bool CAN_RX0IF_Flag = false;                            //MCP2515接收缓冲器0 满中断标志位
+bool CAN_RX1IF_Flag = false;                        //MCP2515接收缓冲器1 满中断标志位
+bool CAN_RX0IF_Flag = false;                        //MCP2515接收缓冲器0 满中断标志位
 
 
 char putchar(char c)  //printf函数会调用putchar()
@@ -37,15 +37,16 @@ char putchar(char c)  //printf函数会调用putchar()
     return c;
 }
 
-//MCP2515波特率	要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-uint8 code bitrate_5Kbps[5] = {CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_10Kbps[5] = {CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_25Kbps[5] = {CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_50Kbps[5] = {CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_100Kbps[5] = {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
-uint8 code bitrate_125Kbps[5] = {CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_250Kbps[5] = {CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-uint8 code bitrate_500Kbps[5] = {CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
+////MCP2515波特率	要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
+//uint8 code bitrate_5Kbps[5] = {CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+//uint8 code bitrate_10Kbps[5] = {CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+//uint8 code bitrate_25Kbps[5] = {CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+//uint8 code bitrate_50Kbps[5] = {CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+//uint8 code bitrate_100Kbps[5] = {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
+//uint8 code bitrate_125Kbps[5] = {CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+//uint8 code bitrate_250Kbps[5] = {CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+//uint8 code bitrate_500Kbps[5] = {CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
+
 
 /*******************************************************************************
 * 函数名  : Exint_Init
@@ -147,14 +148,168 @@ void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
     }
 }
 
+// 设置比特率
+void SetBitrate(uint8 _5Kbps, uint8 *bitrate){
+    uint8 kbps, prseg, phseg1, phseg2, sjw;
+    //MCP2515波特率	要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
+    //    uint8 bitrate_5Kbps[5] = {CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+    //    uint8 bitrate_10Kbps[5] = {CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+    //    uint8 bitrate_25Kbps[5] = {CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+    //    uint8 bitrate_50Kbps[5] = {CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+    //    uint8 bitrate_100Kbps[5] = {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
+    //    uint8 bitrate_125Kbps[5] = {CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+    //    uint8 bitrate_250Kbps[5] = {CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
+    //    uint8 bitrate_500Kbps[5] = {CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
+    switch (_5Kbps * 5) {
+        case 5:
+            kbps = CAN_5Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+        case 10:
+            kbps = CAN_10Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+        case 25:
+            kbps = CAN_25Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+        case 50:
+            kbps = CAN_50Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+        case 100:
+            kbps = CAN_100Kbps, prseg = PRSEG_8TQ, phseg1 = PHSEG1_8TQ, phseg2 = PHSEG2_3TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+        case 125:
+            kbps = CAN_125Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+        case 250:
+            kbps = CAN_250Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break; /* 可选的 */
+
+        default : /* 可选的 */
+            kbps = CAN_500Kbps, prseg = PRSEG_2TQ, phseg1 = PHSEG1_3TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+    }
+    bitrate[0] = kbps, bitrate[1] = prseg, bitrate[2] = phseg1, bitrate[3] = phseg2, bitrate[4] = sjw;
+}
+
+void SaveCfgToE2(CanCfgStruct *CanCfg) {
+    uint8 i;
+    uint8 E2_data[8];
+
+    E2_data[E2_5Kbps] = CanCfg->_5Kbps;
+    E2_data[E2_BUKT_enable] = CanCfg->BUKT_enable;
+    E2_data[E2_CAN_MODE] = CanCfg->CAN_MODE;
+    E2_data[E2_CANINTE_enable] = CanCfg->CANINTE_enable;
+    E2_data[E2_CANINTE_enable] = CanCfg->CANINTF_enable;
+    E2Write(E2_data, E2_CanCifg, 5);
+
+    //    设置屏蔽器0
+    E2_data[0] = CanCfg->RXM0ID >> 24;
+    E2_data[1] = (CanCfg->RXM0ID >> 16) & 0xFF;
+    E2_data[2] = (CanCfg->RXM0ID >> 8) & 0xFF;
+    E2_data[3] = CanCfg->RXM0ID & 0xFF;
+    //    设置屏蔽器1
+    E2_data[4] = CanCfg->RXM0ID >> 24;
+    E2_data[5] = (CanCfg->RXM0ID >> 16) & 0xFF;
+    E2_data[6] = (CanCfg->RXM0ID >> 8) & 0xFF;
+    E2_data[7] = CanCfg->RXM0ID & 0xFF;
+    E2Write(E2_data, E2_RXM01ID, 8);
+
+    // 滤波器0、1
+    E2_data[0] = CanCfg->RXF0ID >> 24 | (CanCfg->RXF0IDE << 15);
+    E2_data[1] = (CanCfg->RXF0ID >> 16) & 0xFF;
+    E2_data[2] = (CanCfg->RXF0ID >> 8) & 0xFF;
+    E2_data[3] = CanCfg->RXF0ID & 0xFF;
+    E2_data[4] = (CanCfg->RXF1ID >> 24) | (CanCfg->RXF1IDE << 15);
+    E2_data[5] = (CanCfg->RXF1ID >> 16) & 0xFF;
+    E2_data[6] = (CanCfg->RXF1ID >> 8) & 0xFF;
+    E2_data[7] = CanCfg->RXF1ID & 0xFF;
+    E2Write(E2_data, E2_RXF01, 8);
+
+    // 滤波器2、3
+    E2_data[0] = CanCfg->RXF2ID >> 24 | (CanCfg->RXF2IDE << 15);
+    E2_data[1] = (CanCfg->RXF2ID >> 16) & 0xFF;
+    E2_data[2] = (CanCfg->RXF2ID >> 8) & 0xFF;
+    E2_data[3] = CanCfg->RXF2ID & 0xFF;
+    E2_data[4] = (CanCfg->RXF3ID >> 24) | (CanCfg->RXF3IDE << 15);
+    E2_data[5] = (CanCfg->RXF3ID >> 16) & 0xFF;
+    E2_data[6] = (CanCfg->RXF3ID >> 8) & 0xFF;
+    E2_data[7] = CanCfg->RXF3ID & 0xFF;
+    E2Write(E2_data, E2_RXF23, 8);
+
+    // 滤波器4、5
+    E2_data[0] = CanCfg->RXF4ID >> 24 | (CanCfg->RXF4IDE << 15);
+    E2_data[1] = (CanCfg->RXF4ID >> 16) & 0xFF;
+    E2_data[2] = (CanCfg->RXF4ID >> 8) & 0xFF;
+    E2_data[3] = CanCfg->RXF4ID & 0xFF;
+    E2_data[4] = (CanCfg->RXF5ID >> 24) | (CanCfg->RXF5IDE << 15);
+    E2_data[5] = (CanCfg->RXF5ID >> 16) & 0xFF;
+    E2_data[6] = (CanCfg->RXF5ID >> 8) & 0xFF;
+    E2_data[7] = CanCfg->RXF5ID & 0xFF;
+    E2Write(E2_data, E2_RXF45, 8);
+}
+
+void SetCfgFromE2(CanCfgStruct *CanCfg) {
+    uint8 i;
+    uint8 E2_read_data[8];
+
+    //  设置波特率
+    E2Read(E2_read_data, E2_CanCifg, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
+    CanCfg->_5Kbps = E2_read_data[E2_5Kbps];
+    SetBitrate(CanCfg->_5Kbps, &(CanCfg->bitrate));
+    //  设置滚存使能位、工作模式、中断使能位、中断标志位
+    CanCfg->BUKT_enable = E2_read_data[E2_BUKT_enable];
+    CanCfg->CAN_MODE = E2_read_data[E2_CAN_MODE];      // 0:正常 1:休眠 2:环回 3:监听 4:配置
+    CanCfg->CANINTE_enable = E2_read_data[E2_CANINTE_enable];
+    CanCfg->CANINTF_enable = E2_read_data[E2_CANINTF_enable];
+    //  设置屏蔽器
+    E2Read(E2_read_data, E2_RXM01ID, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
+    printf("add: %02bX E2_read_data[8]=[%02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX] \r\n", E2_RXM01ID,
+           E2_read_data[0], E2_read_data[1], E2_read_data[2], E2_read_data[3],
+           E2_read_data[4], E2_read_data[5], E2_read_data[6], E2_read_data[7]);
+    CanCfg->RXM0ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXM1ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+
+    //  滤波器0、1
+    E2Read(E2_read_data, E2_RXF01, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
+    printf("add: %02bX E2_read_data[8]=[%02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX] \r\n", E2_RXM01ID,
+           E2_read_data[0], E2_read_data[1], E2_read_data[2], E2_read_data[3],
+           E2_read_data[4], E2_read_data[5], E2_read_data[6], E2_read_data[7]);
+    CanCfg->RXF0IDE = E2_read_data[0] >> 15;
+    CanCfg->RXF0ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXF1IDE = E2_read_data[4] << 15;
+    CanCfg->RXF1ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    //  滤波器0、3
+    E2Read(E2_read_data, E2_RXF23, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
+    printf("add: %02bX E2_read_data[8]=[%02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX] \r\n", E2_RXM01ID,
+           E2_read_data[0], E2_read_data[1], E2_read_data[2], E2_read_data[3],
+           E2_read_data[4], E2_read_data[5], E2_read_data[6], E2_read_data[7]);
+    CanCfg->RXF2IDE = E2_read_data[0] >> 15;
+    CanCfg->RXF2ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXF3IDE = E2_read_data[4] >> 15;
+    CanCfg->RXF3ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    //  滤波器0、5
+    E2Read(E2_read_data, E2_RXF45, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
+    printf("add: %02bX E2_read_data[8]=[%02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX, %02bX] \r\n", E2_RXM01ID,
+           E2_read_data[0], E2_read_data[1], E2_read_data[2], E2_read_data[3],
+           E2_read_data[4], E2_read_data[5], E2_read_data[6], E2_read_data[7]);
+    CanCfg->RXF4IDE = E2_read_data[0] >> 15;
+    CanCfg->RXF4ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXF5IDE = E2_read_data[4] >> 15;
+    CanCfg->RXF5ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+}
+
 void SetCfg(CanCfgStruct *CanCfg)
 {
-//     *(CanCfg->bitrate) = &bitrate_100Kbps[0];  // {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ}
-    CanCfg->bitrate[0] = bitrate_100Kbps[0];
-    CanCfg->bitrate[1] = bitrate_100Kbps[1];
-    CanCfg->bitrate[2] = bitrate_100Kbps[2];
-    CanCfg->bitrate[3] = bitrate_100Kbps[3];
-    CanCfg->bitrate[4] = bitrate_100Kbps[4];
+    CanCfg->_5Kbps = 20;
+//    {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ}
+    CanCfg->bitrate[0] = CAN_100Kbps;
+    CanCfg->bitrate[1] = PRSEG_8TQ;
+    CanCfg->bitrate[2] = PHSEG1_8TQ;
+    CanCfg->bitrate[3] = PHSEG2_3TQ;
+    CanCfg->bitrate[4] = SJW_1TQ;
+//    CanCfg->bitrate[0] = bitrate_100Kbps[0];
+//    CanCfg->bitrate[1] = bitrate_100Kbps[1];
+//    CanCfg->bitrate[2] = bitrate_100Kbps[2];
+//    CanCfg->bitrate[3] = bitrate_100Kbps[3];
+//    CanCfg->bitrate[4] = bitrate_100Kbps[4];
     CanCfg->BUKT_enable = 1;
     CanCfg->CAN_MODE = 3;       // 000 = 设定为正常工作模式
                                 // 001 = 设定为休眠模式
@@ -214,22 +369,33 @@ void main(void) {
     uint8 DLC = 8;
     uint8 i;
     uint8 CANINTF_Flag;
-    uint8 Send_data[] = {0x20, 0xF1, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+    uint8 Send_data[] = {0x20, 0xF1, 0x03, 0x03, 0x04, 0x05, 0x06, 0x07};
+    uint8 E2_data[8];
 
     MsgStruct SendMsg;
     MsgStruct RecMsg;
 
     CanCfgStruct CanCfg;
     SetCfg(&CanCfg);
+    SaveCfgToE2(&CanCfg);
+
+    SetCfgFromE2(&CanCfg);
 
     UART_init();    //UART1初始化配置
     Exint_Init();            //外部中断1初始化函数
 //    MCP2515_Init(bitrate_100Kbps);
 
     Can_Init(&CanCfg);
-    E2Write(Send_data, 0x00, sizeof(Send_data));
-    E2Read(Send_data, 0x00, sizeof(Send_data));  // 从 EEPROM 读取一段数据
 
+//
+    E2Write(Send_data, 0x00, sizeof(Send_data));
+
+    E2Read(E2_data, 0x00, sizeof(Send_data));  // 从 EEPROM 读取一段数据
+
+    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
+        {
+        printf("读取数据 : E2_data[%bd] = %bx \r\n", i, E2_data[i]);
+        }
 //    ReadCfg();
 
     SendMsg.IsSend = 0x1;
