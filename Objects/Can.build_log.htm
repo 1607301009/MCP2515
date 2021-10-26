@@ -22,27 +22,21 @@ C:\Users\Carter\Desktop\51\Can\Can.uvproj
 Project File Date:  10/25/2021
 
 <h2>Output:</h2>
-Build target 'Target 1'
+Rebuild target 'Target 1'
 assembling STARTUP.A51...
+compiling main.c...
+main.c(425): warning C280: 'E2_data': unreferenced local variable
 compiling MCP2515.c...
-MCP2515.H(485): warning C317: attempt to redefine macro 'E2_RXF45'
 compiling UART.c...
-MCP2515.H(485): warning C317: attempt to redefine macro 'E2_RXF45'
 compiling I2C_ROM.c...
 linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?READCFG?MAIN
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_MCP2515_INIT?MCP2515
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_CAN_RECEIVE_BUFFER?MCP2515
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?CO?MCP2515
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_UART_SEND_BUFFER?UART
-Program Size: data=24.2 xdata=152 code=9312
+Program Size: data=23.4 xdata=158 code=8095
 creating hex file from ".\Objects\Can"...
-".\Objects\Can" - 0 Error(s), 7 Warning(s).
+".\Objects\Can" - 0 Error(s), 3 Warning(s).
 Build Time Elapsed:  00:00:01
 </pre>
 </body>

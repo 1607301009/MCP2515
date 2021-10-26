@@ -432,63 +432,74 @@ typedef unsigned int uint16;    // 无符号16位整型变量
 typedef unsigned long uint32;   // 无符号32位整型变量
 
 
-typedef struct        // reveive 结构体
+typedef struct      // reveive 结构体
 {
-    uint32 ID;       // 帧ID
-    uint8 TYPE:2;       // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
-    uint8 IsSend:1;       // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
-    uint8 EXIDE:1;       // 帧格式: 标准帧， 扩展帧
+    uint32 ID;      // 帧ID
+    uint8 TYPE:2;   // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
+    uint8 IsSend:1; // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
+    uint8 EXIDE:1;  // 帧格式: 标准帧， 扩展帧
 
-    uint8  DLC:4;       // 数据长度码位 <3:0> 表明接收到的数据字节个数
+    uint8  DLC:4;   // 数据长度码位 <3:0> 表明接收到的数据字节个数
 
-    uint8  DATA[8];    // 接收缓冲器 n 数据字段字节 m, 这 8 个字节包含接收报文的数据信息
+    uint8  DATA[8]; // 接收缓冲器 n 数据字段字节 m, 这 8 个字节包含接收报文的数据信息
 } MsgStruct;
 
+// BFPCTRL——RXnBF 引脚控制寄存器和状态寄存器 （地址：0Ch） p29 未设置配置文件
+// EFLG——错误标志寄存器 （地址：2Dh） p47 未设置配置文件
 typedef struct        // reveive 结构体
 {
-    uint8 _5Kbps;          // 比特率数，单位: 5Kbps
+    uint8 _5Kbps;           // 比特率数，单位: 5Kbps
     uint8 bitrate[5];       // 比特率数组
-    uint8 BUKT_enable:1;    // 滚存使能位
+
+    uint32 RXM0ID;       // 屏蔽器默认完全屏蔽
+    uint32 RXF0ID;       // 滤波器0H
+    uint32 RXF1ID;       // 滤波器1H
+
+    uint32 RXM1ID;       // 屏蔽器默认完全屏蔽
+    uint32 RXF2ID;       // 滤波器2H
+    uint32 RXF3ID;       // 滤波器3H
+    uint32 RXF4ID;       // 滤波器4H
+    uint32 RXF5ID;       // 滤波器5H
+
+    uint8 CANINTE_enable;     // 中断使能位，p50
+    uint8 CANINTF_enable;     // 中断标志位，p51
+
+    uint8 RXB0RXM:2;        // 接收缓冲器0工作模式位 11 = 关闭屏蔽／滤波功能；接收所有报文
+                            //                   10 = 只接收符合滤波器条件的带有扩展标识符的有效报文
+                            //                   01 = 只接收符合滤波器条件的带有标准标识符的有效报文
+                            //                   00 = 接收符合滤波器条件的所有带扩展标识符或标准标识符的有效报文
+    uint8 RXB1RXM:2;        // 接收缓冲器1工作模式位
+
     uint8 CAN_MODE:3;       // 工作模式： 1. 配置模式。
                             //          2. 正常模式。
                             //          3. 休眠模式。
                             //          4. 仅监听模式。
                             //          5. 环回模式。
 
-    uint32 RXM0ID;       // 屏蔽器默认完全屏蔽
-    uint32 RXF0ID;       // 录波器0H
-    uint32 RXF1ID;       // 录波器1H
+    uint8 BUKT_enable:1;    // 接收缓冲器0滚存1 使能位
 
-    uint32 RXM1ID;       // 屏蔽器默认完全屏蔽
-    uint32 RXF2ID;       // 录波器2H
-    uint32 RXF3ID;       // 录波器3H
-    uint32 RXF4ID;       // 录波器4H
-    uint32 RXF5ID;       // 录波器5H
-
-    uint8 CANINTE_enable;     // 中断使能位，p50
-    uint8 CANINTF_enable;     // 中断标志位，p51
-
-    uint8 RXF0IDE:1;     // RXF0扩展帧标志位
-    uint8 RXF1IDE:1;     // RXF1扩展帧标志位
-    uint8 RXF2IDE:1;     // RXF2扩展帧标志位
-    uint8 RXF3IDE:1;     // RXF3扩展帧标志位
-    uint8 RXF4IDE:1;     // RXF4扩展帧标志位
-    uint8 RXF5IDE:1;     // RXF5扩展帧标志位
+    uint8 RXF0IDE:1;     // 滤波器RXF0扩展帧标志位
+    uint8 RXF1IDE:1;     // 滤波器RXF1扩展帧标志位
+    uint8 RXF2IDE:1;     // 滤波器RXF2扩展帧标志位
+    uint8 RXF3IDE:1;     // 滤波器RXF3扩展帧标志位
+    uint8 RXF4IDE:1;     // 滤波器RXF4扩展帧标志位
+    uint8 RXF5IDE:1;     // 滤波器RXF5扩展帧标志位
 } CanCfgStruct;
 
-/* E2 Config 配置信息 */
-#define E2_CanCifg         0x0
-#define E2_RXM01ID         0x1
-#define E2_RXF01           0x2
-#define E2_RXF23           0x3
-#define E2_RXF45           0x4
-#define E2_RXF45           0x3
+/* E2 Config 配置信息 按E2 page大小计算 */
+#define E2_CanCifg         0x0 * 8
+#define E2_RXM01ID         0x1 * 8
+#define E2_RXF01           0x2 * 8
+#define E2_RXF23           0x3 * 8
+#define E2_RXF45           0x4 * 8
 
 /* Config address 配置信息 */
-#define E2_5Kbps            0x0
-#define E2_BUKT_enable      0x1
-#define E2_CAN_MODE         0x2
-#define E2_CANINTE_enable   0x3
-#define E2_CANINTF_enable   0x4
+#define E2_5Kbps            0x0 // 波特率标志位
+#define E2_BUKT_enable      0x1 // 滚存使能位
+#define E2_RXB0RXM          0x2 // 滚存使能位
+#define E2_RXB1RXM          0x3 // 滚存使能位
+#define E2_CAN_MODE         0x4
+#define E2_CANINTE_enable   0x5
+#define E2_CANINTF_enable   0x6
 
 #endif
