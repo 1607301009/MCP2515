@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 1   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MCP2515
@@ -62,7 +62,7 @@ line level    source
   49          * 描述    : 通过SPI读取一个字节数据
   50          * 输入    : 无
   51          * 输出    : 无
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 2   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 2   
 
   52          * 返回值  : rByte(读取到的一个字节数据)
   53          * 说明    : 无
@@ -126,7 +126,7 @@ line level    source
  111          /*******************************************************************************
  112          * 函数名  : MCP2515_ReadByte
  113          * 描述    : 通过SPI从MCP2515指定地址寄器读1个字节数据
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 3   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 3   
 
  114          * 输入    : addr:MCP2515寄存器地址
  115          * 输出    : 无
@@ -190,7 +190,7 @@ line level    source
  173   1          // 设置波特率
  174   1          // set CNF1, SJW=00,长度为1TQ, BRP=49, TQ=[2*(BRP+1)]/Fsoc=2*50/8M=12.5us
  175   1          MCP2515_WriteByte(CNF1, CanCfg->bitrate[4] | CanCfg->bitrate[0]);
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 4   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 4   
 
  176   1          // set CNF2, SAM=0,在采样点对总线进行一次采样，PHSEG1=(2+1)TQ=3TQ, PRSEG=(0+1)TQ=1TQ
  177   1          MCP2515_WriteByte(CNF2, BTLMODE_CNF3 | CanCfg->bitrate[2] | CanCfg->bitrate[1]);
@@ -254,7 +254,7 @@ line level    source
  233          //  CanSetID(RXF0SIDH,0x100,1);
  234          //  CanSetID(RXF1SIDH,0x7FE,0);
  235          //
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 5   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 5   
 
  236          //  CanSetID(RXM0SIDH,0x7FF,0);
  237          //
@@ -318,7 +318,7 @@ line level    source
  293          *******************************************************************************/
  294          void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
  295          {
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 6   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 6   
 
  296   1        uint8 TXBnCTRL;         // 选择发送缓冲器
  297   1      
@@ -382,7 +382,7 @@ line level    source
  355   1        MCP2515_CS=1;
  356   1        //发送形式设置：单次发送，远程帧，拓展帧，调试状态，回应。
  357   1      
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/27/2021 03:21:28 PAGE 7   
+C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 7   
 
  358   1          // 等待报文发送成功
  359   1          for(i = 0; i < 14; i++)

@@ -263,8 +263,8 @@ void SaveCfgToE2(CanCfgStruct *CanCfg) {
     E2Write(E2_data, E2_RXF45, 8);
 //    printE2Write(E2_data, E2_RXF45, 8);
 }
-
-void PrintfCfg(CanCfgStruct *CanCfg) {
+//
+//void PrintfCfg(CanCfgStruct *CanCfg) {
 //    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
 //    printf("bitrate[0]: %02bX \r\n", CanCfg->bitrate[0]);
 //    printf("bitrate[1]: %02bX \r\n", CanCfg->bitrate[1]);
@@ -273,12 +273,12 @@ void PrintfCfg(CanCfgStruct *CanCfg) {
 //    printf("bitrate[4]: %02bX \r\n", CanCfg->bitrate[4]);
 //    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
 //    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
-
-    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
-    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
-
-    printf("RXM0ID: %08lX \r\n", CanCfg->RXM0ID);
-    printf("RXM1ID: %08lX \r\n", CanCfg->RXM1ID);
+//
+//    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
+//    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
+//
+//    printf("RXM0ID: %08lX \r\n", CanCfg->RXM0ID);
+//    printf("RXM1ID: %08lX \r\n", CanCfg->RXM1ID);
 //    printf("RXF0ID: %07lX \r\n", CanCfg->RXF0ID);
 //    printf("RXF1ID: %07lX \r\n", CanCfg->RXF1ID);
 //    printf("RXF2ID: %07lX \r\n", CanCfg->RXF2ID);
@@ -292,18 +292,16 @@ void PrintfCfg(CanCfgStruct *CanCfg) {
 //    printf("RXF3IDE: %bX \r\n", CanCfg->RXF3IDE);
 //    printf("RXF4IDE: %bX \r\n", CanCfg->RXF4IDE);
 //    printf("RXF5IDE: %bX \r\n", CanCfg->RXF5IDE);
+//}
+
+uint32 GetInt32FormE2(uint8 *buf, uint8 addr) {
+    return (uint32) (((uint32) buf[0 + addr] & 0x7F << 24) | ((uint32) buf[1 + addr] << 16) | ((uint32) buf[2 + addr] << 8) |
+                     (uint32) buf[3 + addr]);
 }
 
 void SetCfgFromE2(CanCfgStruct *CanCfg) {
     uint8 i;
     uint8 E2_read_data[8];
-
-    for (i = 0; i < 5; i++) //发送字符串，直到遇到0才结束
-    {
-        E2Read(E2_read_data, i * 8, sizeof(E2_read_data));
-        printf("SetCfgFromE2 ");
-        printE2Write(E2_read_data, i * 8, sizeof(E2_read_data));
-    }
 
     //  设置波特率
     E2Read(E2_read_data, E2_CanCifg, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
@@ -317,35 +315,26 @@ void SetCfgFromE2(CanCfgStruct *CanCfg) {
 
     //  设置屏蔽器
     E2Read(E2_read_data, E2_RXM01ID, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
-    CanCfg->RXM0ID = (E2_read_data[0] << 24) | (E2_read_data[1] << 16) | (E2_read_data[2] << 8) | E2_read_data[3];
-    CanCfg->RXM1ID = E2_read_data[4] << 24 | E2_read_data[5] << 16 | E2_read_data[6] << 8 | E2_read_data[7];
-//    CanCfg->RXM0ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
-//    CanCfg->RXM1ID = (E2_read_data[4] & 0x7F) << 24 | E2_read_data[5] << 16 | E2_read_data[6] << 8 | E2_read_data[7];
-printf("data[0]: %02bX %lX\r\n", E2_read_data[0], E2_read_data[0] << 4 | 0x10);
-if (CanCfg->RXM0ID == 0xffffffff) {
-    printf("- %04bX\r\n", E2_read_data[4]);
-} else {
-    printf("+ %lX\r\n", CanCfg->RXM0ID);
-}
-//printf("data[4]: %07lX \r\n", E2_read_data[4] << 24);
+    CanCfg->RXM0ID = GetInt32FormE2(E2_read_data, 0);
+    CanCfg->RXM1ID = GetInt32FormE2(E2_read_data, 4);
     //  滤波器0、1
     E2Read(E2_read_data, E2_RXF01, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
     CanCfg->RXF0IDE = E2_read_data[0] >> 7;
-    CanCfg->RXF0ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXF0ID = GetInt32FormE2(E2_read_data, 0);
     CanCfg->RXF1IDE = E2_read_data[4] >> 7;
-    CanCfg->RXF1ID = (E2_read_data[4] & 0x7F) << 24 | E2_read_data[5] << 16 | E2_read_data[6] << 8 | E2_read_data[7];
+    CanCfg->RXF1ID = GetInt32FormE2(E2_read_data, 4);
     //  滤波器0、3
     E2Read(E2_read_data, E2_RXF23, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
     CanCfg->RXF2IDE = E2_read_data[0] >> 7;
-    CanCfg->RXF2ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXF2ID = GetInt32FormE2(E2_read_data, 0);
     CanCfg->RXF3IDE = E2_read_data[4] >> 7;
-    CanCfg->RXF3ID = (E2_read_data[4] & 0x7F) << 24 | E2_read_data[5] << 16 | E2_read_data[6] << 8 | E2_read_data[7];
+    CanCfg->RXF3ID = GetInt32FormE2(E2_read_data, 4);
     //  滤波器0、5
     E2Read(E2_read_data, E2_RXF45, sizeof(E2_read_data));  // 从 EEPROM 读取一段数据
     CanCfg->RXF4IDE = E2_read_data[0] >> 7;
-    CanCfg->RXF4ID = (E2_read_data[0] & 0x7F) << 24 | E2_read_data[1] << 16 | E2_read_data[2] << 8 | E2_read_data[3];
+    CanCfg->RXF4ID = GetInt32FormE2(E2_read_data, 0);
     CanCfg->RXF5IDE = E2_read_data[4] >> 7;
-    CanCfg->RXF5ID = (E2_read_data[4] & 0x7F) << 24 | E2_read_data[5] << 16 | E2_read_data[6] << 8 | E2_read_data[7];
+    CanCfg->RXF5ID = GetInt32FormE2(E2_read_data, 4);
 }
 
 void SetCfg(CanCfgStruct *CanCfg)
@@ -434,12 +423,12 @@ void main(void) {
 //    MCP2515_Init(bitrate_100Kbps);
 
     SetCfg(&CanCfg);
-    PrintfCfg(&CanCfg);
+//    PrintfCfg(&CanCfg);
 
     SaveCfgToE2(&CanCfg);
 
     SetCfgFromE2(&CanCfg);
-    PrintfCfg(&CanCfg);
+//    PrintfCfg(&CanCfg);
 
     Can_Init(&CanCfg);
 
@@ -483,13 +472,13 @@ void main(void) {
 
         Delay_Nms(3000);
 
-//        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
-//        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
-//        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
+        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
+        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
+        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
 
 
         CANINTF_Flag = MCP2515_ReadByte(CANINTF);
-//        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
+        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
 
         if (CANINTF_Flag & RX0IF) {
             Receive(RXB0CTRL, &RecMsg);

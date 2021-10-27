@@ -431,10 +431,12 @@ typedef unsigned char uint8;    // 无符号8位整型变量
 typedef unsigned int uint16;    // 无符号16位整型变量
 typedef unsigned long uint32;   // 无符号32位整型变量
 
-
+// p21 RTR 远程发送标志位
 typedef struct      // reveive 结构体
 {
     uint32 ID;      // 帧ID
+    uint8 FILHIT:3;      // 验收滤波器命中位，
+    uint8 RTR:1;      // 远程帧标志位 p21
     uint8 TYPE:2;   // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
     uint8 IsSend:1; // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
     uint8 EXIDE:1;  // 帧格式: 标准帧， 扩展帧
