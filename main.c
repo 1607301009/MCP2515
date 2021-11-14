@@ -214,8 +214,7 @@ void SaveCfgToE2(CanCfgStruct *CanCfg) {
     E2Write(E2_data, E2_CanCifg, 7);
 //    printE2Write(E2_data, E2_CanCifg, 7);
 
-    //    ÉèÖÃÆÁ±ÎÆ÷0
-    E2_data[0] = CanCfg->RXM0ID >> 24;
+    //    ÉèÖÃÆÁ±ÎÆ÷0    E2_data[0] = CanCfg->RXM0ID >> 24;
     E2_data[1] = (CanCfg->RXM0ID >> 16) & 0xFF;
     E2_data[2] = (CanCfg->RXM0ID >> 8) & 0xFF;
     E2_data[3] = CanCfg->RXM0ID & 0xFF;
