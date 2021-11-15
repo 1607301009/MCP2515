@@ -490,10 +490,10 @@ typedef struct        // reveive 结构体
 
 /* E2 Config 配置信息 按E2 page大小计算 */
 #define E2_CanCifg         0x0 * 8
-#define E2_RXM01ID         0x1 * 8
-#define E2_RXF01           0x2 * 8
-#define E2_RXF23           0x3 * 8
-#define E2_RXF45           0x4 * 8
+#define E2_RXF01           0x1 * 8
+#define E2_RXF23           0x2 * 8
+#define E2_RXF45           0x3 * 8
+#define E2_RXM01ID         0x4 * 8
 
 /* Config address 配置信息 */
 #define E2_5Kbps            0x0 // 波特率标志位
@@ -503,5 +503,20 @@ typedef struct        // reveive 结构体
 #define E2_CAN_MODE         0x4
 #define E2_CANINTE_enable   0x5
 #define E2_CANINTF_enable   0x6
+
+/* 主程序状态控制 */
+#define action_status     0xf0 // 配置或读取状态
+#define action_E2         0x1 // 滚存使能位
+#define action_MCP2515      0x1 // 滚存使能位
+#define save_config_E2      0x1 // 滚存使能位
+
+#define status_set_config      0x1 // 滚存使能位
+#define status_set_enable      0x2 // 使能Can config
+
+/* 配置各个滤波在读取后功能 */
+#define RXF0_init_config      0x0 // 配置功能位
+#define RXF0_set_config      0x0 // 配置功能位
+
+
 
 #endif
