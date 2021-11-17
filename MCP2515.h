@@ -498,20 +498,37 @@ typedef struct        // reveive 结构体
 /* Config address 配置信息 */
 #define E2_5Kbps            0x0 // 波特率标志位
 #define E2_BUKT_enable      0x1 // 滚存使能位
-#define E2_RXB0RXM          0x2 // 滚存使能位
-#define E2_RXB1RXM          0x3 // 滚存使能位
+#define E2_RXB0RXM          0x2 // 接收缓冲器0工作模式 p27
+#define E2_RXB1RXM          0x3 // 接收缓冲器1工作模式 p28
 #define E2_CAN_MODE         0x4
 #define E2_CANINTE_enable   0x5
 #define E2_CANINTF_enable   0x6
 
-/* 主程序状态控制 */
-#define action_status     0xf0 // 配置或读取状态
-#define action_E2         0x1 // 滚存使能位
+#define E2_RXF0ID   0x7
+#define E2_RXF1ID   0x8
+#define E2_RXF2ID   0x9
+#define E2_RXF3ID   0xA
+#define E2_RXF4ID   0xB
+#define E2_RXF5ID   0xC
+
+#define E2_RXM0ID   0xD
+#define E2_RXM1ID   0xE
+
+
+
+/* rec反馈状态控制 */
+#define action_send_can_cfg 0xfe // 上点反馈标志位
+#define action_status       0xf0 // 配置或读取状态
+#define action_E2           0x1 // 滚存使能位
 #define action_MCP2515      0x1 // 滚存使能位
 #define save_config_E2      0x1 // 滚存使能位
+#define read_config_E2      0x1 // 滚存使能位
 
-#define status_set_config      0x1 // 滚存使能位
-#define status_set_enable      0x2 // 使能Can config
+/* 主程序状态控制 */
+#define main_power_on      0x1 // 上电程序
+#define main_set_can_cfg   0x2 // 设置Can config
+#define main_send_can_cfg   0x3 // 设置Can config
+#define main_save_cfg  0x4 // 使能Can config
 
 /* 配置各个滤波在读取后功能 */
 #define RXF0_init_config      0x0 // 配置功能位

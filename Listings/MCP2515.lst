@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 1   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MCP2515
@@ -62,7 +62,7 @@ line level    source
   49          * 描述    : 通过SPI读取一个字节数据
   50          * 输入    : 无
   51          * 输出    : 无
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 2   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 2   
 
   52          * 返回值  : rByte(读取到的一个字节数据)
   53          * 说明    : 无
@@ -126,7 +126,7 @@ line level    source
  111          /*******************************************************************************
  112          * 函数名  : MCP2515_ReadByte
  113          * 描述    : 通过SPI从MCP2515指定地址寄器读1个字节数据
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 3   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 3   
 
  114          * 输入    : addr:MCP2515寄存器地址
  115          * 输出    : 无
@@ -190,7 +190,7 @@ line level    source
  173   1          // 设置波特率
  174   1          // set CNF1, SJW=00,长度为1TQ, BRP=49, TQ=[2*(BRP+1)]/Fsoc=2*50/8M=12.5us
  175   1          MCP2515_WriteByte(CNF1, CanCfg->bitrate[4] | CanCfg->bitrate[0]);
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 4   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 4   
 
  176   1          // set CNF2, SAM=0,在采样点对总线进行一次采样，PHSEG1=(2+1)TQ=3TQ, PRSEG=(0+1)TQ=1TQ
  177   1          MCP2515_WriteByte(CNF2, BTLMODE_CNF3 | CanCfg->bitrate[2] | CanCfg->bitrate[1]);
@@ -254,7 +254,7 @@ line level    source
  233          //  CanSetID(RXF0SIDH,0x100,1);
  234          //  CanSetID(RXF1SIDH,0x7FE,0);
  235          //
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 5   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 5   
 
  236          //  CanSetID(RXM0SIDH,0x7FF,0);
  237          //
@@ -318,7 +318,7 @@ line level    source
  293          *******************************************************************************/
  294          void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data)
  295          {
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 6   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 6   
 
  296   1        uint8 TXBnCTRL;         // 选择发送缓冲器
  297   1      
@@ -382,7 +382,7 @@ line level    source
  355   1        MCP2515_CS=1;
  356   1        //发送形式设置：单次发送，远程帧，拓展帧，调试状态，回应。
  357   1      
-C51 COMPILER V9.60.0.0   MCP2515                                                           10/28/2021 00:33:29 PAGE 7   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 7   
 
  358   1          // 等待报文发送成功
  359   1          for(i = 0; i < 14; i++)
@@ -422,12 +422,113 @@ line level    source
  393   1      }
  394          
  395          
+ 396          /*******************************************************************************
+ 397          * 描述    : 从数组中拼接出ID，默认数组高位的第一位为扩展标志位，舍弃。
+ 398          * 输入    : array：数组， offset：ID在数组的位置
+ 399          *******************************************************************************/
+ 400          uint32 Get_ID_For_Array(uint8 *array, uint8 offset) {
+ 401   1          return ((uint32) array[0 + offset] & 0x7F << 24)
+ 402   1                 | (uint32) (array[1 + offset] << 24)
+ 403   1                 | (uint32) (array[2 + offset] << 16)
+ 404   1                 | array[3 + offset];
+ 405   1      }
+ 406          
+ 407          /*******************************************************************************
+ 408          * 描述    : 将ID拆分，写入数组中，默认数组高位的第一位为扩展标志位。
+ 409          * 输入    : array：数组， offset：ID高位写入数组的位置，
+ 410          *******************************************************************************/
+ 411          void Set_Array_For_ID(uint8 *array, uint8 offset, uint32 ID, uint8 EXIDE) {
+ 412   1          array[0 + offset] = (ID >> 24) | (EXIDE << 7);
+ 413   1          array[1 + offset] = (ID >> 16) & 0xFF;
+ 414   1          array[2 + offset] = (ID >> 8) & 0xFF;
+ 415   1          array[3 + offset] = ID & 0xFF;
+ 416   1      }
+ 417          
+ 418          /*******************************************************************************
+ 419          * 描述    : 从mcp2515寄存器中读取并拼接出ID，扩展标志位设置为ID首位。
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 8   
+
+ 420          * 输入    : buf_addr：mcp2515寄存器SIDH的地址
+ 421          *******************************************************************************/
+ 422          uint32 Get_ID_For_Buf(uint8 buf_addr) {
+ 423   1          uint8 SIDL = MCP2515_ReadByte(buf_addr + 1);
+ 424   1      
+ 425   1          uint32 SID = ((uint32) MCP2515_ReadByte(buf_addr) << 3) | (SIDL >> 5);
+ 426   1          uint32 EID = (uint32) (SIDL & 3) << 16
+ 427   1                       | ((uint32) MCP2515_ReadByte(buf_addr + 2) << 8)
+ 428   1                       | MCP2515_ReadByte(buf_addr + 3);
+ 429   1          // EID有数值或是扩展帧
+ 430   1          if (EID || (SIDL & 0x8)) {
+ 431   2              return SID << 18 | EID;
+ 432   2          } else {
+ 433   2              return SID;
+ 434   2          }
+ 435   1      }
+ 436          
+ 437          /*******************************************************************************
+ 438          * 描述    : 将ID拆分写入到mcp2515寄存器中
+ 439          * 输入    : buf_addr：mcp2515寄存器SIDH的地址， ID， 以及扩展标志位
+ 440          *******************************************************************************/
+ 441          void Set_Buf_For_ID(uint8 buf_addr, uint32 ID, uint8 EXIDE) {
+ 442   1          if ((ID > 0x7FF) || EXIDE) {
+ 443   2              MCP2515_WriteByte(buf_addr, ID >> 21);               //SIDH
+ 444   2              MCP2515_WriteByte(buf_addr + 1, (ID >> 18 & 0x07) << 5 | (ID >> 16 & 0x03) | 0x08);      //SIDL
+ 445   2              MCP2515_WriteByte(buf_addr + 2, ID >> 8 & 0xFF);     //EID8
+ 446   2              MCP2515_WriteByte(buf_addr + 3, ID & 0xFF);          //EID0
+ 447   2          } else {
+ 448   2              MCP2515_WriteByte(buf_addr, ID >> 3);                //SIDH
+ 449   2              MCP2515_WriteByte(buf_addr + 1, (ID & 0x07) << 5);   //SIDL
+ 450   2              MCP2515_WriteByte(buf_addr + 2, 0);                  //EID8
+ 451   2              MCP2515_WriteByte(buf_addr + 3, 0);                  //EID0
+ 452   2          }
+ 453   1      }
+ 454          
+ 455          /*******************************************************************************
+ 456          * 描述    : 设置比特率数组
+ 457          * 说明    : MCP2515波特率 根据树莓派特点，要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=
+             -1..4
+ 458          *******************************************************************************/
+ 459          void Set_Bitrate_Array(uint8 _5Kbps, uint8 *bitrate) {
+ 460   1          uint8 kbps, prseg, phseg1, phseg2, sjw;
+ 461   1          switch (_5Kbps * 5) {
+ 462   2              case 5:
+ 463   2                  kbps = CAN_5Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+ 464   2                  break;
+ 465   2              case 10:
+ 466   2                  kbps = CAN_10Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+ 467   2                  break;
+ 468   2              case 25:
+ 469   2                  kbps = CAN_25Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+ 470   2                  break;
+ 471   2              case 50:
+ 472   2                  kbps = CAN_50Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+ 473   2                  break;
+ 474   2              case 100:
+ 475   2                  kbps = CAN_100Kbps, prseg = PRSEG_8TQ, phseg1 = PHSEG1_8TQ, phseg2 = PHSEG2_3TQ, sjw = SJW_1TQ
+             -;
+ 476   2                  break;
+ 477   2              case 125:
+ 478   2                  kbps = CAN_125Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ
+             -;
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 02:05:22 PAGE 9   
+
+ 479   2                  break;
+ 480   2              case 250:
+ 481   2                  kbps = CAN_250Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ
+             -;
+ 482   2                  break;
+ 483   2              default : /* 默认取500Kbps */
+ 484   2                  kbps = CAN_500Kbps, prseg = PRSEG_2TQ, phseg1 = PHSEG1_3TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ
+             -;
+ 485   2          }
+ 486   1          bitrate[0] = kbps, bitrate[1] = prseg, bitrate[2] = phseg1, bitrate[3] = phseg2, bitrate[4] = sjw;
+ 487   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1294    ----
+   CODE SIZE        =   2420    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----      24
+   XDATA SIZE       =   ----      61
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

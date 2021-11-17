@@ -393,3 +393,95 @@ void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf)
 }
 
 
+/*******************************************************************************
+* 描述    : 从数组中拼接出ID，默认数组高位的第一位为扩展标志位，舍弃。
+* 输入    : array：数组， offset：ID在数组的位置
+*******************************************************************************/
+uint32 Get_ID_For_Array(uint8 *array, uint8 offset) {
+    return ((uint32) array[0 + offset] & 0x7F << 24)
+           | (uint32) (array[1 + offset] << 24)
+           | (uint32) (array[2 + offset] << 16)
+           | array[3 + offset];
+}
+
+/*******************************************************************************
+* 描述    : 将ID拆分，写入数组中，默认数组高位的第一位为扩展标志位。
+* 输入    : array：数组， offset：ID高位写入数组的位置，
+*******************************************************************************/
+void Set_Array_For_ID(uint8 *array, uint8 offset, uint32 ID, uint8 EXIDE) {
+    array[0 + offset] = (ID >> 24) | (EXIDE << 7);
+    array[1 + offset] = (ID >> 16) & 0xFF;
+    array[2 + offset] = (ID >> 8) & 0xFF;
+    array[3 + offset] = ID & 0xFF;
+}
+
+/*******************************************************************************
+* 描述    : 从mcp2515寄存器中读取并拼接出ID，扩展标志位设置为ID首位。
+* 输入    : buf_addr：mcp2515寄存器SIDH的地址
+*******************************************************************************/
+uint32 Get_ID_For_Buf(uint8 buf_addr) {
+    uint8 SIDL = MCP2515_ReadByte(buf_addr + 1);
+
+    uint32 SID = ((uint32) MCP2515_ReadByte(buf_addr) << 3) | (SIDL >> 5);
+    uint32 EID = (uint32) (SIDL & 3) << 16
+                 | ((uint32) MCP2515_ReadByte(buf_addr + 2) << 8)
+                 | MCP2515_ReadByte(buf_addr + 3);
+    // EID有数值或是扩展帧
+    if (EID || (SIDL & 0x8)) {
+        return SID << 18 | EID;
+    } else {
+        return SID;
+    }
+}
+
+/*******************************************************************************
+* 描述    : 将ID拆分写入到mcp2515寄存器中
+* 输入    : buf_addr：mcp2515寄存器SIDH的地址， ID， 以及扩展标志位
+*******************************************************************************/
+void Set_Buf_For_ID(uint8 buf_addr, uint32 ID, uint8 EXIDE) {
+    if ((ID > 0x7FF) || EXIDE) {
+        MCP2515_WriteByte(buf_addr, ID >> 21);               //SIDH
+        MCP2515_WriteByte(buf_addr + 1, (ID >> 18 & 0x07) << 5 | (ID >> 16 & 0x03) | 0x08);      //SIDL
+        MCP2515_WriteByte(buf_addr + 2, ID >> 8 & 0xFF);     //EID8
+        MCP2515_WriteByte(buf_addr + 3, ID & 0xFF);          //EID0
+    } else {
+        MCP2515_WriteByte(buf_addr, ID >> 3);                //SIDH
+        MCP2515_WriteByte(buf_addr + 1, (ID & 0x07) << 5);   //SIDL
+        MCP2515_WriteByte(buf_addr + 2, 0);                  //EID8
+        MCP2515_WriteByte(buf_addr + 3, 0);                  //EID0
+    }
+}
+
+/*******************************************************************************
+* 描述    : 设置比特率数组
+* 说明    : MCP2515波特率	根据树莓派特点，要考虑FOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
+*******************************************************************************/
+void Set_Bitrate_Array(uint8 _5Kbps, uint8 *bitrate) {
+    uint8 kbps, prseg, phseg1, phseg2, sjw;
+    switch (_5Kbps * 5) {
+        case 5:
+            kbps = CAN_5Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break;
+        case 10:
+            kbps = CAN_10Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break;
+        case 25:
+            kbps = CAN_25Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break;
+        case 50:
+            kbps = CAN_50Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break;
+        case 100:
+            kbps = CAN_100Kbps, prseg = PRSEG_8TQ, phseg1 = PHSEG1_8TQ, phseg2 = PHSEG2_3TQ, sjw = SJW_1TQ;
+            break;
+        case 125:
+            kbps = CAN_125Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break;
+        case 250:
+            kbps = CAN_250Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+            break;
+        default : /* 默认取500Kbps */
+            kbps = CAN_500Kbps, prseg = PRSEG_2TQ, phseg1 = PHSEG1_3TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
+    }
+    bitrate[0] = kbps, bitrate[1] = prseg, bitrate[2] = phseg1, bitrate[3] = phseg2, bitrate[4] = sjw;
+}

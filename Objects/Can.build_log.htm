@@ -25,21 +25,48 @@ Project File Date:  10/25/2021
 Rebuild target 'Target 1'
 assembling STARTUP.A51...
 compiling main.c...
-main.c(303): warning C280: 'i': unreferenced local variable
-main.c(414): warning C280: 'E2_data': unreferenced local variable
+main.c(161): warning C275: expression with possibly no effect
+main.c(169): warning C275: expression with possibly no effect
+main.c(174): warning C182: pointer to different objects
+main.c(176): warning C182: pointer to different objects
+main.c(228): warning C182: pointer to different objects
+main.c(482): warning C182: pointer to different objects
+main.c(483): warning C182: pointer to different objects
+main.c(500): warning C182: pointer to different objects
+main.c(514): warning C182: pointer to different objects
+main.c(525): warning C182: pointer to different objects
+main.c(526): warning C182: pointer to different objects
+main.c(527): warning C182: pointer to different objects
+main.c(528): warning C182: pointer to different objects
+main.c(529): warning C182: pointer to different objects
+main.c(531): warning C182: pointer to different objects
+main.c(532): warning C182: pointer to different objects
+main.c(533): warning C182: pointer to different objects
+main.c(534): warning C182: pointer to different objects
+main.c(535): warning C182: pointer to different objects
+main.c(536): warning C182: pointer to different objects
+main.c(537): warning C182: pointer to different objects
+main.c(538): warning C182: pointer to different objects
+main.c(577): warning C209: '_Printf_Cfg': too few actual parameters
+main.c(557): warning C280: 'E2_data': unreferenced local variable
+main.c(604): warning C294: unreachable code
 compiling MCP2515.c...
 compiling UART.c...
 compiling I2C_ROM.c...
 linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_RECEIVE?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_PRINTE2WRITE?MAIN
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_CAN_RECEIVE_BUFFER?MCP2515
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_SET_BUF_FOR_ID?MCP2515
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_UART_SEND_BUFFER?UART
-Program Size: data=23.4 xdata=156 code=7537
+Program Size: data=23.4 xdata=186 code=9779
 creating hex file from ".\Objects\Can"...
-".\Objects\Can" - 0 Error(s), 5 Warning(s).
+".\Objects\Can" - 0 Error(s), 30 Warning(s).
 Build Time Elapsed:  00:00:01
 </pre>
 </body>

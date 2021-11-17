@@ -17,6 +17,14 @@ extern void Can_Init(CanCfgStruct *CanCfg);
 extern void CAN_Send_buffer(uint32 ID,uint8 EXIDE,uint8 DLC,uint8 *Send_data);
 extern void CAN_Receive_Buffer(uint8 RXB_CTRL_Address,uint8 *CAN_RX_Buf);
 
+// ID×ª»¯Ä£¿é
+extern uint32 Get_ID_For_Array(uint8 *array, uint8 offset);
+extern void Set_Array_For_ID(uint8 *array, uint8 offset, uint32 ID, uint8 EXIDE);
+extern uint32 Get_ID_For_Buf(uint8 buf_addr);
+extern void Set_Buf_For_ID(uint8 buf_addr, uint32 ID, uint8 EXIDE);
+
+extern void Set_Bitrate_Array(uint8 _5Kbps, uint8 *bitrate);
+
 // ´æ´¢Ä£¿é
 extern void E2Read(unsigned char *buf, unsigned char addr, unsigned char len);
 extern void E2Write(unsigned char *buf, unsigned char addr, unsigned char len);
@@ -32,45 +40,29 @@ bool CAN_RX0IF_Flag = false;                        //MCP2515½ÓÊÕ»º³åÆ÷0 ÂúÖĞ¶Ï±
 
 uint8 main_status = 0;
 
-
-char putchar(char c)  //printfº¯Êı»áµ÷ÓÃputchar()
+/*******************************************************************************
+* ÃèÊö    : ÖØ¶¨Ïòputchar, ½«printfº¯Êı´òÓ¡µ½´®¿ÚÖĞ¡£
+*******************************************************************************/
+char putchar(char c)
 {
     UART_send_str(c);
     return c;
 }
 
-////MCP2515²¨ÌØÂÊ	Òª¿¼ÂÇFOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-//uint8 code bitrate_5Kbps[5] = {CAN_5Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-//uint8 code bitrate_10Kbps[5] = {CAN_10Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-//uint8 code bitrate_25Kbps[5] = {CAN_25Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-//uint8 code bitrate_50Kbps[5] = {CAN_50Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-//uint8 code bitrate_100Kbps[5] = {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ};
-//uint8 code bitrate_125Kbps[5] = {CAN_125Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-//uint8 code bitrate_250Kbps[5] = {CAN_250Kbps,PRSEG_6TQ,PHSEG1_7TQ,PHSEG2_2TQ,SJW_1TQ};
-//uint8 code bitrate_500Kbps[5] = {CAN_500Kbps,PRSEG_2TQ,PHSEG1_3TQ,PHSEG2_2TQ,SJW_1TQ};
-
-
 /*******************************************************************************
 * º¯ÊıÃû  : Exint_Init
 * ÃèÊö    : Íâ²¿ÖĞ¶Ï1³õÊ¼»¯º¯Êı
-* ÊäÈë    : ÎŞ
-* Êä³ö    : ÎŞ
-* ·µ»ØÖµ  : ÎŞ
-* ËµÃ÷    : ÎŞ
 *******************************************************************************/
 void Exint_Init(void) {
-    PX1 = 1;        //ÉèÖÃÍâ²¿ÖĞ¶Ï1µÄÖĞ¶ÏÓÅÏÈ¼¶Îª¸ßÓÅÏÈ¼¶
+    PX1 = 1;    //ÉèÖÃÍâ²¿ÖĞ¶Ï1µÄÖĞ¶ÏÓÅÏÈ¼¶Îª¸ßÓÅÏÈ¼¶
     IT1 = 1;    //ÉèÖÃINT1µÄÖĞ¶ÏÀàĞÍ (1:½öÏÂ½µÑØ 0:ÉÏÉıÑØºÍÏÂ½µÑØ)
     EX1 = 1;    //Ê¹ÄÜINT1ÖĞ¶Ï
-    EA = 1;    //Ê¹ÄÜ×ÜÖĞ¶Ï
+    EA = 1;     //Ê¹ÄÜ×ÜÖĞ¶Ï
 }
 
 /*******************************************************************************
 * º¯ÊıÃû  : Exint_ISR
 * ÃèÊö    : Íâ²¿ÖĞ¶Ï1ÖĞ¶Ï·şÎñº¯Êı µ¥Æ¬»úÒı½ÅP3.3½ÓMCP2515 INTÒı½Å
-* ÊäÈë    : ÎŞ
-* Êä³ö    : ÎŞ
-* ·µ»ØÖµ  : ÎŞ
 * ËµÃ÷    : ÓÃÓÚ¼ì²âMCP2515ÖĞ¶ÏÒı½ÅµÄÖĞ¶ÏĞÅºÅ
 *******************************************************************************/
 void Exint_ISR(void) interrupt 2 using 1
@@ -88,16 +80,20 @@ void Exint_ISR(void) interrupt 2 using 1
     if (Flag&0x01) CAN_RX0IF_Flag = true;                           //MCP2515½ÓÊÕ»º³åÆ÷0 ÂúÖĞ¶Ï±êÖ¾Î»
 }
 
-void ShowMsg(MsgStruct *Msg) {
+/*******************************************************************************
+* ÃèÊö    : ½«msg´òÓ¡³öÀ´
+* ÊäÈë    : Msg½á¹¹Ìå
+*******************************************************************************/
+void Printf_Msg(MsgStruct *Msg) {
     uint8 i;
     uint32 ID = Msg->ID;
     uint8 EXIDE = Msg->EXIDE;
     uint8 DLC = Msg->DLC;
 
     if (Msg->IsSend) {
-        printf("Can send    ");
+        printf("send ");
     } else {
-        printf("Can recevie ");
+        printf("rec  ");
     }
 
     if (EXIDE) {
@@ -113,18 +109,38 @@ void ShowMsg(MsgStruct *Msg) {
     printf("\r\n");
 }
 
-/* ½«ĞèÒª·¢ËÍµÄÊı¾İ ×ª·¢µ½uart */
+/* ÉèÖÃµ÷ÊÔ±êÖ¾Î»£¬½«ĞèÒª·¢ËÍµÄÊı¾İ ×ª·¢µ½uart */
 void Send(MsgStruct *SendMsg) {
     uint32 ID = SendMsg->ID;
     uint8 EXIDE = SendMsg->EXIDE;
-    uint8 DLC = SendMsg->DLC;
+    uint8 DLC = SendMsg->DLC | (SendMsg->RTR << 6);
     CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
+}
+
+
+/*******************************************************************************
+* ÃèÊö    : Í¨¹ıCan msgÉèÖÃCANÅäÖÃ,
+* data[0]±£Áô±êÖ¾Î»£¬
+* data[1]:addr, 2: data_len, [3:7]:data_arr
+* ËµÃ÷    : ÉèÖÃÍê³ÉºóĞèÏÂ·¢³õÊ¼»¯Ê¹ÄÜĞÅºÅ¡£
+* ³õ²½Ä£¿é¼òµ¥ÉèÖÃ
+*******************************************************************************/
+void msg_set_E2(uint8 *msg_data) {
+    uint8 i;
+    uint8 addr = msg_data[1];
+    uint8 len = msg_data[2];
+    uint8 array[8];
+    for (i = 0; i < len; i++) //·¢ËÍ×Ö·û´®£¬Ö±µ½Óöµ½0²Å½áÊø
+        {
+        array[i] = msg_data[i+3];
+        }
+    E2Write(array, addr, len + 3);
 }
 
 /*******************************************************************************
 * ÃèÊö    : ½ÓÊÕµ½ĞÅÏ¢ºó,¸ù¾İ×´Ì¬½øĞĞ·´Ó¦
 * ÊäÈë    : msg
-* ËµÃ÷    : ÓÃÓÚ¼ì²âMCP2515ÖĞ¶ÏÒı½ÅµÄÖĞ¶ÏĞÅºÅ
+* ËµÃ÷    : Éè¼ÆÃ¤Ó¦´ğÄ£Ê½£¬ Í³Ò»Ò»¸öID£¬ÉÏ±¨ºÍµ÷ÊÔ£¬·½±ã²éÕÒÉè±¸
 *******************************************************************************/
 void action_rec_msg(MsgStruct *RecMsg) {
     if (RecMsg->FILHIT == 0) {  // ÂË²¨Æ÷0H ½øĞĞ ÅäÖÃĞÅÏ¢
@@ -157,7 +173,9 @@ void action_rec_msg(MsgStruct *RecMsg) {
             RecMsg->RTR = 1; // Ó¦´ğÄ£Ê½Éè¼ÆÎªÔ¶³ÌÖ¡£¬ ½â¾ö»Ø»·Ä£Ê½ÖØ¸´·¢ËÍÎÊÌâ
             Send(&RecMsg);
         }
-        ShowMsg(&RecMsg);
+        Printf_Msg(&RecMsg);
+    } else if (RecMsg->FILHIT == 5) {  // ÂË²¨Æ÷5H Ã¤Ó¦´ğÄ£Ê½
+        return;
     } else {  // GPIO ÉèÖÃ
         return;
     }
@@ -168,72 +186,49 @@ void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
     uint8 i;
 
     uint8 RXBnCTRL = MCP2515_ReadByte(RXB_CTRL_Address);
+    uint8 RXBnDLC = MCP2515_ReadByte(RXB_CTRL_Address + 5);
+    RecMsg->DLC = RXBnDLC & 0x0F;
+    RecMsg->RTR = RXBnDLC >> 6;
+
     if (RXB_CTRL_Address == RXB0CTRL) {
         RecMsg->FILHIT = RXBnCTRL & 0x3;
     } else {
         RecMsg->FILHIT = RXBnCTRL & 0x7;
     }
 
-    uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
-    uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
-    uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
-    uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
-    uint8 RXBnDLC = MCP2515_ReadByte(RXB_CTRL_Address + 5);
+    RecMsg->ID = Get_ID_For_Buf(RXB_CTRL_Address + 1);
+    RecMsg->EXIDE = (MCP2515_ReadByte(RXB_CTRL_Address + 2) & 0x8) >> 3;
 
-    RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // À©Õ¹±êÊ¶·û±êÖ¾Î» 1 = ÊÕµ½µÄ±¨ÎÄÊÇÀ©Õ¹Ö¡, 0 = ÊÕµ½µÄ±¨ÎÄÊÇ±ê×¼Ö¡
-    RecMsg->DLC = RXBnDLC & 0x0F;
 
-    if (RecMsg->EXIDE) {
-        uint32 SID = (RXBnSIDH << 3) | (RXBnSIDL >> 5);
-        uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8 << 8) | RXBnEID0;
-        RecMsg->ID = SID << 18 | EID;
-    } else {
-        uint32 SID = (RXBnSIDH << 3) | (RXBnSIDL >> 5);
-        RecMsg->ID = SID;
-    }
+
+
+//    uint8 RXBnSIDH = MCP2515_ReadByte(RXB_CTRL_Address + 1);
+//    uint8 RXBnSIDL = MCP2515_ReadByte(RXB_CTRL_Address + 2);
+//    uint8 RXBnEID8 = MCP2515_ReadByte(RXB_CTRL_Address + 3);
+//    uint8 RXBnEID0 = MCP2515_ReadByte(RXB_CTRL_Address + 4);
+//    uint8 RXBnDLC = MCP2515_ReadByte(RXB_CTRL_Address + 5);
+//
+//    RecMsg->EXIDE = (RXBnSIDL & 0x8) >> 3;  // À©Õ¹±êÊ¶·û±êÖ¾Î» 1 = ÊÕµ½µÄ±¨ÎÄÊÇÀ©Õ¹Ö¡, 0 = ÊÕµ½µÄ±¨ÎÄÊÇ±ê×¼Ö¡
+//    RecMsg->DLC = RXBnDLC & 0x0F;
+//
+//    if (RecMsg->EXIDE) {
+//        uint32 SID = (RXBnSIDH << 3) | (RXBnSIDL >> 5);
+//        uint32 EID = (RXBnSIDL & 3) << 16 | (RXBnEID8 << 8) | RXBnEID0;
+//        RecMsg->ID = SID << 18 | EID;
+//    } else {
+//        uint32 SID = (RXBnSIDH << 3) | (RXBnSIDL >> 5);
+//        RecMsg->ID = SID;
+//    }
 
     for (i = 0; i < RecMsg->DLC; i++) //»ñÈ¡½ÓÊÕµ½µÄÊı¾İ
     {
         RecMsg->DATA[i] = MCP2515_ReadByte(RXB_CTRL_Address + 6 + i);
     }
-
-    action_rec_msg(&RecMsg)
+    // ¸ù¾İ½ÓÊÕµÄmsg, ½øĞĞ¶¯×÷
+    action_rec_msg(&RecMsg);
 }
 
-/*******************************************************************************
-* ÃèÊö    : ÉèÖÃ±ÈÌØÂÊ
-* ËµÃ÷    : MCP2515²¨ÌØÂÊ	¸ù¾İÊ÷İ®ÅÉÌØµã£¬Òª¿¼ÂÇFOSC=8M BRP=0..64 PRSEG=1..8 PHSEG1=3..16 PHSEG2=2..8 SJW=1..4
-*******************************************************************************/
-void SetBitrate(uint8 _5Kbps, uint8 *bitrate){
-    uint8 kbps, prseg, phseg1, phseg2, sjw;
-    switch (_5Kbps * 5) {
-        case 5:
-            kbps = CAN_5Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
-        case 10:
-            kbps = CAN_10Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
-        case 25:
-            kbps = CAN_25Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
-        case 50:
-            kbps = CAN_50Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
-        case 100:
-            kbps = CAN_100Kbps, prseg = PRSEG_8TQ, phseg1 = PHSEG1_8TQ, phseg2 = PHSEG2_3TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
-        case 125:
-            kbps = CAN_125Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
-        case 250:
-            kbps = CAN_250Kbps, prseg = PRSEG_6TQ, phseg1 = PHSEG1_7TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-            break; /* ¿ÉÑ¡µÄ */
 
-        default : /* ¿ÉÑ¡µÄ */
-            kbps = CAN_500Kbps, prseg = PRSEG_2TQ, phseg1 = PHSEG1_3TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ;
-    }
-    bitrate[0] = kbps, bitrate[1] = prseg, bitrate[2] = phseg1, bitrate[3] = phseg2, bitrate[4] = sjw;
-}
 
 void printE2Write(uint8 *E2_data, uint8 add, uint8 Len) {
     uint8 i;
@@ -245,25 +240,7 @@ void printE2Write(uint8 *E2_data, uint8 add, uint8 Len) {
     printf("\r\n");
 }
 
-/*******************************************************************************
-* ÃèÊö    : Í¨¹ıCan msgÉèÖÃCANÅäÖÃ,
- * data[0]±£Áô±êÖ¾Î»£¬
- * data[1]:addr, 2: data_len, [3:7]:data_arr
-* ËµÃ÷    : ÉèÖÃÍê³ÉºóĞèÏÂ·¢³õÊ¼»¯Ê¹ÄÜĞÅºÅ¡£
- * ³õ²½Ä£¿é¼òµ¥ÉèÖÃ
-*******************************************************************************/
-void msg_set_E2(uint8 *msg_data) {
-    uint8 i;
-    uint8 addr = msg_data[1];
-    uint8 len = msg_data[2];
-    uint8 data[len];
-    for (i = 0; i < len; i++) //·¢ËÍ×Ö·û´®£¬Ö±µ½Óöµ½0²Å½áÊø
-    {
-        data[i] = msg_data[i+3];
-    }
-    E2Write(data, addr, len);
-}
-
+// ±¾µØµ÷ÊÔÊ¹ÓÃ
 void SaveCfgToE2(CanCfgStruct *CanCfg) {
     uint8 E2_data[8];
 //    uint8 read_data[8];
@@ -278,114 +255,90 @@ void SaveCfgToE2(CanCfgStruct *CanCfg) {
     E2Write(E2_data, E2_CanCifg, 7);
 //    printE2Write(E2_data, E2_CanCifg, 7);
 
-    //    ÉèÖÃÆÁ±ÎÆ÷0    E2_data[0] = CanCfg->RXM0ID >> 24;
-    E2_data[1] = (CanCfg->RXM0ID >> 16) & 0xFF;
-    E2_data[2] = (CanCfg->RXM0ID >> 8) & 0xFF;
-    E2_data[3] = CanCfg->RXM0ID & 0xFF;
-    //    ÉèÖÃÆÁ±ÎÆ÷1
-    E2_data[4] = CanCfg->RXM0ID >> 24;
-    E2_data[5] = (CanCfg->RXM0ID >> 16) & 0xFF;
-    E2_data[6] = (CanCfg->RXM0ID >> 8) & 0xFF;
-    E2_data[7] = CanCfg->RXM0ID & 0xFF;
+    //  ÉèÖÃÆÁ±ÎÆ÷0 1
+    Set_Array_For_ID(E2_data, 0, CanCfg->RXM0ID, 0);
+    Set_Array_For_ID(E2_data, 4, CanCfg->RXM1ID, 0);
     E2Write(E2_data, E2_RXM01ID, 8);
 //    printE2Write(E2_data, E2_RXM01ID, 8);
 
     // ÂË²¨Æ÷0¡¢1£¬ Ê×Î»ÎªÀ©Õ¹Ö¡±êÖ¾Î»
-    E2_data[0] = CanCfg->RXF0ID >> 24 | (CanCfg->RXF0IDE << 7);
-    E2_data[1] = (CanCfg->RXF0ID >> 16) & 0xFF;
-    E2_data[2] = (CanCfg->RXF0ID >> 8) & 0xFF;
-    E2_data[3] = CanCfg->RXF0ID & 0xFF;
-    E2_data[4] = (CanCfg->RXF1ID >> 24) | (CanCfg->RXF1IDE << 7);
-    E2_data[5] = (CanCfg->RXF1ID >> 16) & 0xFF;
-    E2_data[6] = (CanCfg->RXF1ID >> 8) & 0xFF;
-    E2_data[7] = CanCfg->RXF1ID & 0xFF;
+    Set_Array_For_ID(E2_data, 0, CanCfg->RXF0ID, CanCfg->RXF0IDE);
+    Set_Array_For_ID(E2_data, 4, CanCfg->RXF1ID, CanCfg->RXF1IDE);
     E2Write(E2_data, E2_RXF01, 8);
 //    printE2Write(E2_data, E2_RXF01, 8);
 
     // ÂË²¨Æ÷2¡¢3
-    E2_data[0] = CanCfg->RXF2ID >> 24 | (CanCfg->RXF2IDE << 7);
-    E2_data[1] = (CanCfg->RXF2ID >> 16) & 0xFF;
-    E2_data[2] = (CanCfg->RXF2ID >> 8) & 0xFF;
-    E2_data[3] = CanCfg->RXF2ID & 0xFF;
-    E2_data[4] = (CanCfg->RXF3ID >> 24) | (CanCfg->RXF3IDE << 7);
-    E2_data[5] = (CanCfg->RXF3ID >> 16) & 0xFF;
-    E2_data[6] = (CanCfg->RXF3ID >> 8) & 0xFF;
-    E2_data[7] = CanCfg->RXF3ID & 0xFF;
+    Set_Array_For_ID(E2_data, 0, CanCfg->RXF2ID, CanCfg->RXF2IDE);
+    Set_Array_For_ID(E2_data, 4, CanCfg->RXF3ID, CanCfg->RXF3IDE);
     E2Write(E2_data, E2_RXF23, 8);
 //    printE2Write(E2_data, E2_RXF23, 8);
 
     // ÂË²¨Æ÷4¡¢5
-    E2_data[0] = CanCfg->RXF4ID >> 24 | (CanCfg->RXF4IDE << 7);
-    E2_data[1] = (CanCfg->RXF4ID >> 16) & 0xFF;
-    E2_data[2] = (CanCfg->RXF4ID >> 8) & 0xFF;
-    E2_data[3] = CanCfg->RXF4ID & 0xFF;
-    E2_data[4] = (CanCfg->RXF5ID >> 24) | (CanCfg->RXF5IDE << 7);
-    E2_data[5] = (CanCfg->RXF5ID >> 16) & 0xFF;
-    E2_data[6] = (CanCfg->RXF5ID >> 8) & 0xFF;
-    E2_data[7] = CanCfg->RXF5ID & 0xFF;
+    Set_Array_For_ID(E2_data, 0, CanCfg->RXF4ID, CanCfg->RXF4IDE);
+    Set_Array_For_ID(E2_data, 4, CanCfg->RXF5ID, CanCfg->RXF5IDE);
     E2Write(E2_data, E2_RXF45, 8);
+//    E2_data[0] = CanCfg->RXF4ID >> 24 | (CanCfg->RXF4IDE << 7);
+//    E2_data[1] = (CanCfg->RXF4ID >> 16) & 0xFF;
+//    E2_data[2] = (CanCfg->RXF4ID >> 8) & 0xFF;
+//    E2_data[3] = CanCfg->RXF4ID & 0xFF;
+//    E2_data[4] = (CanCfg->RXF5ID >> 24) | (CanCfg->RXF5IDE << 7);
+//    E2_data[5] = (CanCfg->RXF5ID >> 16) & 0xFF;
+//    E2_data[6] = (CanCfg->RXF5ID >> 8) & 0xFF;
+//    E2_data[7] = CanCfg->RXF5ID & 0xFF;
+//    E2Write(E2_data, E2_RXF45, 8);
 //    printE2Write(E2_data, E2_RXF45, 8);
 }
 
-//void PrintfCfg(CanCfgStruct *CanCfg) {
-//    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
-//    printf("bitrate[0]: %02bX \r\n", CanCfg->bitrate[0]);
-//    printf("bitrate[1]: %02bX \r\n", CanCfg->bitrate[1]);
-//    printf("bitrate[2]: %02bX \r\n", CanCfg->bitrate[2]);
-//    printf("bitrate[3]: %02bX \r\n", CanCfg->bitrate[3]);
-//    printf("bitrate[4]: %02bX \r\n", CanCfg->bitrate[4]);
-//    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
-//    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
-//
-//    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
-//    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
-//
-//    printf("RXM0ID: %08lX \r\n", CanCfg->RXM0ID);
-//    printf("RXM1ID: %08lX \r\n", CanCfg->RXM1ID);
-//    printf("RXF0ID: %07lX \r\n", CanCfg->RXF0ID);
-//    printf("RXF1ID: %07lX \r\n", CanCfg->RXF1ID);
-//    printf("RXF2ID: %07lX \r\n", CanCfg->RXF2ID);
-//    printf("RXF3ID: %07lX \r\n", CanCfg->RXF3ID);
-//    printf("RXF4ID: %07lX \r\n", CanCfg->RXF4ID);
-//    printf("RXF5ID: %07lX \r\n", CanCfg->RXF5ID);
-//
-//    printf("RXF0IDE: %bX \r\n", CanCfg->RXF0IDE);
-//    printf("RXF1IDE: %bX \r\n", CanCfg->RXF1IDE);
-//    printf("RXF2IDE: %bX \r\n", CanCfg->RXF2IDE);
-//    printf("RXF3IDE: %bX \r\n", CanCfg->RXF3IDE);
-//    printf("RXF4IDE: %bX \r\n", CanCfg->RXF4IDE);
-//    printf("RXF5IDE: %bX \r\n", CanCfg->RXF5IDE);
+void Printf_Cfg(CanCfgStruct *CanCfg) {
+    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
+    printf("bitrate: %02bX %02bX %02bX %02bX %02bX\r\n", CanCfg->bitrate[0],
+           CanCfg->bitrate[1], CanCfg->bitrate[2], CanCfg->bitrate[3], CanCfg->bitrate[4]);
+
+    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
+    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
+
+    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
+    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
+
+    printf("RXBnRXM0-1: %02bX %02bX\r\n", CanCfg->RXB0RXM, CanCfg->RXB1RXM);
+
+    printf("RXMnID0-1: %08lX %08lX\r\n", CanCfg->RXM0ID, CanCfg->RXM1ID);
+    printf("RXFnID0-5: %07lX %07lX %07lX %07lX %07lX\r\n", CanCfg->RXF0ID, CanCfg->RXF1ID, CanCfg->RXF2ID,
+           CanCfg->RXF3ID, CanCfg->RXF4ID, CanCfg->RXF5ID);
+
+    printf("RXFnIDE0-5: %bX %bX %bX %bX %bX\r\n", CanCfg->RXF0IDE, CanCfg->RXF1IDE, CanCfg->RXF2IDE, CanCfg->RXF3IDE,
+           CanCfg->RXF4IDE, CanCfg->RXF5IDE);
+}
+
+///*******************************************************************************
+//* ÃèÊö    : ½«Êı×éÖĞµÄÊı¾İ£¬Æ´½ÓÍêÕûID£¬³¤¶ÈÈ¡4
+//* ÊäÈë    : uint8 Êı×é
+//* ËµÃ÷    : ÎŞ
+//*******************************************************************************/
+//uint32 GetInt32FormE2(uint8 *buf, uint8 addr) {
+//    if (buf[1 + addr] & 0x8 >> 3) {
+//        uint32 SID = ((uint32) buf[0 + addr] << 3) | (buf[1 + addr] >> 5);
+//        uint32 EID = (uint32) (buf[1 + addr] & 3) << 16 | ((uint32) buf[2 + addr] << 8) | buf[3 + addr];
+//        return SID << 18 | EID;
+//    } else {
+//        uint32 SID = (uint32) (buf[0 + addr] << 3) | (buf[1 + addr] >> 5);
+//        return SID;
+//    }
 //}
 
-/*******************************************************************************
-* ÃèÊö    : ½«Êı×éÖĞµÄÊı¾İ£¬Æ´½ÓÍêÕûID£¬³¤¶ÈÈ¡4
-* ÊäÈë    : uint8 Êı×é
-* ËµÃ÷    : ÎŞ
-*******************************************************************************/
-uint32 GetInt32FormE2(uint8 *buf, uint8 addr) {
-    if (buf[1 + addr] & 0x8) {
-        uint32 SID = ((uint32) buf[0 + addr] << 3) | (buf[1 + addr] >> 5);
-        uint32 EID = (uint32) (buf[1 + addr] & 3) << 16 | ((uint32) buf[2 + addr] << 8) | buf[3 + addr];
-        return SID << 18 | EID;
-    } else {
-        uint32 SID = (uint32) (buf[0 + addr] << 3) | (buf[1 + addr] >> 5);
-        return SID;
-    }
-}
 
 /*******************************************************************************
 * ÃèÊö    : Í¨¹ı¶ÁÈ¡´æ´¢Êı¾İ£¬ÉèÖÃCanÅäÖÃ
 * ÊäÈë    : CanÅäÖÃ½á¹¹Ìå
-* ËµÃ÷    : ÒÀÀµGetInt32FormE2Æ´½Ó³öÍêÕûID£¬ Ê×Î»×öÍØÕ¹±êÖ¾Î»
+* ËµÃ÷    : ÒÀÀµGetInt32FormE2Æ´½Ó³öÍêÕûID£¬ Ê×Î»×öÀ©Õ¹±êÖ¾Î»
 *******************************************************************************/
-void SetCfgFromE2(CanCfgStruct *CanCfg) {
-//    uint8 i;
+void Set_Cfg_From_E2(CanCfgStruct *CanCfg) {
     uint8 E2_read_data[8];
 
     //  ÉèÖÃ²¨ÌØÂÊ
-    E2Read(E2_read_data, E2_CanCifg, sizeof(E2_read_data));  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
+    E2Read(E2_read_data, E2_CanCifg, 8);  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
     CanCfg->_5Kbps = E2_read_data[E2_5Kbps];
-    SetBitrate(CanCfg->_5Kbps, &(CanCfg->bitrate));
+    Set_Bitrate_Array(CanCfg->_5Kbps, &(CanCfg->bitrate));
     //  ÉèÖÃ¹ö´æÊ¹ÄÜÎ»¡¢¹¤×÷Ä£Ê½¡¢ÖĞ¶ÏÊ¹ÄÜÎ»¡¢ÖĞ¶Ï±êÖ¾Î»
     CanCfg->BUKT_enable = E2_read_data[E2_BUKT_enable];
     CanCfg->CAN_MODE = E2_read_data[E2_CAN_MODE];      // 0:Õı³£ 1:ĞİÃß 2:»·»Ø 3:¼àÌı 4:ÅäÖÃ
@@ -393,28 +346,28 @@ void SetCfgFromE2(CanCfgStruct *CanCfg) {
     CanCfg->CANINTF_enable = E2_read_data[E2_CANINTF_enable];
 
     //  ÉèÖÃÆÁ±ÎÆ÷
-    E2Read(E2_read_data, E2_RXM01ID, sizeof(E2_read_data));  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
-    CanCfg->RXM0ID = GetInt32FormE2(E2_read_data, 0);
-    CanCfg->RXM1ID = GetInt32FormE2(E2_read_data, 4);
+    E2Read(E2_read_data, E2_RXM01ID, 8);  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
+    CanCfg->RXM0ID = Get_ID_For_Array(E2_read_data, 0);
+    CanCfg->RXM1ID = Get_ID_For_Array(E2_read_data, 4);
 
     //  ÂË²¨Æ÷0¡¢1
-    E2Read(E2_read_data, E2_RXF01, sizeof(E2_read_data));  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
-    CanCfg->RXF0IDE = E2_read_data[1] << 4 >> 7;
-    CanCfg->RXF0ID = GetInt32FormE2(E2_read_data, 0);
-    CanCfg->RXF1IDE = E2_read_data[4] << 4 >> 7;
-    CanCfg->RXF1ID = GetInt32FormE2(E2_read_data, 4);
+    E2Read(E2_read_data, E2_RXF01, 8);  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
+    CanCfg->RXF0IDE = E2_read_data[1] & 0x8 >> 3;
+    CanCfg->RXF0ID = Get_ID_For_Array(E2_read_data, 0);
+    CanCfg->RXF1IDE = E2_read_data[4] & 0x8 >> 3;
+    CanCfg->RXF1ID = Get_ID_For_Array(E2_read_data, 4);
     //  ÂË²¨Æ÷0¡¢3
-    E2Read(E2_read_data, E2_RXF23, sizeof(E2_read_data));  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
-    CanCfg->RXF2IDE = E2_read_data[0] << 4 >> 7;
-    CanCfg->RXF2ID = GetInt32FormE2(E2_read_data, 0);
-    CanCfg->RXF3IDE = E2_read_data[4] << 4 >> 7;
-    CanCfg->RXF3ID = GetInt32FormE2(E2_read_data, 4);
+    E2Read(E2_read_data, E2_RXF23, 8);  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
+    CanCfg->RXF2IDE = E2_read_data[0] & 0x8 >> 3;
+    CanCfg->RXF2ID = Get_ID_For_Array(E2_read_data, 0);
+    CanCfg->RXF3IDE = E2_read_data[4] & 0x8 >> 3;
+    CanCfg->RXF3ID = Get_ID_For_Array(E2_read_data, 4);
     //  ÂË²¨Æ÷0¡¢5
-    E2Read(E2_read_data, E2_RXF45, sizeof(E2_read_data));  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
-    CanCfg->RXF4IDE = E2_read_data[0] << 4 >> 7;
-    CanCfg->RXF4ID = GetInt32FormE2(E2_read_data, 0);
-    CanCfg->RXF5IDE = E2_read_data[4] << 4 >> 7;
-    CanCfg->RXF5ID = GetInt32FormE2(E2_read_data, 4);
+    E2Read(E2_read_data, E2_RXF45, 8);  // ´Ó EEPROM ¶ÁÈ¡Ò»¶ÎÊı¾İ
+    CanCfg->RXF4IDE = E2_read_data[0] & 0x8 >> 3;
+    CanCfg->RXF4ID = Get_ID_For_Array(E2_read_data, 0);
+    CanCfg->RXF5IDE = E2_read_data[4] & 0x8 >> 3;
+    CanCfg->RXF5ID = Get_ID_For_Array(E2_read_data, 4);
 }
 
 
@@ -424,28 +377,37 @@ void SetCfgFromE2(CanCfgStruct *CanCfg) {
 * ËµÃ÷    : ²¨ÌØÂÊÅäÖÃÊı×éÄ¬ÈÏ²ÉÓÃÊ÷İ®ÅÉÉÏµÄ×éºÏ£¬±£Áôµ¥Î» 5Kbps
 *******************************************************************************/
 void save_mcp2515_to_E2(void) {
-    uint8 E2_data[4];
+    uint8 E2_data[8];
     uint8 i;
-    uint8 tmp_data;
+    uint8 offfset;
 
-    E2_data[E2_5Kbps] = CanCfg->_5Kbps;
+    uint8 tmp_data;
+    uint8 EXIDE;
+    uint32 ID;
+    // ÏÈ¶ÁÒ»´Î£¬±£Áô²¨ÌØÂÊĞÅÏ¢£¬²¨ÌØÂÊĞÅÏ¢Ö»ÄÜÍ¨¹ıset-e2Íê³É
+    E2Read(E2_data, E2_CanCifg, 8);
+//    E2_data[E2_5Kbps] =  E2Read(E2_data, E2_CanCifg, 8)[0];
     tmp_data = MCP2515_ReadByte(RXB0CTRL);
-    E2_data[E2_BUKT_enable] = tmp_data && 0xE0);
-    E2_data[E2_RXB0RXM] = tmp_data && RXM;
-    E2_data[E2_RXB1RXM] = MCP2515_ReadByte(RXB1CTRL) && RXM;
-    E2_data[E2_CAN_MODE] = MCP2515_ReadByte(CANCTRL) && REQOP;
+    E2_data[E2_BUKT_enable] = tmp_data & 0x7 >> 2;
+    E2_data[E2_RXB0RXM] = tmp_data & RXM >> 5;
+    E2_data[E2_RXB1RXM] = MCP2515_ReadByte(RXB1CTRL) & RXM >> 5;
+    E2_data[E2_CAN_MODE] = MCP2515_ReadByte(CANCTRL) & REQOP >> 5;
     E2_data[E2_CANINTE_enable] = MCP2515_ReadByte(CANINTE);
     E2_data[E2_CANINTF_enable] = MCP2515_ReadByte(CANINTF);
     E2Write(E2_data, E2_CanCifg, 7);
 
-    // ±£´æÂË²¨Æ÷ºÍÆÁ±ÎÆ÷µÄID
+    // ±£´æÂË²¨Æ÷0-5ºÍÆÁ±ÎÆ÷0-1µÄID£¬¼°À©Õ¹Ö¡±êÖ¾Î»
     for (i = 0; i < 8; i++)
     {
-        E2_data[0] = MCP2515_ReadByte(RXF0SIDH + tmp_data * 4);
-        E2_data[1] = MCP2515_ReadByte(RXF0SIDL + tmp_data * 4);
-        E2_data[2] = MCP2515_ReadByte(RXF0EID8 + tmp_data * 4);
-        E2_data[3] = MCP2515_ReadByte(RXF0EID0 + tmp_data * 4);
-        E2Write(E2_data, E2_RXF01 + tmp_data * 4, 4);
+        offfset = tmp_data * 4;
+        EXIDE = MCP2515_ReadByte(RXF0SIDL + offfset) & 0x8 >> 3;
+        ID = Get_ID_For_Buf(RXF0SIDH + offfset);
+        Set_Array_For_ID(E2_data, offfset % 8, ID, EXIDE);
+//        E2_data[0] = MCP2515_ReadByte(RXF0SIDH + tmp_data * 4);
+//        E2_data[1] = MCP2515_ReadByte(RXF0SIDL + tmp_data * 4);
+//        E2_data[2] = MCP2515_ReadByte(RXF0EID8 + tmp_data * 4);
+//        E2_data[3] = MCP2515_ReadByte(RXF0EID0 + tmp_data * 4);
+        E2Write(E2_data, E2_RXF01 + offfset, 4);
     }
 }
 
@@ -465,7 +427,7 @@ void SetCfg(CanCfgStruct *CanCfg)
 //    CanCfg->bitrate[3] = bitrate_100Kbps[3];
 //    CanCfg->bitrate[4] = bitrate_100Kbps[4];
     CanCfg->BUKT_enable = 1;
-    CanCfg->CAN_MODE = 3;       // 000 = Éè¶¨ÎªÕı³£¹¤×÷Ä£Ê½
+    CanCfg->CAN_MODE = 2;       // 000 = Éè¶¨ÎªÕı³£¹¤×÷Ä£Ê½
                                 // 001 = Éè¶¨ÎªĞİÃßÄ£Ê½
                                 // 010 = Éè¶¨Îª»·»ØÄ£Ê½
                                 // 011 = Éè¶¨Îª½ö¼àÌıÄ£Ê½
@@ -510,47 +472,70 @@ void SetCfg(CanCfgStruct *CanCfg)
 //}
 
 /*******************************************************************************
-* º¯ÊıÃû  : power_on_init
+* º¯ÊıÃû  : ÉÏµç³õÊ¼»¯³ÌĞò
 * ÃèÊö    : ÉÏµçÅäÖÃ
-* ËµÃ÷    : ÎŞ
+* ËµÃ÷    : Éè¼ÆÉÏµç×Ô¼ì³ÌĞò£¬
 *******************************************************************************/
 void power_on_init(CanCfgStruct *CanCfg) {
-    //    ³õÊ¼ÉèÖÃÅäÖÃ
-    UART_init();    //UART1³õÊ¼»¯ÅäÖÃ
-    Exint_Init();            //Íâ²¿ÖĞ¶Ï1³õÊ¼»¯º¯Êı
     //    MCP2515_Init(bitrate_100Kbps);
 
     SetCfg(&CanCfg);
     SaveCfgToE2(&CanCfg);
 
-    SetCfgFromE2(&CanCfg);
-    //    PrintfCfg(&CanCfg);
+//    Set_Cfg_From_E2(&CanCfg);
+    //    Printf_Cfg(&CanCfg);
 
-    Can_Init(&CanCfg);
-    main_status = 1;
+//    Can_Init(&CanCfg);
 }
 
 /*******************************************************************************
-* º¯ÊıÃû  : power_on_init
-* ÃèÊö    : ÉèÖÃÅäÖÃ
-* ËµÃ÷    : ÎŞ
+* ÃèÊö    : ½«canÅäÖÃ·¢ËÍ¸øÏµÍ³
+* ËµÃ÷    :¡¡Éè¼Æ·¢ËÍÃèÊöĞÅÏ¢
 *******************************************************************************/
-void set_cancfg(CanCfgStruct *CanCfg) {
-    //    ³õÊ¼ÉèÖÃÅäÖÃ
-    UART_init();    //UART1³õÊ¼»¯ÅäÖÃ
-    Exint_Init();            //Íâ²¿ÖĞ¶Ï1³õÊ¼»¯º¯Êı
-    //    MCP2515_Init(bitrate_100Kbps);
+void send_cfg(uint32 ID, uint8 flag, uint8 EXIDE, uint8 num, MsgStruct *SendMsg) {
+    SendMsg->ID = ID;
+    SendMsg->EXIDE = EXIDE;
+    SendMsg->DATA[1] = flag;
+    SendMsg->DATA[2] = num;
+    Send(&SendMsg);
+}
 
-    SetCfg(&CanCfg);
-    //    PrintfCfg(&CanCfg);
+/*******************************************************************************
+* ÃèÊö    : ½«canÅäÖÃ·¢ËÍ¸øÏµÍ³
+* ËµÃ÷    : Éè¼Æ·¢ËÍÃèÊöĞÅÏ¢
+*******************************************************************************/
+void send_can_cfg(CanCfgStruct *CanCfg, MsgStruct *SendMsg) {
+    //¡¡ÉÏµç·´À¡£¬Éè¼ÆÎ»Ô¶³ÌÖ¡£¬³¤¶ÈÎª7
+    SendMsg->RTR = 0x1;
+    SendMsg->DLC = 0;  // ³õÊ¼ÉèÖÃÎ»0£¬¹ã²¥ÉÏµç
+    // ÓÃµÚ0¸öÂË²¨Æ÷·¢ËÍÁã³¤msg,Í¨ÖªÉÏµç
+    SendMsg->ID = CanCfg->RXF0ID;
+    SendMsg->EXIDE = CanCfg->RXF0IDE;
+    Send(&SendMsg);
 
-    SaveCfgToE2(&CanCfg);
+    SendMsg->DLC = 7;
+    SendMsg->DATA[0] = action_send_can_cfg;
+    Set_Array_For_ID(&(SendMsg->DATA), 3, CanCfg->RXF0ID, CanCfg->RXF0IDE);
 
-    SetCfgFromE2(&CanCfg);
-    //    PrintfCfg(&CanCfg);
+//    SendMsg->DATA[3] = CanCfg->RXF0ID >> 24;
+//    SendMsg->DATA[4] = (CanCfg->RXF0ID >> 16) & 0xFF;
+//    SendMsg->DATA[5] = (CanCfg->RXF0ID >> 8) & 0xFF;
+//    SendMsg->DATA[6] = CanCfg->RXF0ID & 0xFF;
 
-    Can_Init(&CanCfg);
-    main_status = 1;
+    send_cfg(CanCfg->RXF0ID, E2_5Kbps, CanCfg->RXF0IDE, CanCfg->_5Kbps, &SendMsg);
+    send_cfg(CanCfg->RXF0ID, E2_BUKT_enable, CanCfg->RXF0IDE, CanCfg->BUKT_enable, &SendMsg);
+    send_cfg(CanCfg->RXF0ID, E2_CAN_MODE, CanCfg->RXF0IDE, CanCfg->CAN_MODE, &SendMsg);
+    send_cfg(CanCfg->RXF0ID, E2_CANINTE_enable, CanCfg->RXF0IDE, CanCfg->CANINTE_enable, &SendMsg);
+    send_cfg(CanCfg->RXF0ID, E2_CANINTF_enable, CanCfg->RXF0IDE, CanCfg->CANINTF_enable, &SendMsg);
+
+    send_cfg(CanCfg->RXF1ID, E2_RXF0ID, CanCfg->RXF0IDE, 0, &SendMsg);
+    send_cfg(CanCfg->RXF2ID, E2_RXF1ID, CanCfg->RXF1IDE, 0, &SendMsg);
+    send_cfg(CanCfg->RXF3ID, E2_RXF2ID, CanCfg->RXF2IDE, 0, &SendMsg);
+    send_cfg(CanCfg->RXF4ID, E2_RXF3ID, CanCfg->RXF3IDE, 0, &SendMsg);
+    send_cfg(CanCfg->RXF5ID, E2_RXF4ID, CanCfg->RXF4IDE, 0, &SendMsg);
+    send_cfg(CanCfg->RXF5ID, E2_RXF5ID, CanCfg->RXF5IDE, 0, &SendMsg);
+    send_cfg(CanCfg->RXM0ID, E2_RXM0ID, 0, 0, &SendMsg);
+    send_cfg(CanCfg->RXM1ID, E2_RXM1ID, 0, 0, &SendMsg);
 }
 
 /*******************************************************************************
@@ -559,7 +544,7 @@ void set_cancfg(CanCfgStruct *CanCfg) {
 * ÊäÈë    : ÎŞ
 * Êä³ö    : ÎŞ
 * ·µ»ØÖµ  : ÎŞ
-* ËµÃ÷    : ÎŞ
+* ËµÃ÷    : Éè¼Æ´®¿Úµ÷ÊÔÄ£¿é
 *******************************************************************************/
 void main(void) {
     uint32 ID = 0x101;
@@ -576,24 +561,28 @@ void main(void) {
 
     CanCfgStruct CanCfg;
 
+    //    ³õÊ¼ÉèÖÃÅäÖÃ
+    UART_init();    //UART1³õÊ¼»¯ÅäÖÃ
+    Exint_Init();   //Íâ²¿ÖĞ¶Ï1³õÊ¼»¯º¯Êı
+
     while (1) {
         switch (main_status) {
-            case 0:  // ÉÏµç×Ô¼ì
+            case main_power_on:  // ÉÏµç×Ô¼ì
                 power_on_init(&CanCfg);
-                main_status = 1;
-            case 1: // ÉèÖÃcon config
-                printf("½±ÀøÆû³µÒ»Á¾£¡£¡\n");
+            case main_set_can_cfg: // ÉèÖÃcon config
+                Set_Cfg_From_E2(&CanCfg);
+                Can_Init(&CanCfg);
+            case main_send_can_cfg: // CAN·¢ËÍµ±Ç°ÅäÖÃ£¬²¢´òÓ¡
+                send_can_cfg(&CanCfg, &SendMsg);
+                Printf_Cfg();     // Í¨¹ı¶ÁÈ¡£Í£Ã£Ğ£²£µ£±£µ´òÓ¡È«²¿µÄÅäÖÃĞÅÏ¢
+                main_status = 0;  // ½øÈëdefaultÄ£Ê½
                 break;
-            case 1: // ½«Config±£³Öµ½E2ÖĞ
+            case main_save_cfg:  // ½«Config±£³Öµ½E2ÖĞ
                 save_mcp2515_to_E2();
                 break;
-            case 15:  //  ÉÏ±¨×´Ì¬£¬´íÎó£¬ Òì³£
-                printf("½±ÀøĞ¡Â¥Ò»¶°£¡£¡\n");
-                break;
             default:  // Ä¬ÈÏ½øÈëÂÖÑ¯µÈ´ı
-//                É¨ÃèÒª¼à¿ØµÄGPIOÊÇ·ñ·¢ËÍ¸Ä±ä£¬
-                void scan_GPIO_chanage()
-                printf("±§Ç¸,Î´Âú×ã½±ÀøÌõ¼ş»òÕß³¬³ö¹¤Áä£¡£¡\n");
+                // É¨ÃèGPIO£¬½øÈë·¢ËÍ³ÌĞò scan_GPIO_chanage()
+                // É¨Ãè½ÓÊÕÆ÷×´Ì¬£¬½øÈë½ÓÊÕ³ÌĞò scan_rec_chanage()
                 break;
         }
     }
@@ -631,7 +620,7 @@ void main(void) {
     for (i = 0; i < 2; i++) //·¢ËÍ×Ö·û´®£¬Ö±µ½Óöµ½0²Å½áÊø
     {
         Send(&SendMsg);
-        ShowMsg(&SendMsg);
+        Printf_Msg(&SendMsg);
         SendMsg.ID = 0x100;
         SendMsg.TYPE = 0x2;
         SendMsg.EXIDE = 0x1;
@@ -649,13 +638,13 @@ void main(void) {
 
         if (CANINTF_Flag & RX0IF) {
             Receive(RXB0CTRL, &RecMsg);
-            ShowMsg(&RecMsg);
+            Printf_Msg(&RecMsg);
             MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFE);//Çå³ıÖĞ¶Ï±êÖ¾Î»(ÖĞ¶Ï±êÖ¾¼Ä´æÆ÷±ØĞëÓÉMCUÇåÁã)
         }
 
         if (CANINTF_Flag & RX1IF) {
             Receive(RXB1CTRL, &RecMsg);
-            ShowMsg(&RecMsg);
+            Printf_Msg(&RecMsg);
             MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFD);//Çå³ıÖĞ¶Ï±êÖ¾Î»(ÖĞ¶Ï±êÖ¾¼Ä´æÆ÷±ØĞëÓÉMCUÇåÁã)
         }
     }
