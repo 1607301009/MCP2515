@@ -229,16 +229,16 @@ void Receive(uint8 RXB_CTRL_Address, MsgStruct *RecMsg) {
 }
 
 
-
-void printE2Write(uint8 *E2_data, uint8 add, uint8 Len) {
-    uint8 i;
-    printf("add: %02bX Len: %02bX Data:", add, Len);
-    for (i = 0; i < Len; i++) //发送字符串，直到遇到0才结束
-    {
-        printf(" %02bX", E2_data[i]);
-    }
-    printf("\r\n");
-}
+//
+//void printE2Write(uint8 *E2_data, uint8 add, uint8 Len) {
+//    uint8 i;
+//    printf("add: %02bX Len: %02bX Data:", add, Len);
+//    for (i = 0; i < Len; i++) //发送字符串，直到遇到0才结束
+//    {
+//        printf(" %02bX", E2_data[i]);
+//    }
+//    printf("\r\n");
+//}
 
 // 本地调试使用
 void SaveCfgToE2(CanCfgStruct *CanCfg) {
@@ -553,8 +553,8 @@ void main(void) {
     uint8 i;
 
     uint8 CANINTF_Flag;
-    uint8 Send_data[] = {0x20, 0xF1, 0x03, 0x03, 0x04, 0x05, 0x06, 0x07};
-    uint8 E2_data[8];
+//    uint8 Send_data[] = {0x20, 0xF1, 0x03, 0x03, 0x04, 0x05, 0x06, 0x07};
+//    uint8 E2_data[8];
 
     MsgStruct SendMsg;
     MsgStruct RecMsg;
@@ -574,7 +574,7 @@ void main(void) {
                 Can_Init(&CanCfg);
             case main_send_can_cfg: // CAN发送当前配置，并打印
                 send_can_cfg(&CanCfg, &SendMsg);
-                Printf_Cfg();     // 通过读取ＭＣＰ２５１５打印全部的配置信息
+                Printf_Cfg(&CanCfg);     // 通过读取ＭＣＰ２５１５打印全部的配置信息
                 main_status = 0;  // 进入default模式
                 break;
             case main_save_cfg:  // 将Config保持到E2中
@@ -600,76 +600,76 @@ void main(void) {
 //        printf("读取数据 : E2_data[%bd] = %bx \r\n", i, E2_data[i]);
 //        }
 //    ReadCfg();
-
-    SendMsg.IsSend = 0x1;
-
-    SendMsg.ID = ID;
-    SendMsg.TYPE = 0x2;
-    SendMsg.EXIDE = 0x0;
-    SendMsg.DLC = 8;
-
-    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
-    {
-        SendMsg.DATA[i] = Send_data[i];
-//        printf("SendMsg.DATA[%bd] = %bx \r\n", i, SendMsg.DATA[i]);
-    }
-
-    RecMsg.IsSend = 0;
-//    Send(&SendMsg);
-
-    for (i = 0; i < 2; i++) //发送字符串，直到遇到0才结束
-    {
-        Send(&SendMsg);
-        Printf_Msg(&SendMsg);
-        SendMsg.ID = 0x100;
-        SendMsg.TYPE = 0x2;
-        SendMsg.EXIDE = 0x1;
-        SendMsg.DLC = 7;
-
-        Delay_Nms(3000);
-
-        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
-        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
-        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
-
-
-        CANINTF_Flag = MCP2515_ReadByte(CANINTF);
-        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
-
-        if (CANINTF_Flag & RX0IF) {
-            Receive(RXB0CTRL, &RecMsg);
-            Printf_Msg(&RecMsg);
-            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
-        }
-
-        if (CANINTF_Flag & RX1IF) {
-            Receive(RXB1CTRL, &RecMsg);
-            Printf_Msg(&RecMsg);
-            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
-        }
-    }
-
-    Delay_Nms(2000);
-
-    while (1) {
-
-//        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
-//        {
-//            CAN_RX0IF_Flag = 0;//CAN接收到数据标志
-//            Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
-//            Delay_Nms(2000);  //移动到下一个字符
 //
-//        }
-//        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
-//        {
-//            CAN_RX1IF_Flag = 0;//CAN接收到数据标志
-//            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
-////            UART_send_buffer(RXB_Value, 14); //发送一个字符
-//            Delay_Nms(2000);  //移动到下一个字符
-////			UART_send_buffer(RXB_Value,14); //发送一个字符
+//    SendMsg.IsSend = 0x1;
+//
+//    SendMsg.ID = ID;
+//    SendMsg.TYPE = 0x2;
+//    SendMsg.EXIDE = 0x0;
+//    SendMsg.DLC = 8;
+//
+//    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
+//    {
+//        SendMsg.DATA[i] = Send_data[i];
+////        printf("SendMsg.DATA[%bd] = %bx \r\n", i, SendMsg.DATA[i]);
+//    }
+//
+//    RecMsg.IsSend = 0;
+////    Send(&SendMsg);
+//
+//    for (i = 0; i < 2; i++) //发送字符串，直到遇到0才结束
+//    {
+//        Send(&SendMsg);
+//        Printf_Msg(&SendMsg);
+//        SendMsg.ID = 0x100;
+//        SendMsg.TYPE = 0x2;
+//        SendMsg.EXIDE = 0x1;
+//        SendMsg.DLC = 7;
+//
+//        Delay_Nms(3000);
+//
+//        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
+//        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
+//        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
+//
+//
+//        CANINTF_Flag = MCP2515_ReadByte(CANINTF);
+//        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
+//
+//        if (CANINTF_Flag & RX0IF) {
+//            Receive(RXB0CTRL, &RecMsg);
+//            Printf_Msg(&RecMsg);
+//            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFE);//清除中断标志位(中断标志寄存器必须由MCU清零)
 //        }
 //
-//        Delay_Nms(2000);
-    }
+//        if (CANINTF_Flag & RX1IF) {
+//            Receive(RXB1CTRL, &RecMsg);
+//            Printf_Msg(&RecMsg);
+//            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFD);//清除中断标志位(中断标志寄存器必须由MCU清零)
+//        }
+//    }
+//
+//    Delay_Nms(2000);
+//
+//    while (1) {
+//
+////        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
+////        {
+////            CAN_RX0IF_Flag = 0;//CAN接收到数据标志
+////            Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
+////            Delay_Nms(2000);  //移动到下一个字符
+////
+////        }
+////        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
+////        {
+////            CAN_RX1IF_Flag = 0;//CAN接收到数据标志
+////            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
+//////            UART_send_buffer(RXB_Value, 14); //发送一个字符
+////            Delay_Nms(2000);  //移动到下一个字符
+//////			UART_send_buffer(RXB_Value,14); //发送一个字符
+////        }
+////
+////        Delay_Nms(2000);
+//    }
 
 }

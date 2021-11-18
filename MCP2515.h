@@ -437,6 +437,7 @@ typedef struct      // reveive 结构体
     uint32 ID;      // 帧ID
     uint8 FILHIT:3;      // 验收滤波器命中位，
     uint8 RTR:1;      // 远程帧标志位 p21
+    uint8 LEVEL:2;      // 发送优先级 p18
     uint8 TYPE:2;   // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
     uint8 IsSend:1; // 帧类型: 数据帧， 远程帧， 错误帧， 过载帧
     uint8 EXIDE:1;  // 帧格式: 标准帧， 扩展帧

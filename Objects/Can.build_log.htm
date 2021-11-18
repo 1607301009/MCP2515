@@ -47,9 +47,9 @@ main.c(535): warning C182: pointer to different objects
 main.c(536): warning C182: pointer to different objects
 main.c(537): warning C182: pointer to different objects
 main.c(538): warning C182: pointer to different objects
-main.c(577): warning C209: '_Printf_Cfg': too few actual parameters
-main.c(557): warning C280: 'E2_data': unreferenced local variable
-main.c(604): warning C294: unreachable code
+main.c(553): warning C280: 'i': unreferenced local variable
+main.c(555): warning C280: 'CANINTF_Flag': unreferenced local variable
+main.c(560): warning C280: 'RecMsg': unreferenced local variable
 compiling MCP2515.c...
 compiling UART.c...
 compiling I2C_ROM.c...
@@ -57,16 +57,30 @@ linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_RECEIVE?MAIN
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_PRINTE2WRITE?MAIN
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_CAN_RECEIVE_BUFFER?MCP2515
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_SET_BUF_FOR_ID?MCP2515
+    SEGMENT: ?PR?_CAN_SEND_MSG?MCP2515
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_UART_SEND_BUFFER?UART
-Program Size: data=23.4 xdata=186 code=9779
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _CAN_SEND_BUFFER
+    MODULE:  .\Objects\main.obj (MAIN)
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ?_CAN_SEND_BUFFER?BYTE
+    MODULE:  .\Objects\main.obj (MAIN)
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?_CAN_SEND_BUFFER?BYTE
+    MODULE:  .\Objects\main.obj (MAIN)
+    ADDRESS: 1EC9H
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?_CAN_SEND_BUFFER?BYTE
+    MODULE:  .\Objects\main.obj (MAIN)
+    ADDRESS: 1EE0H
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _CAN_SEND_BUFFER
+    MODULE:  .\Objects\main.obj (MAIN)
+    ADDRESS: 1EEBH
+Program Size: data=23.4 xdata=159 code=8971
 creating hex file from ".\Objects\Can"...
-".\Objects\Can" - 0 Error(s), 30 Warning(s).
+".\Objects\Can" - 0 Error(s), 33 Warning(s).
 Build Time Elapsed:  00:00:01
 </pre>
 </body>
