@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 1   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MCP2515
@@ -62,7 +62,7 @@ line level    source
   49          * 输入    : 无
   50          * 输出    : 无
   51          * 返回值  : rByte(读取到的一个字节数据)
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 2   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 2   
 
   52          * 说明    : 无
   53          *******************************************************************************/
@@ -126,7 +126,7 @@ line level    source
  111          * 函数名  : MCP2515_ReadByte
  112          * 描述    : 通过SPI从MCP2515指定地址寄器读1个字节数据
  113          * 输入    : addr:MCP2515寄存器地址
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 3   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 3   
 
  114          * 输出    : 无
  115          * 返回值  : rByte:读取到寄存器的1个字节数据
@@ -190,7 +190,7 @@ line level    source
  173   1      
  174   1          uint32 SID = ((uint32) MCP2515_ReadByte(buf_addr) << 3) | (SIDL >> 5);
  175   1          uint32 EID = (uint32) (SIDL & 3) << 16
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 4   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 4   
 
  176   1                  | ((uint32) MCP2515_ReadByte(buf_addr + 2) << 8)
  177   1                  | MCP2515_ReadByte(buf_addr + 3);
@@ -254,7 +254,7 @@ line level    source
  231   2                  break;
  232   2              default : /* 默认取500Kbps */
  233   2                  kbps = CAN_500Kbps, prseg = PRSEG_2TQ, phseg1 = PHSEG1_3TQ, phseg2 = PHSEG2_2TQ, sjw = SJW_1TQ
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 5   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 5   
 
              -;
  234   2          }
@@ -318,7 +318,7 @@ line level    source
  291   1          Set_Buf_For_ID(RXM1SIDH, CanCfg->RXM1ID, 1);
  292   1      
  293   1          MCP2515_WriteByte(CANCTRL, REQOP_LOOPBACK | CLKOUT_ENABLED);//将MCP2515设置为环回模式,退出配置模式
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 6   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 6   
 
  294   1          if (OPMODE_NORMAL != (MCP2515_ReadByte(CANSTAT) && 0xE0))//判断MCP2515是否已经进入环回模式
  295   1          {
@@ -382,7 +382,7 @@ line level    source
  352          ////  MCP2515_WriteByte(RXF0SIDH,0xFF);       //配置验收滤波寄存器n标准标识符高位
  353          ////
  354          ////  MCP2515_WriteByte(RXM0SIDH,0xFF);       //配置验收屏蔽寄存器n标准标识符高位
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 7   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 7   
 
  355          ////  MCP2515_WriteByte(RXM1EID0,0xE0);       //配置验收屏蔽寄存器n标准标识符低位
  356          ////
@@ -446,7 +446,7 @@ line level    source
  411   1          MCP2515_WriteByte(TXBnCTRL, TXREQ | SendMsg->LEVEL);  //CTRL 开始发送
  412   1          MCP2515_CS=1;
  413   1          // 发送形式设置：单次发送，远程帧，拓展帧，调试状态，回应。
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 8   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 8   
 
  414   1      
  415   1          // 等待报文发送成功
@@ -510,7 +510,7 @@ line level    source
  473          ////    else
  474          ////    {
  475          ////        MCP2515_WriteByte(TXBnCTRL + 1, ID>>3);     //SIDH
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 9   
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 9   
 
  476          ////        MCP2515_WriteByte(TXBnCTRL + 2, (ID&0x07)<<5);  //SIDL
  477          ////        MCP2515_WriteByte(TXBnCTRL + 3, 0);       //EID8
@@ -574,7 +574,7 @@ line level    source
  535          
  536          
 
-C51 COMPILER V9.60.0.0   MCP2515                                                           11/18/2021 23:26:50 PAGE 10  
+C51 COMPILER V9.60.0.0   MCP2515                                                           11/19/2021 01:55:27 PAGE 10  
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
