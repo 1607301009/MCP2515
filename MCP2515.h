@@ -468,7 +468,7 @@ typedef struct        // reveive 结构体
     uint8 CANINTF_enable;     // 中断标志位，p51
 
     uint8 RXB0RXM:2;        // 接收缓冲器0工作模式位 11 = 关闭屏蔽／滤波功能；接收所有报文
-                            //                   10 = 只接收符合滤波器条件的带有扩展标识符的有效报文
+                            //  p27              10 = 只接收符合滤波器条件的带有扩展标识符的有效报文
                             //                   01 = 只接收符合滤波器条件的带有标准标识符的有效报文
                             //                   00 = 接收符合滤波器条件的所有带扩展标识符或标准标识符的有效报文
     uint8 RXB1RXM:2;        // 接收缓冲器1工作模式位
@@ -490,20 +490,30 @@ typedef struct        // reveive 结构体
 } CanCfgStruct;
 
 /* E2 Config 配置信息 按E2 page大小计算 */
-#define E2_CanCifg         0x0 * 8
-#define E2_RXF01           0x1 * 8
-#define E2_RXF23           0x2 * 8
-#define E2_RXF45           0x3 * 8
-#define E2_RXM01ID         0x4 * 8
+#define E2_CanCifg         0x00
+#define E2_RXM01ID         0x08
+#define E2_RXF01           0x10
+#define E2_RXF23           0x18
+#define E2_RXF45           0x20
+
 
 /* Config address 配置信息 */
 #define E2_5Kbps            0x0 // 波特率标志位
-#define E2_BUKT_enable      0x1 // 滚存使能位
-#define E2_RXB0RXM          0x2 // 接收缓冲器0工作模式 p27
-#define E2_RXB1RXM          0x3 // 接收缓冲器1工作模式 p28
-#define E2_CAN_MODE         0x4
-#define E2_CANINTE_enable   0x5
-#define E2_CANINTF_enable   0x6
+#define E2_CAN_MODE         0x1 // 工作模式： 1. 配置模式。
+                                //          2. 正常模式。
+                                //          3. 休眠模式。
+                                //          4. 仅监听模式。
+                                //          5. 环回模式。
+#define E2_CANINTE_enable   0x2
+#define E2_CANINTF_enable   0x3
+#define E2_BUKT_enable      0x4 // 滚存使能位
+#define E2_RXB0RXM          0x5 // 接收缓冲器0工作模式
+                // 接收缓冲器0工作模式位 11 = 关闭屏蔽／滤波功能；接收所有报文
+                //                   10 = 只接收符合滤波器条件的带有扩展标识符的有效报文
+                //                   01 = 只接收符合滤波器条件的带有标准标识符的有效报文
+                //                   00 = 接收符合滤波器条件的所有带扩展标识符或标准标识符的有效报文
+#define E2_RXB1RXM          0x6 // 接收缓冲器1工作模式 p28
+
 
 #define E2_RXF0ID   0x7
 #define E2_RXF1ID   0x8

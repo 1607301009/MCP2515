@@ -84,30 +84,30 @@ void Exint_ISR(void) interrupt 2 using 1
 * 描述    : 将msg打印出来
 * 输入    : Msg结构体
 *******************************************************************************/
-void Printf_Msg(MsgStruct *Msg) {
-    uint8 i;
-    uint32 ID = Msg->ID;
-    uint8 EXIDE = Msg->EXIDE;
-    uint8 DLC = Msg->DLC;
-
-    if (Msg->IsSend) {
-        printf("send ");
-    } else {
-        printf("rec  ");
-    }
-
-    if (EXIDE) {
-        printf("ID: %07lX,  DLC:%bx,  Data: ", ID, DLC);
-    } else {
-        printf("ID: %7lX,  DLC:%bx,  Data: ", ID, DLC);
-    }
-
-    for (i = 0; i < DLC; i++) {
-        printf("%02bX ", Msg->DATA[i]);
-    }
-
-    printf("\r\n");
-}
+//void Printf_Msg(MsgStruct *Msg) {
+//    uint8 i;
+//    uint32 ID = Msg->ID;
+//    uint8 EXIDE = Msg->EXIDE;
+//    uint8 DLC = Msg->DLC;
+//
+//    if (Msg->IsSend) {
+//        printf("send ");
+//    } else {
+//        printf("rec  ");
+//    }
+//
+//    if (EXIDE) {
+//        printf("ID: %07lX,  DLC:%bx,  Data: ", ID, DLC);
+//    } else {
+//        printf("ID: %7lX,  DLC:%bx,  Data: ", ID, DLC);
+//    }
+//
+//    for (i = 0; i < DLC; i++) {
+//        printf("%02bX ", Msg->DATA[i]);
+//    }
+//
+//    printf("\r\n");
+//}
 
 /* 设置调试标志位，将需要发送的数据 转发到uart */
 void Send(MsgStruct *SendMsg) {
@@ -271,7 +271,7 @@ printf("SaveCfgToE2  : %02bX \r\n", main_status);
 void Printf_E2(uint8 page) {
     uint8 i;
     uint8 E2_read_data[8];
-    printf("page: %02bX ", page);
+    printf("page11: %02bX ", page);
     E2Read(E2_read_data, page, 8);
     for (i = 0; i < 8; i++) {
         printf(" %02bX ", E2_read_data[i]);
@@ -333,17 +333,20 @@ void Printf_Cfg(CanCfgStruct *CanCfg) {
 void Set_Cfg_From_E2(CanCfgStruct *CanCfg) {
     uint8 E2_read_data[8];
 
+    // page 0: Kbps, CAN_MODE, CANINTE, CANINTF, BUKT, RXB0RXM, RXB1RXM
     //  设置波特率
     E2Read(E2_read_data, E2_CanCifg, 8);  // 从 EEPROM 读取一段数据
     CanCfg->_5Kbps = E2_read_data[E2_5Kbps];
     Set_Bitrate_Array(CanCfg->_5Kbps, &(CanCfg->bitrate));
-    //  设置滚存使能位、工作模式、中断使能位、中断标志位
-    CanCfg->BUKT_enable = E2_read_data[E2_BUKT_enable];
     CanCfg->CAN_MODE = E2_read_data[E2_CAN_MODE];      // 0:正常 1:休眠 2:环回 3:监听 4:配置
     CanCfg->CANINTE_enable = E2_read_data[E2_CANINTE_enable];
     CanCfg->CANINTF_enable = E2_read_data[E2_CANINTF_enable];
+    //  设置滚存使能位、工作模式、中断使能位、中断标志位
+    CanCfg->BUKT_enable = E2_read_data[E2_BUKT_enable];
+    CanCfg->RXB0RXM = E2_read_data[E2_RXB0RXM];
+    CanCfg->RXB1RXM = E2_read_data[E2_RXB1RXM];
 
-    //  设置屏蔽器
+    //  设置屏蔽器0 1
     E2Read(E2_read_data, E2_RXM01ID, 8);  // 从 EEPROM 读取一段数据
     CanCfg->RXM0ID = Get_ID_For_Array(E2_read_data, 0);
     CanCfg->RXM1ID = Get_ID_For_Array(E2_read_data, 4);
@@ -354,13 +357,13 @@ void Set_Cfg_From_E2(CanCfgStruct *CanCfg) {
     CanCfg->RXF0ID = Get_ID_For_Array(E2_read_data, 0);
     CanCfg->RXF1IDE = E2_read_data[4] & 0x8 >> 3;
     CanCfg->RXF1ID = Get_ID_For_Array(E2_read_data, 4);
-    //  滤波器0、3
+    //  滤波器2、3
     E2Read(E2_read_data, E2_RXF23, 8);  // 从 EEPROM 读取一段数据
     CanCfg->RXF2IDE = E2_read_data[0] & 0x8 >> 3;
     CanCfg->RXF2ID = Get_ID_For_Array(E2_read_data, 0);
     CanCfg->RXF3IDE = E2_read_data[4] & 0x8 >> 3;
     CanCfg->RXF3ID = Get_ID_For_Array(E2_read_data, 4);
-    //  滤波器0、5
+    //  滤波器4、5
     E2Read(E2_read_data, E2_RXF45, 8);  // 从 EEPROM 读取一段数据
     CanCfg->RXF4IDE = E2_read_data[0] & 0x8 >> 3;
     CanCfg->RXF4ID = Get_ID_For_Array(E2_read_data, 0);
@@ -410,50 +413,50 @@ void save_mcp2515_to_E2(void) {
 }
 
 // 测试时使用
-void SetCfg(CanCfgStruct *CanCfg)
-{
-//    printf("SetCfg  : %02bX \r\n", main_status);
-    CanCfg->_5Kbps = 20;
-//    printf("CanCfg->_5Kbps  : %02bX \r\n", CanCfg->_5Kbps);
-//    {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ}
-    CanCfg->bitrate[0] = CAN_100Kbps;
-    CanCfg->bitrate[1] = PRSEG_8TQ;
-    CanCfg->bitrate[2] = PHSEG1_8TQ;
-    CanCfg->bitrate[3] = PHSEG2_3TQ;
-    CanCfg->bitrate[4] = SJW_1TQ;
-//    CanCfg->bitrate[0] = bitrate_100Kbps[0];
-//    CanCfg->bitrate[1] = bitrate_100Kbps[1];
-//    CanCfg->bitrate[2] = bitrate_100Kbps[2];
-//    CanCfg->bitrate[3] = bitrate_100Kbps[3];
-//    CanCfg->bitrate[4] = bitrate_100Kbps[4];
-
-    CanCfg->BUKT_enable = 1;
-    CanCfg->CAN_MODE = 2;       // 000 = 设定为正常工作模式
-                                // 001 = 设定为休眠模式
-                                // 010 = 设定为环回模式
-                                // 011 = 设定为仅监听模式
-                                // 100 = 设定为配置模式
-    CanCfg->CANINTE_enable = 3;
-    CanCfg->CANINTF_enable = 0;
-    printf("enable  : %02bX \r\n", CanCfg->CANINTF_enable);
-    CanCfg->RXM0ID = 0x1FFFFFFF;
-    CanCfg->RXM1ID = 0x1FFFFFFF;
-
-    CanCfg->RXF0ID = 0x100;
-    CanCfg->RXF1ID = 0x7FE;
-    CanCfg->RXF2ID = 0x101;
-    CanCfg->RXF3ID = 0x102;
-    CanCfg->RXF4ID = 0x103;
-    CanCfg->RXF5ID = 0x104;
-
-    CanCfg->RXF0IDE = 1;
-    CanCfg->RXF1IDE = 0;
-    CanCfg->RXF2IDE = 0;
-    CanCfg->RXF3IDE = 1;
-    CanCfg->RXF4IDE = 0;
-    CanCfg->RXF5IDE = 1;
-    printf("CanCfg->RXF5ID  : %02bX \r\n", CanCfg->RXF5ID);
-}
+//void SetCfg(CanCfgStruct *CanCfg)
+//{
+////    printf("SetCfg  : %02bX \r\n", main_status);
+//    CanCfg->_5Kbps = 20;
+////    printf("CanCfg->_5Kbps  : %02bX \r\n", CanCfg->_5Kbps);
+////    {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ}
+//    CanCfg->bitrate[0] = CAN_100Kbps;
+//    CanCfg->bitrate[1] = PRSEG_8TQ;
+//    CanCfg->bitrate[2] = PHSEG1_8TQ;
+//    CanCfg->bitrate[3] = PHSEG2_3TQ;
+//    CanCfg->bitrate[4] = SJW_1TQ;
+////    CanCfg->bitrate[0] = bitrate_100Kbps[0];
+////    CanCfg->bitrate[1] = bitrate_100Kbps[1];
+////    CanCfg->bitrate[2] = bitrate_100Kbps[2];
+////    CanCfg->bitrate[3] = bitrate_100Kbps[3];
+////    CanCfg->bitrate[4] = bitrate_100Kbps[4];
+//
+//    CanCfg->BUKT_enable = 1;
+//    CanCfg->CAN_MODE = 2;       // 000 = 设定为正常工作模式
+//                                // 001 = 设定为休眠模式
+//                                // 010 = 设定为环回模式
+//                                // 011 = 设定为仅监听模式
+//                                // 100 = 设定为配置模式
+//    CanCfg->CANINTE_enable = 3;
+//    CanCfg->CANINTF_enable = 0;
+//    CanCfg->RXM0ID = 0x1FFFFFFF;
+//    CanCfg->RXM1ID = 0x1FFFFFFF;
+//    printf("CanCfg->0RXM1ID  : %08bX \r\n", CanCfg->RXM1ID);
+//    CanCfg->RXF0ID = 0x100;
+//    printf("CanCfg->RXF0ID  : %08bX \r\n", CanCfg->RXF0ID);
+//    CanCfg->RXF1ID = 0x7FE;
+//    CanCfg->RXF2ID = 0x101;
+//    CanCfg->RXF3ID = 0x102;
+//    CanCfg->RXF4ID = 0x103;
+//    CanCfg->RXF5ID = 0x104;
+//
+//    CanCfg->RXF0IDE = 1;
+//    CanCfg->RXF1IDE = 0;
+//    CanCfg->RXF2IDE = 0;
+//    CanCfg->RXF3IDE = 1;
+//    CanCfg->RXF4IDE = 0;
+//    CanCfg->RXF5IDE = 1;
+////    printf("CanCfg->RXF5ID  : %02bX \r\n", CanCfg->RXF5ID);
+//}
 
 //void ReadCfg(void) {
 //    printf("CNF1: %02bX ", MCP2515_ReadByte(CNF1));
@@ -481,14 +484,30 @@ void SetCfg(CanCfgStruct *CanCfg)
 void power_on_init(CanCfgStruct *CanCfg) {
     //    MCP2515_Init(bitrate_100Kbps);
 //    printf("power_on_init: %02bX \r\n", main_status);
-    SetCfg(&CanCfg);
+//    SetCfg(&CanCfg);
 //    Printf_Msg(&RecMsg);
 //    printf("SetCfg: %02bX \r\n", main_status);
-    SaveCfgToE2(&CanCfg);
+//    SaveCfgToE2(&CanCfg);
+    // page 0: Kbps, CAN_MODE, CANINTE, CANINTF, BUKT, RXB0RXM, RXB1RXM
+//    uint8 Send_data[8] = {0x14, 0x5, 0x03, 0x0, 0x01, 0x05, 0x03, 0x0};
+//    uint8 Send_data1[8] = {0x1F, 0xFF, 0xFF, 0xFF, 0x1F, 0xFF, 0xFF, 0xFF};
+//    uint8 Send_data2[8] = {0x10, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01};
+//    uint8 Send_data3[8] = {0x00, 0x00, 0x07, 0xff, 0x10, 0x00, 0x17, 0xFF};
+//    uint8 Send_data4[8] = {0x9F, 0xFF, 0xFF, 0xFF, 0x9F, 0xFF, 0xFF, 0xFE};
+//    E2Write(Send_data, E2_CanCifg, 7);
+//    E2Write(Send_data1, E2_RXM01ID, 8);
+//    // 1 100  0 101
+//    E2Write(Send_data2, E2_RXF01, 8);
+//    // 0 7FF  1 17FF
+//    E2Write(Send_data3, E2_RXF23, 8);
+//    // 1 1FFFFfFF  1 1FFFFfFE
+//    E2Write(Send_data4, E2_RXF45, 8);
+
+
     printf("SaveCfgToE2: %02bX \r\n", main_status);
 //    Set_Cfg_From_E2(&CanCfg);
     Printf_Cfg(&CanCfg);
-
+    printf("Printf_Cfg: %02bX \r\n", main_status);
 //    Can_Init(&CanCfg);
 }
 
