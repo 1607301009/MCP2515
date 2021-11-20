@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   52          /*******************************************************************************
   53          * 函数名  : Exint_Init
   54          * 描述    : 外部中断1初始化函数
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 2   
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 2   
 
   55          *******************************************************************************/
   56          void Exint_Init(void) {
@@ -126,7 +126,7 @@ line level    source
  113          void Send(MsgStruct *SendMsg) {
  114   1          uint32 ID = SendMsg->ID;
  115   1          uint8 EXIDE = SendMsg->EXIDE;
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 3   
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 3   
 
  116   1          uint8 DLC = SendMsg->DLC | (SendMsg->RTR << 6);
  117   1          CAN_Send_buffer(ID, EXIDE, DLC, SendMsg->DATA);
@@ -190,7 +190,7 @@ line level    source
  175          //        }
  176          //        Printf_Msg(&RecMsg);
  177          //    } else if (RecMsg->FILHIT == 5) {  // 滤波器5H 盲应答模式
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 4   
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 4   
 
  178          //        return;
  179          //    } else {  // GPIO 设置
@@ -254,7 +254,7 @@ line level    source
  236   1      
  237   1          //  设置屏蔽器0 1
  238   1          Set_Array_For_ID(E2_data, 0, CanCfg->RXM0ID, 0);
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 5   
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 5   
 
  239   1          Set_Array_For_ID(E2_data, 4, CanCfg->RXM1ID, 0);
  240   1          E2Write(E2_data, E2_RXM01ID, 8);
@@ -288,50 +288,49 @@ line level    source
  268   1      //    printE2Write(E2_data, E2_RXF45, 8);
  269   1      }
  270          
- 271          void Printf_E2(uint8 page) {
- 272   1          uint8 i;
- 273   1          uint8 E2_read_data[8];
- 274   1          printf("page11: %02bX ", page);
- 275   1          E2Read(E2_read_data, page, 8);
- 276   1          for (i = 0; i < 8; i++) {
- 277   2              printf(" %02bX ", E2_read_data[i]);
- 278   2          }
- 279   1          printf("\r\n");
- 280   1      }
+ 271          //void Printf_E2(uint8 page) {
+ 272          //    uint8 i;
+ 273          //    uint8 E2_read_data[8];
+ 274          //    printf("page11: %02bX ", page);
+ 275          //    E2Read(E2_read_data, page, 8);
+ 276          //    for (i = 0; i < 8; i++) {
+ 277          //        printf(" %02bX ", E2_read_data[i]);
+ 278          //    }
+ 279          //    printf("\r\n");
+ 280          //}
  281          
- 282          void Printf_Cfg(CanCfgStruct *CanCfg) {
- 283   1      //    uint8 E2_read_data[8];
- 284   1      //    uint8 i;
- 285   1          printf("page: ");
- 286   1          Printf_E2(E2_CanCifg);
- 287   1          Printf_E2(E2_RXF01);
- 288   1          Printf_E2(E2_RXF23);
- 289   1          Printf_E2(E2_RXF45);
- 290   1      
- 291   1      //    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
- 292   1      //    printf("bitrate: %02bX %02bX %02bX %02bX %02bX\r\n", CanCfg->bitrate[0],
- 293   1      //           CanCfg->bitrate[1], CanCfg->bitrate[2], CanCfg->bitrate[3], CanCfg->bitrate[4]);
- 294   1      //
- 295   1      //    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
- 296   1      //    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
- 297   1      //
- 298   1      //    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
- 299   1      //    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
- 300   1      //
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 6   
+ 282          //void Printf_Cfg(CanCfgStruct *CanCfg) {
+ 283          ////    uint8 E2_read_data[8];
+ 284          ////    uint8 i;
+ 285          //    printf("page: ");
+ 286          //    Printf_E2(E2_CanCifg);
+ 287          //    Printf_E2(E2_RXF01);
+ 288          //    Printf_E2(E2_RXF23);
+ 289          //    Printf_E2(E2_RXF45);
+ 290          //
+ 291          ////    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
+ 292          ////    printf("bitrate: %02bX %02bX %02bX %02bX %02bX\r\n", CanCfg->bitrate[0],
+ 293          ////           CanCfg->bitrate[1], CanCfg->bitrate[2], CanCfg->bitrate[3], CanCfg->bitrate[4]);
+ 294          ////
+ 295          ////    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
+ 296          ////    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
+ 297          ////
+ 298          ////    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
+ 299          ////    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
+ 300          ////
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 6   
 
- 301   1      //    printf("RXBnRXM0-1: %02bX %02bX\r\n", CanCfg->RXB0RXM, CanCfg->RXB1RXM);
- 302   1      //
- 303   1      //    printf("RXMnID0-1: %08lX %08lX\r\n", CanCfg->RXM0ID, CanCfg->RXM1ID);
- 304   1      //    printf("RXFnID0-5: %07lX %07lX %07lX %07lX %07lX\r\n", CanCfg->RXF0ID, CanCfg->RXF1ID, CanCfg->RXF2I
-             -D,
- 305   1      //           CanCfg->RXF3ID, CanCfg->RXF4ID, CanCfg->RXF5ID);
- 306   1      //
- 307   1      //    printf("RXFnIDE0-5: %bX %bX %bX %bX %bX\r\n", CanCfg->RXF0IDE, CanCfg->RXF1IDE, CanCfg->RXF2IDE, Can
-             -Cfg->RXF3IDE,
- 308   1      //           CanCfg->RXF4IDE, CanCfg->RXF5IDE);
- 309   1      }
-*** WARNING C280 IN LINE 282 OF main.c: 'CanCfg': unreferenced local variable
+ 301          ////    printf("RXBnRXM0-1: %02bX %02bX\r\n", CanCfg->RXB0RXM, CanCfg->RXB1RXM);
+ 302          ////
+ 303          ////    printf("RXMnID0-1: %08lX %08lX\r\n", CanCfg->RXM0ID, CanCfg->RXM1ID);
+ 304          ////    printf("RXFnID0-5: %07lX %07lX %07lX %07lX %07lX\r\n", CanCfg->RXF0ID, CanCfg->RXF1ID, CanCfg->RXF
+             -2ID,
+ 305          ////           CanCfg->RXF3ID, CanCfg->RXF4ID, CanCfg->RXF5ID);
+ 306          ////
+ 307          ////    printf("RXFnIDE0-5: %bX %bX %bX %bX %bX\r\n", CanCfg->RXF0IDE, CanCfg->RXF1IDE, CanCfg->RXF2IDE, C
+             -anCfg->RXF3IDE,
+ 308          ////           CanCfg->RXF4IDE, CanCfg->RXF5IDE);
+ 309          //}
  310          
  311          ///*******************************************************************************
  312          //* 描述    : 将数组中的数据，拼接完整ID，长度取4
@@ -382,9 +381,9 @@ line level    source
  357   1          CanCfg->RXF0ID = Get_ID_For_Array(E2_read_data, 0);
  358   1          CanCfg->RXF1IDE = E2_read_data[4] & 0x8 >> 3;
  359   1          CanCfg->RXF1ID = Get_ID_For_Array(E2_read_data, 4);
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 7   
-
  360   1          //  滤波器2、3
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 7   
+
  361   1          E2Read(E2_read_data, E2_RXF23, 8);  // 从 EEPROM 读取一段数据
  362   1          CanCfg->RXF2IDE = E2_read_data[0] & 0x8 >> 3;
  363   1          CanCfg->RXF2ID = Get_ID_For_Array(E2_read_data, 0);
@@ -446,9 +445,9 @@ line level    source
  419          //    CanCfg->_5Kbps = 20;
  420          ////    printf("CanCfg->_5Kbps  : %02bX \r\n", CanCfg->_5Kbps);
  421          ////    {CAN_100Kbps,PRSEG_8TQ,PHSEG1_8TQ,PHSEG2_3TQ,SJW_1TQ}
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 8   
-
  422          //    CanCfg->bitrate[0] = CAN_100Kbps;
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 8   
+
  423          //    CanCfg->bitrate[1] = PRSEG_8TQ;
  424          //    CanCfg->bitrate[2] = PHSEG1_8TQ;
  425          //    CanCfg->bitrate[3] = PHSEG2_3TQ;
@@ -510,9 +509,9 @@ line level    source
  481          * 描述    : 上电配置
  482          * 说明    : 设计上电自检程序，
  483          *******************************************************************************/
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 9   
-
  484          void power_on_init(CanCfgStruct *CanCfg) {
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 9   
+
  485   1          //    MCP2515_Init(bitrate_100Kbps);
  486   1      //    printf("power_on_init: %02bX \r\n", main_status);
  487   1      //    SetCfg(&CanCfg);
@@ -537,229 +536,278 @@ line level    source
  506   1      
  507   1          printf("SaveCfgToE2: %02bX \r\n", main_status);
  508   1      //    Set_Cfg_From_E2(&CanCfg);
- 509   1          Printf_Cfg(&CanCfg);
-*** WARNING C182 IN LINE 509 OF main.c: pointer to different objects
+ 509   1      //    Printf_Cfg(&CanCfg);
  510   1          printf("Printf_Cfg: %02bX \r\n", main_status);
  511   1      //    Can_Init(&CanCfg);
  512   1      }
+*** WARNING C280 IN LINE 484 OF main.c: 'CanCfg': unreferenced local variable
  513          
- 514          /*******************************************************************************
- 515          * 描述    : 将can配置发送给系统
- 516          * 说明    :　设计发送描述信息
- 517          *******************************************************************************/
- 518          void send_cfg(uint32 ID, uint8 flag, uint8 EXIDE, uint8 num, MsgStruct *SendMsg) {
- 519   1          SendMsg->ID = ID;
- 520   1          SendMsg->EXIDE = EXIDE;
- 521   1          SendMsg->DATA[1] = flag;
- 522   1          SendMsg->DATA[2] = num;
- 523   1          Send(&SendMsg);
-*** WARNING C182 IN LINE 523 OF main.c: pointer to different objects
- 524   1      }
- 525          
- 526          /*******************************************************************************
- 527          * 描述    : 将can配置发送给系统
- 528          * 说明    : 设计发送描述信息
- 529          *******************************************************************************/
- 530          void send_can_cfg(CanCfgStruct *CanCfg, MsgStruct *SendMsg) {
- 531   1          //　上电反馈，设计位远程帧，长度为7
- 532   1          SendMsg->RTR = 0x1;
- 533   1          SendMsg->DLC = 0;  // 初始设置位0，广播上电
- 534   1          // 用第0个滤波器发送零长msg,通知上电
- 535   1          SendMsg->ID = CanCfg->RXF0ID;
- 536   1          SendMsg->EXIDE = CanCfg->RXF0IDE;
- 537   1          Send(&SendMsg);
-*** WARNING C182 IN LINE 537 OF main.c: pointer to different objects
- 538   1      
- 539   1          SendMsg->DLC = 7;
- 540   1          SendMsg->DATA[0] = action_send_can_cfg;
- 541   1          Set_Array_For_ID(&(SendMsg->DATA), 3, CanCfg->RXF0ID, CanCfg->RXF0IDE);
- 542   1      
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 10  
+ 514          void E2_buf(uint8 isRead)
+ 515          {
+ 516   1          uint8 Send_data[] = {
+ 517   1                  // 波特率, 工作模式, CANINTE, CANINTF, BUKT, RXB0RXM, RXB1RXM
+ 518   1                  0x14, 0x05, 0x03, 0x00, 0x01, 0x05, 0x03, 0x00,
+ 519   1                  // RXF0ID, 1 2 3   4 5    ExIDE   id
+ 520   1                  0x1F, 0xFF, 0xFF, 0xFF, 0x1F, 0xFF, 0xFF, 0xFF,
+ 521   1                  0x10, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01,
+ 522   1                  0x00, 0x00, 0x07, 0xff, 0x10, 0x00, 0x17, 0xFF,
+ 523   1                  // RXM0ID 0 1
+ 524   1                  0x9F, 0xFF, 0xFF, 0xFF, 0x9F, 0xFF, 0xFF, 0xFE};
+ 525   1          printf("E2_buf: %02bX ", isRead);
+ 526   1          if (isRead == 1) {
+ 527   2              E2Read(&Send_data, 0, 40);
+ 528   2              for (isRead = 0; isRead < 40; isRead++) {
+ 529   3                  if (isRead % 8 == 0) {
+ 530   4                      printf("\r\n");
+ 531   4                  }
+ 532   3                  printf(" %02bX ", Send_data[isRead]);
+ 533   3              }
+ 534   2          } else {
+ 535   2              E2Write(&Send_data, 0, 8);
+ 536   2          }
+ 537   1      
+ 538   1          printf("\r\n E2 end\r\n");
+ 539   1      //
+ 540   1      //
+ 541   1      //    if (isRead == 1) {
+ 542   1      //        for (i = 0; i < 8; i++)
+ 543   1      //        {
+ 544   1      //            offfset = tmp_data * 4;
+ 545   1      //            EXIDE = MCP2515_ReadByte(RXF0SIDL + offfset) & 0x8 >> 3;
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 10  
 
- 543   1      //    SendMsg->DATA[3] = CanCfg->RXF0ID >> 24;
- 544   1      //    SendMsg->DATA[4] = (CanCfg->RXF0ID >> 16) & 0xFF;
- 545   1      //    SendMsg->DATA[5] = (CanCfg->RXF0ID >> 8) & 0xFF;
- 546   1      //    SendMsg->DATA[6] = CanCfg->RXF0ID & 0xFF;
- 547   1      
- 548   1          send_cfg(CanCfg->RXF0ID, E2_5Kbps, CanCfg->RXF0IDE, CanCfg->_5Kbps, &SendMsg);
-*** WARNING C182 IN LINE 548 OF main.c: pointer to different objects
- 549   1          send_cfg(CanCfg->RXF0ID, E2_BUKT_enable, CanCfg->RXF0IDE, CanCfg->BUKT_enable, &SendMsg);
-*** WARNING C182 IN LINE 549 OF main.c: pointer to different objects
- 550   1          send_cfg(CanCfg->RXF0ID, E2_CAN_MODE, CanCfg->RXF0IDE, CanCfg->CAN_MODE, &SendMsg);
-*** WARNING C182 IN LINE 550 OF main.c: pointer to different objects
- 551   1          send_cfg(CanCfg->RXF0ID, E2_CANINTE_enable, CanCfg->RXF0IDE, CanCfg->CANINTE_enable, &SendMsg);
-*** WARNING C182 IN LINE 551 OF main.c: pointer to different objects
- 552   1          send_cfg(CanCfg->RXF0ID, E2_CANINTF_enable, CanCfg->RXF0IDE, CanCfg->CANINTF_enable, &SendMsg);
-*** WARNING C182 IN LINE 552 OF main.c: pointer to different objects
- 553   1      
- 554   1          send_cfg(CanCfg->RXF1ID, E2_RXF0ID, CanCfg->RXF0IDE, 0, &SendMsg);
-*** WARNING C182 IN LINE 554 OF main.c: pointer to different objects
- 555   1          send_cfg(CanCfg->RXF2ID, E2_RXF1ID, CanCfg->RXF1IDE, 0, &SendMsg);
-*** WARNING C182 IN LINE 555 OF main.c: pointer to different objects
- 556   1          send_cfg(CanCfg->RXF3ID, E2_RXF2ID, CanCfg->RXF2IDE, 0, &SendMsg);
-*** WARNING C182 IN LINE 556 OF main.c: pointer to different objects
- 557   1          send_cfg(CanCfg->RXF4ID, E2_RXF3ID, CanCfg->RXF3IDE, 0, &SendMsg);
-*** WARNING C182 IN LINE 557 OF main.c: pointer to different objects
- 558   1          send_cfg(CanCfg->RXF5ID, E2_RXF4ID, CanCfg->RXF4IDE, 0, &SendMsg);
-*** WARNING C182 IN LINE 558 OF main.c: pointer to different objects
- 559   1          send_cfg(CanCfg->RXF5ID, E2_RXF5ID, CanCfg->RXF5IDE, 0, &SendMsg);
-*** WARNING C182 IN LINE 559 OF main.c: pointer to different objects
- 560   1          send_cfg(CanCfg->RXM0ID, E2_RXM0ID, 0, 0, &SendMsg);
-*** WARNING C182 IN LINE 560 OF main.c: pointer to different objects
- 561   1          send_cfg(CanCfg->RXM1ID, E2_RXM1ID, 0, 0, &SendMsg);
-*** WARNING C182 IN LINE 561 OF main.c: pointer to different objects
- 562   1      }
- 563          
- 564          /*******************************************************************************
- 565          * 函数名  : main
- 566          * 描述    : 主函数，用户程序从main函数开始运行
- 567          * 输入    : 无
- 568          * 输出    : 无
- 569          * 返回值  : 无
- 570          * 说明    : 设计串口调试模块
- 571          *******************************************************************************/
- 572          void main(void) {
- 573   1          uint32 ID = 0x101;
- 574   1          uint8 EXIDE = 0;
- 575   1          uint8 DLC = 8;
- 576   1          uint8 i;
- 577   1      
- 578   1      //    uint8 CANINTF_Flag;
- 579   1      //    uint8 Send_data[] = {0x20, 0xF1, 0x03, 0x03, 0x04, 0x05, 0x06, 0x07};
- 580   1      //    uint8 E2_data[8];
+ 546   1      //            ID = Get_ID_For_Buf(RXF0SIDH + offfset);
+ 547   1      //            Set_Array_For_ID(E2_data, offfset % 8, ID, EXIDE);
+ 548   1      //            //        E2_data[0] = MCP2515_ReadByte(RXF0SIDH + tmp_data * 4);
+ 549   1      //            //        E2_data[1] = MCP2515_ReadByte(RXF0SIDL + tmp_data * 4);
+ 550   1      //            //        E2_data[2] = MCP2515_ReadByte(RXF0EID8 + tmp_data * 4);
+ 551   1      //            //        E2_data[3] = MCP2515_ReadByte(RXF0EID0 + tmp_data * 4);
+ 552   1      //            E2Write(E2_data, E2_RXF01 + offfset, 4);
+ 553   1      //        }
+ 554   1      //    }
+ 555   1      }
+ 556          
+ 557          /*******************************************************************************
+ 558          * 描述    : 将can配置发送给系统
+ 559          * 说明    :　设计发送描述信息
+ 560          *******************************************************************************/
+ 561          void send_cfg(uint32 ID, uint8 flag, uint8 EXIDE, uint8 num, MsgStruct *SendMsg) {
+ 562   1          SendMsg->ID = ID;
+ 563   1          SendMsg->EXIDE = EXIDE;
+ 564   1          SendMsg->DATA[1] = flag;
+ 565   1          SendMsg->DATA[2] = num;
+ 566   1          Send(&SendMsg);
+*** WARNING C182 IN LINE 566 OF main.c: pointer to different objects
+ 567   1      }
+ 568          
+ 569          /*******************************************************************************
+ 570          * 描述    : 将can配置发送给系统
+ 571          * 说明    : 设计发送描述信息
+ 572          *******************************************************************************/
+ 573          void send_can_cfg(CanCfgStruct *CanCfg, MsgStruct *SendMsg) {
+ 574   1          //　上电反馈，设计位远程帧，长度为7
+ 575   1          SendMsg->RTR = 0x1;
+ 576   1          SendMsg->DLC = 0;  // 初始设置位0，广播上电
+ 577   1          // 用第0个滤波器发送零长msg,通知上电
+ 578   1          SendMsg->ID = CanCfg->RXF0ID;
+ 579   1          SendMsg->EXIDE = CanCfg->RXF0IDE;
+ 580   1          Send(&SendMsg);
+*** WARNING C182 IN LINE 580 OF main.c: pointer to different objects
  581   1      
- 582   1      //    MsgStruct SendMsg;
- 583   1      //    MsgStruct RecMsg;
- 584   1      
- 585   1          CanCfgStruct CanCfg;
- 586   1      
- 587   1          //    初始设置配置
- 588   1          UART_init();    //UART1初始化配置
- 589   1          Exint_Init();   //外部中断1初始化函数
- 590   1          power_on_init(&CanCfg);
- 591   1          while (1) {
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 11  
+ 582   1          SendMsg->DLC = 7;
+ 583   1          SendMsg->DATA[0] = action_send_can_cfg;
+ 584   1          Set_Array_For_ID(&(SendMsg->DATA), 3, CanCfg->RXF0ID, CanCfg->RXF0IDE);
+ 585   1      
+ 586   1      //    SendMsg->DATA[3] = CanCfg->RXF0ID >> 24;
+ 587   1      //    SendMsg->DATA[4] = (CanCfg->RXF0ID >> 16) & 0xFF;
+ 588   1      //    SendMsg->DATA[5] = (CanCfg->RXF0ID >> 8) & 0xFF;
+ 589   1      //    SendMsg->DATA[6] = CanCfg->RXF0ID & 0xFF;
+ 590   1      
+ 591   1          send_cfg(CanCfg->RXF0ID, E2_5Kbps, CanCfg->RXF0IDE, CanCfg->_5Kbps, &SendMsg);
+*** WARNING C182 IN LINE 591 OF main.c: pointer to different objects
+ 592   1          send_cfg(CanCfg->RXF0ID, E2_BUKT_enable, CanCfg->RXF0IDE, CanCfg->BUKT_enable, &SendMsg);
+*** WARNING C182 IN LINE 592 OF main.c: pointer to different objects
+ 593   1          send_cfg(CanCfg->RXF0ID, E2_CAN_MODE, CanCfg->RXF0IDE, CanCfg->CAN_MODE, &SendMsg);
+*** WARNING C182 IN LINE 593 OF main.c: pointer to different objects
+ 594   1          send_cfg(CanCfg->RXF0ID, E2_CANINTE_enable, CanCfg->RXF0IDE, CanCfg->CANINTE_enable, &SendMsg);
+*** WARNING C182 IN LINE 594 OF main.c: pointer to different objects
+ 595   1          send_cfg(CanCfg->RXF0ID, E2_CANINTF_enable, CanCfg->RXF0IDE, CanCfg->CANINTF_enable, &SendMsg);
+*** WARNING C182 IN LINE 595 OF main.c: pointer to different objects
+ 596   1      
+ 597   1          send_cfg(CanCfg->RXF1ID, E2_RXF0ID, CanCfg->RXF0IDE, 0, &SendMsg);
+*** WARNING C182 IN LINE 597 OF main.c: pointer to different objects
+ 598   1          send_cfg(CanCfg->RXF2ID, E2_RXF1ID, CanCfg->RXF1IDE, 0, &SendMsg);
+*** WARNING C182 IN LINE 598 OF main.c: pointer to different objects
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 11  
 
- 592   2              Delay_Nms(2000);
- 593   2      //        switch (main_status) {
- 594   2      //            case main_power_on:  // 上电自检
- 595   2      //                printf("page1: %02bX %02bX ", main_status, main_power_on);
- 596   2      //                power_on_init(&CanCfg);
- 597   2      ////            case main_set_can_cfg: // 设置con config
- 598   2      ////                Set_Cfg_From_E2(&CanCfg);
- 599   2      ////                Can_Init(&CanCfg);
- 600   2      ////            case main_send_can_cfg: // CAN发送当前配置，并打印
- 601   2      ////                send_can_cfg(&CanCfg, &SendMsg);
- 602   2      ////                Printf_Cfg(&CanCfg);     // 通过读取ＭＣＰ２５１５打印全部的配置信息
- 603   2      ////                main_status = 0;  // 进入default模式
- 604   2      ////                break;
- 605   2      ////            case main_save_cfg:  // 将Config保持到E2中
- 606   2      ////                save_mcp2515_to_E2();
- 607   2      ////                break;
- 608   2      //            default:  // 默认进入轮询等待
- 609   2      //                // 扫描GPIO，进入发送程序 scan_GPIO_chanage()
- 610   2      //                // 扫描接收器状态，进入接收程序 scan_rec_chanage()
- 611   2      //                break;
- 612   2      //        }
- 613   2          }
- 614   1      
- 615   1      
- 616   1      //
- 617   1      //    E2Write(Send_data, 0xF0, sizeof(Send_data));
- 618   1      //    printf("Main Set");
- 619   1      //    printE2Write(Send_data, 0xF0, sizeof(Send_data));
- 620   1      //    E2Read(E2_data, E2_RXM01ID, sizeof(E2_data));  // 从 EEPROM 读取一段数据
- 621   1      //    printf("Main Read ");
- 622   1      //    printE2Write(E2_data, E2_RXM01ID, sizeof(E2_data));
- 623   1      //    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
- 624   1      //        {
- 625   1      //        printf("读取数据 : E2_data[%bd] = %bx \r\n", i, E2_data[i]);
- 626   1      //        }
- 627   1      //    ReadCfg();
- 628   1      //
- 629   1      //    SendMsg.IsSend = 0x1;
- 630   1      //
- 631   1      //    SendMsg.ID = ID;
- 632   1      //    SendMsg.TYPE = 0x2;
- 633   1      //    SendMsg.EXIDE = 0x0;
- 634   1      //    SendMsg.DLC = 8;
- 635   1      //
- 636   1      //    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
- 637   1      //    {
- 638   1      //        SendMsg.DATA[i] = Send_data[i];
- 639   1      ////        printf("SendMsg.DATA[%bd] = %bx \r\n", i, SendMsg.DATA[i]);
- 640   1      //    }
- 641   1      //
- 642   1      //    RecMsg.IsSend = 0;
- 643   1      ////    Send(&SendMsg);
- 644   1      //
- 645   1      //    for (i = 0; i < 2; i++) //发送字符串，直到遇到0才结束
- 646   1      //    {
- 647   1      //        Send(&SendMsg);
- 648   1      //        Printf_Msg(&SendMsg);
- 649   1      //        SendMsg.ID = 0x100;
- 650   1      //        SendMsg.TYPE = 0x2;
- 651   1      //        SendMsg.EXIDE = 0x1;
- 652   1      //        SendMsg.DLC = 7;
- 653   1      //
-C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 03:58:41 PAGE 12  
+ 599   1          send_cfg(CanCfg->RXF3ID, E2_RXF2ID, CanCfg->RXF2IDE, 0, &SendMsg);
+*** WARNING C182 IN LINE 599 OF main.c: pointer to different objects
+ 600   1          send_cfg(CanCfg->RXF4ID, E2_RXF3ID, CanCfg->RXF3IDE, 0, &SendMsg);
+*** WARNING C182 IN LINE 600 OF main.c: pointer to different objects
+ 601   1          send_cfg(CanCfg->RXF5ID, E2_RXF4ID, CanCfg->RXF4IDE, 0, &SendMsg);
+*** WARNING C182 IN LINE 601 OF main.c: pointer to different objects
+ 602   1          send_cfg(CanCfg->RXF5ID, E2_RXF5ID, CanCfg->RXF5IDE, 0, &SendMsg);
+*** WARNING C182 IN LINE 602 OF main.c: pointer to different objects
+ 603   1          send_cfg(CanCfg->RXM0ID, E2_RXM0ID, 0, 0, &SendMsg);
+*** WARNING C182 IN LINE 603 OF main.c: pointer to different objects
+ 604   1          send_cfg(CanCfg->RXM1ID, E2_RXM1ID, 0, 0, &SendMsg);
+*** WARNING C182 IN LINE 604 OF main.c: pointer to different objects
+ 605   1      }
+ 606          
+ 607          /*******************************************************************************
+ 608          * 函数名  : main
+ 609          * 描述    : 主函数，用户程序从main函数开始运行
+ 610          * 输入    : 无
+ 611          * 输出    : 无
+ 612          * 返回值  : 无
+ 613          * 说明    : 设计串口调试模块
+ 614          *******************************************************************************/
+ 615          void main(void) {
+ 616   1          uint32 ID = 0x101;
+ 617   1          uint8 EXIDE = 0;
+ 618   1          uint8 DLC = 8;
+ 619   1          uint8 i;
+ 620   1      
+ 621   1      //    uint8 CANINTF_Flag;
+ 622   1      //    uint8 Send_data[] = {0x20, 0xF1, 0x03, 0x03, 0x04, 0x05, 0x06, 0x07};
+ 623   1      //    uint8 E2_data[8];
+ 624   1      
+ 625   1      //    MsgStruct SendMsg;
+ 626   1      //    MsgStruct RecMsg;
+ 627   1      
+ 628   1          CanCfgStruct CanCfg;
+ 629   1      
+ 630   1          //    初始设置配置
+ 631   1          UART_init();    //UART1初始化配置
+ 632   1          Exint_Init();   //外部中断1初始化函数
+ 633   1          
+ 634   1          E2_buf(0);
+ 635   1          E2_buf(1);
+ 636   1      //    power_on_init(&CanCfg);
+ 637   1          while (1) {
+ 638   2              Delay_Nms(2000);
+ 639   2      //        switch (main_status) {
+ 640   2      //            case main_power_on:  // 上电自检
+ 641   2      //                printf("page1: %02bX %02bX ", main_status, main_power_on);
+ 642   2      //                power_on_init(&CanCfg);
+ 643   2      ////            case main_set_can_cfg: // 设置con config
+ 644   2      ////                Set_Cfg_From_E2(&CanCfg);
+ 645   2      ////                Can_Init(&CanCfg);
+ 646   2      ////            case main_send_can_cfg: // CAN发送当前配置，并打印
+ 647   2      ////                send_can_cfg(&CanCfg, &SendMsg);
+ 648   2      ////                Printf_Cfg(&CanCfg);     // 通过读取ＭＣＰ２５１５打印全部的配置信息
+ 649   2      ////                main_status = 0;  // 进入default模式
+ 650   2      ////                break;
+ 651   2      ////            case main_save_cfg:  // 将Config保持到E2中
+ 652   2      ////                save_mcp2515_to_E2();
+ 653   2      ////                break;
+ 654   2      //            default:  // 默认进入轮询等待
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 12  
 
- 654   1      //        Delay_Nms(3000);
- 655   1      //
- 656   1      //        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
- 657   1      //        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
- 658   1      //        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
- 659   1      //
- 660   1      //
- 661   1      //        CANINTF_Flag = MCP2515_ReadByte(CANINTF);
- 662   1      //        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
- 663   1      //
- 664   1      //        if (CANINTF_Flag & RX0IF) {
- 665   1      //            Receive(RXB0CTRL, &RecMsg);
- 666   1      //            Printf_Msg(&RecMsg);
- 667   1      //            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFE);//清除中断标志位(中断标志寄存器
-             -必须由MCU清零)
- 668   1      //        }
- 669   1      //
- 670   1      //        if (CANINTF_Flag & RX1IF) {
- 671   1      //            Receive(RXB1CTRL, &RecMsg);
- 672   1      //            Printf_Msg(&RecMsg);
- 673   1      //            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFD);//清除中断标志位(中断标志寄存器
-             -必须由MCU清零)
- 674   1      //        }
- 675   1      //    }
+ 655   2      //                // 扫描GPIO，进入发送程序 scan_GPIO_chanage()
+ 656   2      //                // 扫描接收器状态，进入接收程序 scan_rec_chanage()
+ 657   2      //                break;
+ 658   2      //        }
+ 659   2          }
+ 660   1      
+ 661   1      
+ 662   1      //
+ 663   1      //    E2Write(Send_data, 0xF0, sizeof(Send_data));
+ 664   1      //    printf("Main Set");
+ 665   1      //    printE2Write(Send_data, 0xF0, sizeof(Send_data));
+ 666   1      //    E2Read(E2_data, E2_RXM01ID, sizeof(E2_data));  // 从 EEPROM 读取一段数据
+ 667   1      //    printf("Main Read ");
+ 668   1      //    printE2Write(E2_data, E2_RXM01ID, sizeof(E2_data));
+ 669   1      //    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
+ 670   1      //        {
+ 671   1      //        printf("读取数据 : E2_data[%bd] = %bx \r\n", i, E2_data[i]);
+ 672   1      //        }
+ 673   1      //    ReadCfg();
+ 674   1      //
+ 675   1      //    SendMsg.IsSend = 0x1;
  676   1      //
- 677   1      //    Delay_Nms(2000);
- 678   1      //
- 679   1      //    while (1) {
- 680   1      //
- 681   1      ////        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
- 682   1      ////        {
- 683   1      ////            CAN_RX0IF_Flag = 0;//CAN接收到数据标志
- 684   1      ////            Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
- 685   1      ////            Delay_Nms(2000);  //移动到下一个字符
- 686   1      ////
- 687   1      ////        }
- 688   1      ////        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
- 689   1      ////        {
- 690   1      ////            CAN_RX1IF_Flag = 0;//CAN接收到数据标志
- 691   1      ////            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
- 692   1      //////            UART_send_buffer(RXB_Value, 14); //发送一个字符
- 693   1      ////            Delay_Nms(2000);  //移动到下一个字符
- 694   1      //////      UART_send_buffer(RXB_Value,14); //发送一个字符
- 695   1      ////        }
- 696   1      ////
- 697   1      ////        Delay_Nms(2000);
- 698   1      //    }
- 699   1      
- 700   1      }
-*** WARNING C280 IN LINE 576 OF main.c: 'i': unreferenced local variable
+ 677   1      //    SendMsg.ID = ID;
+ 678   1      //    SendMsg.TYPE = 0x2;
+ 679   1      //    SendMsg.EXIDE = 0x0;
+ 680   1      //    SendMsg.DLC = 8;
+ 681   1      //
+ 682   1      //    for (i = 0; i < 8; i++) //发送字符串，直到遇到0才结束
+ 683   1      //    {
+ 684   1      //        SendMsg.DATA[i] = Send_data[i];
+ 685   1      ////        printf("SendMsg.DATA[%bd] = %bx \r\n", i, SendMsg.DATA[i]);
+ 686   1      //    }
+ 687   1      //
+ 688   1      //    RecMsg.IsSend = 0;
+ 689   1      ////    Send(&SendMsg);
+ 690   1      //
+ 691   1      //    for (i = 0; i < 2; i++) //发送字符串，直到遇到0才结束
+ 692   1      //    {
+ 693   1      //        Send(&SendMsg);
+ 694   1      //        Printf_Msg(&SendMsg);
+ 695   1      //        SendMsg.ID = 0x100;
+ 696   1      //        SendMsg.TYPE = 0x2;
+ 697   1      //        SendMsg.EXIDE = 0x1;
+ 698   1      //        SendMsg.DLC = 7;
+ 699   1      //
+ 700   1      //        Delay_Nms(3000);
+ 701   1      //
+ 702   1      //        printf("CAN_RX0IF_Flag = %bd \r\n", CAN_RX0IF_Flag);
+ 703   1      //        printf("CAN_RX1IF_Flag = %bd \r\n", CAN_RX1IF_Flag);
+ 704   1      //        printf("CANSTAT: %02bX \r\n", MCP2515_ReadByte(CANSTAT));
+ 705   1      //
+ 706   1      //
+ 707   1      //        CANINTF_Flag = MCP2515_ReadByte(CANINTF);
+ 708   1      //        printf("CANINTF: %02bX \r\n", CANINTF_Flag);
+ 709   1      //
+ 710   1      //        if (CANINTF_Flag & RX0IF) {
+ 711   1      //            Receive(RXB0CTRL, &RecMsg);
+ 712   1      //            Printf_Msg(&RecMsg);
+ 713   1      //            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFE);//清除中断标志位(中断标志寄存器
+             -必须由MCU清零)
+ 714   1      //        }
+ 715   1      //
+C51 COMPILER V9.60.0.0   MAIN                                                              11/20/2021 20:05:40 PAGE 13  
+
+ 716   1      //        if (CANINTF_Flag & RX1IF) {
+ 717   1      //            Receive(RXB1CTRL, &RecMsg);
+ 718   1      //            Printf_Msg(&RecMsg);
+ 719   1      //            MCP2515_WriteByte(CANINTF, MCP2515_ReadByte(CANINTF) & 0xFD);//清除中断标志位(中断标志寄存器
+             -必须由MCU清零)
+ 720   1      //        }
+ 721   1      //    }
+ 722   1      //
+ 723   1      //    Delay_Nms(2000);
+ 724   1      //
+ 725   1      //    while (1) {
+ 726   1      //
+ 727   1      ////        if (CAN_RX0IF_Flag == 1)                            //接收缓冲器0 满中断标志位
+ 728   1      ////        {
+ 729   1      ////            CAN_RX0IF_Flag = 0;//CAN接收到数据标志
+ 730   1      ////            Receive(RXB0CTRL, RXB_Value);//CAN接收一帧数据
+ 731   1      ////            Delay_Nms(2000);  //移动到下一个字符
+ 732   1      ////
+ 733   1      ////        }
+ 734   1      ////        if (CAN_RX1IF_Flag == 1)                            //接收缓冲器1 满中断标志位
+ 735   1      ////        {
+ 736   1      ////            CAN_RX1IF_Flag = 0;//CAN接收到数据标志
+ 737   1      ////            CAN_Receive_Buffer(RXB1CTRL, RXB_Value);//CAN接收一帧数据
+ 738   1      //////            UART_send_buffer(RXB_Value, 14); //发送一个字符
+ 739   1      ////            Delay_Nms(2000);  //移动到下一个字符
+ 740   1      //////      UART_send_buffer(RXB_Value,14); //发送一个字符
+ 741   1      ////        }
+ 742   1      ////
+ 743   1      ////        Delay_Nms(2000);
+ 744   1      //    }
+ 745   1      
+ 746   1      }
+*** WARNING C280 IN LINE 619 OF main.c: 'i': unreferenced local variable
+*** WARNING C280 IN LINE 628 OF main.c: 'CanCfg': unreferenced local variable
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   3049    ----
-   CONSTANT SIZE    =    183    ----
-   XDATA SIZE       =      1     143
+   CODE SIZE        =   3063    ----
+   CONSTANT SIZE    =    228    ----
+   XDATA SIZE       =      1     171
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

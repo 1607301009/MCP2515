@@ -19,30 +19,30 @@ CPU DLL:         S8051.DLL V3.122.0.0
 Dialog DLL:      DP51.DLL V2.67.0.0 
 <h2>Project:</h2>
 C:\Users\Carter\Desktop\51\Can\Can.uvproj
-Project File Date:  11/19/2021
+Project File Date:  11/20/2021
 
 <h2>Output:</h2>
 Rebuild target 'Target 1'
 assembling STARTUP.A51...
 compiling main.c...
-main.c(282): warning C280: 'CanCfg': unreferenced local variable
-main.c(509): warning C182: pointer to different objects
-main.c(523): warning C182: pointer to different objects
-main.c(537): warning C182: pointer to different objects
-main.c(548): warning C182: pointer to different objects
-main.c(549): warning C182: pointer to different objects
-main.c(550): warning C182: pointer to different objects
-main.c(551): warning C182: pointer to different objects
-main.c(552): warning C182: pointer to different objects
-main.c(554): warning C182: pointer to different objects
-main.c(555): warning C182: pointer to different objects
-main.c(556): warning C182: pointer to different objects
-main.c(557): warning C182: pointer to different objects
-main.c(558): warning C182: pointer to different objects
-main.c(559): warning C182: pointer to different objects
-main.c(560): warning C182: pointer to different objects
-main.c(561): warning C182: pointer to different objects
-main.c(576): warning C280: 'i': unreferenced local variable
+main.c(484): warning C280: 'CanCfg': unreferenced local variable
+main.c(566): warning C182: pointer to different objects
+main.c(580): warning C182: pointer to different objects
+main.c(591): warning C182: pointer to different objects
+main.c(592): warning C182: pointer to different objects
+main.c(593): warning C182: pointer to different objects
+main.c(594): warning C182: pointer to different objects
+main.c(595): warning C182: pointer to different objects
+main.c(597): warning C182: pointer to different objects
+main.c(598): warning C182: pointer to different objects
+main.c(599): warning C182: pointer to different objects
+main.c(600): warning C182: pointer to different objects
+main.c(601): warning C182: pointer to different objects
+main.c(602): warning C182: pointer to different objects
+main.c(603): warning C182: pointer to different objects
+main.c(604): warning C182: pointer to different objects
+main.c(619): warning C280: 'i': unreferenced local variable
+main.c(628): warning C280: 'CanCfg': unreferenced local variable
 compiling MCP2515.c...
 compiling UART.c...
 compiling I2C_ROM.c...
@@ -55,6 +55,8 @@ linking...
     SEGMENT: ?PR?_SET_CFG_FROM_E2?MAIN
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?SAVE_MCP2515_TO_E2?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_POWER_ON_INIT?MAIN
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_SEND_CAN_CFG?MAIN
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
@@ -72,18 +74,18 @@ linking...
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  ?_CAN_SEND_BUFFER?BYTE
     MODULE:  .\Objects\main.obj (MAIN)
-    ADDRESS: 17E0H
+    ADDRESS: 19A3H
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  ?_CAN_SEND_BUFFER?BYTE
     MODULE:  .\Objects\main.obj (MAIN)
-    ADDRESS: 17F7H
+    ADDRESS: 19BAH
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  _CAN_SEND_BUFFER
     MODULE:  .\Objects\main.obj (MAIN)
-    ADDRESS: 1802H
-Program Size: data=23.4 xdata=237 code=7393
+    ADDRESS: 19C5H
+Program Size: data=23.4 xdata=260 code=7698
 creating hex file from ".\Objects\Can"...
-".\Objects\Can" - 0 Error(s), 31 Warning(s).
+".\Objects\Can" - 0 Error(s), 32 Warning(s).
 Build Time Elapsed:  00:00:01
 </pre>
 </body>

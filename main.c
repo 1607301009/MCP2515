@@ -268,45 +268,45 @@ printf("SaveCfgToE2  : %02bX \r\n", main_status);
 //    printE2Write(E2_data, E2_RXF45, 8);
 }
 
-void Printf_E2(uint8 page) {
-    uint8 i;
-    uint8 E2_read_data[8];
-    printf("page11: %02bX ", page);
-    E2Read(E2_read_data, page, 8);
-    for (i = 0; i < 8; i++) {
-        printf(" %02bX ", E2_read_data[i]);
-    }
-    printf("\r\n");
-}
-
-void Printf_Cfg(CanCfgStruct *CanCfg) {
-//    uint8 E2_read_data[8];
+//void Printf_E2(uint8 page) {
 //    uint8 i;
-    printf("page: ");
-    Printf_E2(E2_CanCifg);
-    Printf_E2(E2_RXF01);
-    Printf_E2(E2_RXF23);
-    Printf_E2(E2_RXF45);
+//    uint8 E2_read_data[8];
+//    printf("page11: %02bX ", page);
+//    E2Read(E2_read_data, page, 8);
+//    for (i = 0; i < 8; i++) {
+//        printf(" %02bX ", E2_read_data[i]);
+//    }
+//    printf("\r\n");
+//}
 
-//    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
-//    printf("bitrate: %02bX %02bX %02bX %02bX %02bX\r\n", CanCfg->bitrate[0],
-//           CanCfg->bitrate[1], CanCfg->bitrate[2], CanCfg->bitrate[3], CanCfg->bitrate[4]);
+//void Printf_Cfg(CanCfgStruct *CanCfg) {
+////    uint8 E2_read_data[8];
+////    uint8 i;
+//    printf("page: ");
+//    Printf_E2(E2_CanCifg);
+//    Printf_E2(E2_RXF01);
+//    Printf_E2(E2_RXF23);
+//    Printf_E2(E2_RXF45);
 //
-//    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
-//    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
-//
-//    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
-//    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
-//
-//    printf("RXBnRXM0-1: %02bX %02bX\r\n", CanCfg->RXB0RXM, CanCfg->RXB1RXM);
-//
-//    printf("RXMnID0-1: %08lX %08lX\r\n", CanCfg->RXM0ID, CanCfg->RXM1ID);
-//    printf("RXFnID0-5: %07lX %07lX %07lX %07lX %07lX\r\n", CanCfg->RXF0ID, CanCfg->RXF1ID, CanCfg->RXF2ID,
-//           CanCfg->RXF3ID, CanCfg->RXF4ID, CanCfg->RXF5ID);
-//
-//    printf("RXFnIDE0-5: %bX %bX %bX %bX %bX\r\n", CanCfg->RXF0IDE, CanCfg->RXF1IDE, CanCfg->RXF2IDE, CanCfg->RXF3IDE,
-//           CanCfg->RXF4IDE, CanCfg->RXF5IDE);
-}
+////    printf("_5Kbps: %02bX \r\n", CanCfg->_5Kbps);
+////    printf("bitrate: %02bX %02bX %02bX %02bX %02bX\r\n", CanCfg->bitrate[0],
+////           CanCfg->bitrate[1], CanCfg->bitrate[2], CanCfg->bitrate[3], CanCfg->bitrate[4]);
+////
+////    printf("BUKT_enable: %02bX \r\n", CanCfg->BUKT_enable);
+////    printf("CAN_MODE: %02bX \r\n", CanCfg->CAN_MODE);
+////
+////    printf("CANINTE: %02bX \r\n", CanCfg->CANINTE_enable);
+////    printf("CANINTF: %02bX \r\n", CanCfg->CANINTF_enable);
+////
+////    printf("RXBnRXM0-1: %02bX %02bX\r\n", CanCfg->RXB0RXM, CanCfg->RXB1RXM);
+////
+////    printf("RXMnID0-1: %08lX %08lX\r\n", CanCfg->RXM0ID, CanCfg->RXM1ID);
+////    printf("RXFnID0-5: %07lX %07lX %07lX %07lX %07lX\r\n", CanCfg->RXF0ID, CanCfg->RXF1ID, CanCfg->RXF2ID,
+////           CanCfg->RXF3ID, CanCfg->RXF4ID, CanCfg->RXF5ID);
+////
+////    printf("RXFnIDE0-5: %bX %bX %bX %bX %bX\r\n", CanCfg->RXF0IDE, CanCfg->RXF1IDE, CanCfg->RXF2IDE, CanCfg->RXF3IDE,
+////           CanCfg->RXF4IDE, CanCfg->RXF5IDE);
+//}
 
 ///*******************************************************************************
 //* 描述    : 将数组中的数据，拼接完整ID，长度取4
@@ -506,9 +506,52 @@ void power_on_init(CanCfgStruct *CanCfg) {
 
     printf("SaveCfgToE2: %02bX \r\n", main_status);
 //    Set_Cfg_From_E2(&CanCfg);
-    Printf_Cfg(&CanCfg);
+//    Printf_Cfg(&CanCfg);
     printf("Printf_Cfg: %02bX \r\n", main_status);
 //    Can_Init(&CanCfg);
+}
+
+void E2_buf(uint8 isRead)
+{
+    uint8 Send_data[] = {
+            // 波特率, 工作模式, CANINTE, CANINTF, BUKT, RXB0RXM, RXB1RXM
+            0x14, 0x05, 0x03, 0x00, 0x01, 0x05, 0x03, 0x00,
+            // RXF0ID, 1 2 3   4 5    ExIDE   id
+            0x1F, 0xFF, 0xFF, 0xFF, 0x1F, 0xFF, 0xFF, 0xFF,
+            0x10, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01,
+            0x00, 0x00, 0x07, 0xff, 0x10, 0x00, 0x17, 0xFF,
+            // RXM0ID 0 1
+            0x9F, 0xFF, 0xFF, 0xFF, 0x9F, 0xFF, 0xFF, 0xFE};
+    printf("E2_buf: %02bX ", isRead);
+    if (isRead == 1) {
+        E2Read(&Send_data, 0, 40);
+        for (isRead = 0; isRead < 40; isRead++) {
+            if (isRead % 8 == 0) {
+                printf("\r\n");
+            }
+            printf(" %02bX ", Send_data[isRead]);
+        }
+    } else {
+        E2Write(&Send_data, 0, 8);
+    }
+
+    printf("\r\n E2 end\r\n");
+//
+//
+//    if (isRead == 1) {
+//        for (i = 0; i < 8; i++)
+//        {
+//            offfset = tmp_data * 4;
+//            EXIDE = MCP2515_ReadByte(RXF0SIDL + offfset) & 0x8 >> 3;
+//            ID = Get_ID_For_Buf(RXF0SIDH + offfset);
+//            Set_Array_For_ID(E2_data, offfset % 8, ID, EXIDE);
+//            //        E2_data[0] = MCP2515_ReadByte(RXF0SIDH + tmp_data * 4);
+//            //        E2_data[1] = MCP2515_ReadByte(RXF0SIDL + tmp_data * 4);
+//            //        E2_data[2] = MCP2515_ReadByte(RXF0EID8 + tmp_data * 4);
+//            //        E2_data[3] = MCP2515_ReadByte(RXF0EID0 + tmp_data * 4);
+//            E2Write(E2_data, E2_RXF01 + offfset, 4);
+//        }
+//    }
 }
 
 /*******************************************************************************
@@ -587,7 +630,10 @@ void main(void) {
     //    初始设置配置
     UART_init();    //UART1初始化配置
     Exint_Init();   //外部中断1初始化函数
-    power_on_init(&CanCfg);
+    
+    E2_buf(0);
+    E2_buf(1);
+//    power_on_init(&CanCfg);
     while (1) {
         Delay_Nms(2000);
 //        switch (main_status) {
